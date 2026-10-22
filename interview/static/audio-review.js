@@ -29,7 +29,7 @@ function attach(card,t,text,isCurrent,auto,skills){
  const strength=el('p',data.strength);strength.className='review-strength';box.append(strength);
  function detail(title,copy){const d=el('details'),summary=el('summary',title);d.className='review-detail';d.append(summary,el('p',copy));box.append(d);return d;}
  const analysis=detail('Explore the feedback','');
- for(const [title,key] of [['Structure','structure'],['Language clarity','language'],['Technical reasoning','knowledge'],['Delivery ? AI estimate','delivery']]){const section=el('section');section.append(el('h4',title),el('p',data[key]));analysis.append(section);}
+ for(const [title,key] of [['Structure','structure'],['Language clarity','language'],['Technical reasoning','knowledge'],['Delivery · AI estimate','delivery']]){const section=el('section');section.append(el('h4',title),el('p',data[key]));analysis.append(section);}
  for(const e of data.evidence||[]){const quote=el('blockquote',e.quote);analysis.append(quote,el('p',e.observation+' '+e.suggestion));}
  const draft=detail('A clearer version of your answer',data.improved_answer);draft.append(el('p','Suggested draft: verify every fact and fill in missing details truthfully.'));
  for(const q of data.missing_details||[])draft.append(el('p',q));
