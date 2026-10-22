@@ -1,0 +1,10 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+function element(){return {children:[],value:'',append(...xs){this.children.push(...xs);},replaceChildren(){this.children=[];},setAttribute(){}};}
+const response={transcript:'I tested the fix.',summary:'Clear',evidence:[],missing_details:[]};let calls=0,resolve;
+const ctx={window:{},document:{createElement:element},Blob,ArrayBuffer,DataView,URLSearchParams,Math,AudioContext:class{async decodeAudioData(){return {duration:.01};}async close(){}},OfflineAudioContext:class{createBufferSource(){return {connect(){},start(){}};}async startRendering(){return {getChannelData:()=>new Float32Array(160)};}},fetch:async()=>{calls++;return {ok:true,json:async()=>response};}};
+vm.runInNewContext(fs.readFileSync('static/audio-review.js','utf8'),ctx);
+(async()=>{const wav=await ctx.window.audioReview.wav(new Blob(['audio']));const buf=await wav.arrayBuffer();assert.equal(new DataView(buf).getUint32(24,true),16000);assert.equal(buf.byteLength,364);
+const card=element(),t={blob:new Blob(['audio']),question:'Question'},text=element();text.oninput=()=>{t.transcript=text.value;};ctx.window.audioReview.attach(card,t,text,()=>true,false,'Clarity');assert.equal(calls,0);await card.children[1].onclick();assert.equal(calls,1);assert.equal(t.transcript,response.transcript);assert.equal(card.children[3].hidden,false);
+t.userEdited=true;text.value='My corrected text';await card.children[1].onclick();assert.equal(text.value,'My corrected text');
+let current=true;const other=element();ctx.fetch=()=>new Promise(r=>resolve=r);ctx.window.audioReview.attach(other,{blob:t.blob,question:'q'},element(),()=>current,false,'');const pending=other.children[1].onclick();while(!resolve)await Promise.resolve();current=false;resolve({ok:true,json:async()=>response});await pending;assert.equal(other.children[3].hidden,true);
+console.log('PASS: WAV format, explicit upload, transcript filled, edited transcript preserved, stale result ignored (mock audio/browser).');})().catch(e=>{console.error(e);process.exitCode=1;});

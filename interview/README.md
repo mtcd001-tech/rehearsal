@@ -90,7 +90,7 @@ For each take, write or paste what you said and press **Check my words**. The te
 
 Optional: tick **Draft a transcript while I speak** before recording to have the browser's speech recognition fill the take's transcript (it keeps updating briefly after you stop, and never overwrites your own edits). In Chrome, this sends audio to Google's speech service, so it is off by default and disclosed next to the checkbox. It is hidden when the browser has no speech recognition. Real recognition results have not been verified by the agent (headless Chrome returned none); logic is covered by mocked tests.
 
-Without that option, audio is never uploaded and is not transcribed automatically. Reset, switching modes, or closing the tab discards undownloaded takes. Microphone tracks are released on stop, reset, and leaving the page.
+Without captions or Gemini review, audio is not uploaded or transcribed automatically. Reset, switching modes, or closing the tab discards undownloaded takes. Microphone tracks are released on stop, reset, and leaving the page.
 
 Local recording logic tests: `node test_practice.cjs` (mocked browser APIs: capture/stop, cleanup, delayed permission, permission denial, typed takes, check gating, comparison arguments, stale results after reset, take limit). In headless Chrome with Chrome's fake microphone device, a real MediaRecorder take was recorded, played (duration fixed from Chrome's WebM `Infinity`), checked, compared, and reset. A physical microphone has not been tested by the agent.
 
@@ -137,3 +137,16 @@ See docs/USER_TEST.md at repository root for the no-API test pass. Personal setu
 ### Answer analysis and improvement
 Local Check my words now includes an Improve your next answer revision checklist from deterministic signals. It is not a semantic assessment or AI rewrite. For AI interviews, Review my answer returns evidence-based analysis plus a suggested clearer draft and missing-detail questions. The draft is labeled for review, uses placeholders where facts are missing, and never replaces the original transcript. Instructions constrain the rewrite to the submitted answer, but generated advice still requires fact checking. AI coaching needs working API access; no paid calls were made to validate this feature.
 Failed live setup now resets the question and screen consistently, closes the setup dialog, preserves personal setup and offers local practice. HTTP 429 explains quota/rate-limit possibilities.
+
+## Gemini: review a spoken answer without typing
+
+1. Set GEMINI_API_KEY in interview/.env and restart the server. Default model: gemini-3.5-flash; override with GEMINI_AUDIO_MODEL if needed.
+2. Choose Practice my own answer and a question; Hear the question lets Maya read it aloud.
+3. Enable Analyze after I stop recording (Gemini), then record and stop. Or leave it off and click Analyze my recording with Gemini on a saved take.
+4. Read the automatic transcript, analysis, delivery observations, retry focus and suggested answer. You can correct the transcript; your original recording is preserved. Record another take to retry; Compare first and latest take remains a deterministic comparison of wording signals.
+
+The browser converts recordings to mono 16 kHz WAV. Audio, the question and skill goals are sent through the local server to Google; no resume is included. The server does not save uploaded audio. Maximum 12 MB upload; browser recordings are limited to two minutes. Gemini free-tier data may be used for product improvement. Upload failures preserve the recording for retry. No automatic retry on quota errors.
+
+Feedback is AI-generated and can be wrong. Quote filtering checks the model transcript, not ground-truth audio. Delivery observations are qualitative estimates, not validated scores. Suggested rewrites need fact checking; the live test exposed an added inference, and the prompt was tightened. OpenAI live voice and research remain separate integrations.
+
+Verification: a synthetic spoken answer was actually sent to Gemini successfully, producing a matching transcript and feedback. Audio endpoint tests and browser/audio mocks pass; real browser capture/conversion/rendering still needs user testing. Run python -m unittest test_audio_review and node test_audio_review.cjs from interview/. Documentation used: https://ai.google.dev/gemini-api/docs/audio and https://ai.google.dev/gemini-api/docs/structured-output .

@@ -12,7 +12,7 @@ The user is busy and expects the agent to do most of the work. Overnight on Oct 
 
 - **Never credit Claude, Codex, or any AI as co-author** in commits, PRs, or docs (explicit user rule; also in `AGENTS.md`).
 - Rehearsal in `interview/` is active. Trace was moved to `trace/` (paused; preserve it; not the submission).
-- User chose "build the sample flow first; I'll handle API access later." **Do not make paid API calls.** The key had `429 insufficient_quota`; Realtime client-secret returned 500.
+- User chose "build the sample flow first; I'll handle API access later." **OpenAI calls remain deferred. On Oct 22 the user supplied a Gemini key locally and explicitly authorized Gemini implementation/testing.** The key had `429 insufficient_quota`; Realtime client-secret returned 500.
 - Honesty: authored sample content is labelled as authored; rule checks are labelled deterministic/no AI; the live AI path is labelled unverified. No fabricated scores, transcripts, metrics, or feedback evidence.
 - Publishing (GitHub repo creation/push, YouTube upload, Devpost submission) is outward-facing: **the user must do it or explicitly approve it.** No remote exists yet.
 - Ordinary implementation and testing do not need repeated permission.
@@ -59,7 +59,7 @@ The user is busy and expects the agent to do most of the work. Overnight on Oct 
    - Web endpoints `/api/tool`, `/api/check`, `/api/compare-text` call the real MCP endpoint via the SDK client. Tool errors now return 400 with a readable message (previously 500).
 4. **Local practice:**
    - Record (MediaRecorder, meter, 2-minute cap, 4 takes) or type a take. Per-take **Check my words**; **Compare first and latest take**.
-   - JSON export includes the checks. Audio never leaves the tab. The WebM Infinity-duration fix is in.
+   - JSON export includes the checks. Audio stays local unless Gemini review or browser captions is explicitly selected. The WebM Infinity-duration fix is in.
 5. **MCP Apps view:** `interview/mcp_app/answer_check.html` is served as `ui://rehearsal/answer-check` (`text/html;profile=mcp-app`, prefersBorder). The check tools carry `_meta.ui.resourceUri` and `structured_output=True` (this needs `-> dict[str, Any]`). The reference host is at `/mcp-app-preview` (`static/mcp-app-host.html`). The spec was read from `modelcontextprotocol/ext-apps` `specification/draft/apps.mdx`. It has not been tried in a third-party host.
 6. **Practice history:** `interview/history.py`; MCP `save_practice_result` and `get_practice_progress`; `/api/progress` GET/POST/DELETE; the file is `interview/data/practice_history.json` (gitignored); `INTERVIEW_HISTORY_FILE` overrides it.
 7. **Optional captions:** `webkitSpeechRecognition`, opt-in checkbox `#live-captions`, Google disclosure, auto-restart while recording, late results land, user edits win, abort on reset. Mocked tests only; real speech results unverified.
@@ -170,3 +170,11 @@ Demo no longer overwrites personal setup; summary shows round/duration and demo 
 
 ## Latest: answer improvement and voice failure recovery
 User reported live HTTP 429 and requested answer assessment/improvement. Added AI coach improved_answer and missing_details output, labeled draft in coaching UI; original transcript/baseline unchanged. Local rule feedback includes a revision checklist (not AI rewriting). Failed live setup now resets question/state and offers local recovery, retaining setup; explicit 429 message. Tests: 17 Python CoachTests/checks PASS (mock provider), setup/practice/recovery JS mocks PASS and JS syntax PASS. No paid calls, browser rendering or actual AI rewrite quality verified. Next: user tests local checklist; real AI review needs working API access and lifting deferral.
+
+## Current milestone: Gemini recorded-answer review
+
+User authorized Gemini testing after saving key in gitignored interview/.env. Implemented audio_review.py, POST /api/audio-review (12 MB in-memory WAV, bounded context), static/audio-review.js (browser WAV conversion to mono 16kHz, consent, transcript + feedback + rewrite), and practice integration. Recording remains local until Analyze my recording with Gemini or the explicit Analyze after I stop checkbox is selected. Only audio/question/skill goals go to Google, not resume. Key stays server-side. Browser captions remain a separate option.
+
+Default GEMINI_AUDIO_MODEL=gemini-3.5-flash. Live synthetic speech test SUCCESS: matching transcript, feedback, 3 valid evidence snippets. Earlier listed models returned 404/503. Draft contained an inference about a missing index, so prompt tightened; generated draft must still be checked. No personal user recording/resume sent. Test WAV is gitignored in interview/data/gemini-test.wav. Key never printed.
+
+Tests: 4 audio Python tests plus 8 coach tests PASS (mocks), audio frontend mocks PASS (WAV/transcript/edit preservation/stale result), existing practice JS PASS, syntax PASS. Real browser microphone/conversion/rendering remains unverified. No user server restart. OpenAI live voice/text and company research still use OpenAI; Gemini recorded review is separate, not continuous Gemini Live conversation. Next: restart server and user tests Practice my own answer -> enable Gemini auto analysis -> Record -> Stop -> review -> retry. Continue adapting questions/company research to Gemini only as a subsequent task.

@@ -214,3 +214,18 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - Verification: 17 CoachTests/checks Python tests PASS with mocked provider; setup/practice/recovery JS mocks PASS; app/checks syntax PASS. Initial test-edit command used wrong venv path, corrected before running. No paid calls.
 - Limits: draft facts are prompt-constrained, not independently verified; local checks are deterministic, not semantic analysis. Browser rendering and actual model quality unverified.
 - Next: user tests local revision checklist; verify real AI coaching once API access is available.
+
+### 2026-10-22 - IN PROGRESS: Gemini recorded-answer review
+- User supplied Gemini key locally and explicitly authorized implementation/testing. Gemini synthetic-audio tests now authorized; OpenAI deferral remains. Never log credentials.
+- Next: bounded audio endpoint, Gemini transcript/analysis/rewrite, recording review UI with upload disclosure, synthetic live check and mocks.
+
+### 2026-10-22 - Gemini implementation checkpoint
+- Model list authenticated. Live synthetic WAV: 2.5 Flash 404, 3.1 Flash Lite 503, 3.5 Flash SUCCESS with matching transcript/3 evidence quotes and feedback. Default set to successful model. Draft added an unsupported inference; prompt tightened and UI explicitly labels draft for fact checking.
+- Audio endpoint/validation mocks 4 PASS; practice JS regression/syntax PASS. Next: audio frontend lifecycle mocks, docs and handoff. No personal data used in tests.
+
+### 2026-10-22 - COMPLETE: Gemini recorded-answer review
+- Changes: audio_review.py and bounded /api/audio-review; browser WAV conversion/upload consent; per-recording and opt-in automatic review, transcript fill with edit protection, analysis/evidence/delivery/draft/missing details; example config, tests, README/HANDOFF.
+- Verification: actual Gemini model listing 200; synthetic WAV review 200 using gemini-3.5-flash, matching transcript and 3 exact evidence quotes. Earlier model attempts 404/503. Final prompt tightened against inferred facts. Initial fixture generation failed because data directory did not exist; created it and generated synthetic WAV (gitignored).
+- Tests: 12 Python audio/coach tests PASS (mocked); audio JS WAV/lifecycle tests PASS; existing practice mocks PASS and JS syntax PASS. No secret printed or personal data sent.
+- Limits: physical mic/browser decoding/rendering unverified; qualitative AI delivery feedback and rewrites may be incorrect. OpenAI flows unchanged/deferred. User server not restarted.
+- Next: user tests recording -> automatic Gemini review -> spoken retry after restarting server. Default model is configured in code/example, key stays in ignored .env.

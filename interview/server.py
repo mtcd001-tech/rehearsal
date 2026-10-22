@@ -25,6 +25,7 @@ from checks import check_answer, compare_answers
 from sample import SAMPLE
 from resume_import import MAX_BYTES
 from research import search_company, validate_plan, PLAN_PROMPT
+from audio_review import review_audio, MAX_AUDIO_BYTES
 
 ROOT = Path(__file__).parent
 load_dotenv(ROOT / '.env', override=True)
@@ -262,6 +263,17 @@ def home():
 @app.get('/api/sample')
 def sample():
     return SAMPLE
+
+@app.post('/api/audio-review')
+async def audio_review(request: Request, question: str = '', skills: str = ''):
+    if len(question) > 1000 or len(skills) > 1000:
+        raise ValueError('Question and skills must each be 1,000 characters or less.')
+    data = bytearray()
+    async for chunk in request.stream():
+        data.extend(chunk)
+        if len(data) > MAX_AUDIO_BYTES:
+            raise HTTPException(413, 'Recording must be 12 MB or smaller.')
+    return await review_audio(bytes(data), question, skills)
 
 @app.post('/api/resume')
 async def import_resume(request: Request, filename: str):
