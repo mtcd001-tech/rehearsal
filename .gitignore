@@ -1,0 +1,8 @@
+.venv/
+__pycache__/
+.env
+*.log
+test-results/
+.claude/settings.local.json
+*.zip
+.claude/
