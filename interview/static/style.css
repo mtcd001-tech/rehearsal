@@ -20,3 +20,8 @@
 .take-card .rule-list{grid-template-columns:1fr}
 .retry-card #compare-takes{margin-bottom:8px}
 @media(max-width:800px){.rule-check{padding:18px}.rule-list{grid-template-columns:1fr}.rule-row{grid-template-columns:1fr;gap:6px}.pill{justify-self:start}}
+.progress-box{background:#f4f6ee;border:1px solid #dfe5d3;border-radius:8px;padding:14px 16px;margin:4px 0 16px;font-size:11px;line-height:1.7;color:#66735c}
+.progress-box strong{display:block;color:#4c5547;font-size:12px;margin-bottom:4px}
+.progress-box .text-button{padding:6px 0;margin-right:14px}
+.retry-card #save-progress{margin-bottom:4px}
+#progress-note{text-align:center;margin:2px 0 12px}

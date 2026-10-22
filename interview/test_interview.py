@@ -1,3 +1,5 @@
+import json
+import os
 import unittest
 from unittest.mock import AsyncMock, patch
 import httpx
@@ -85,6 +87,15 @@ class LocalIntegration(unittest.IsolatedAsyncioTestCase):
             self.assertTrue(compared.json()['result']['summary'].startswith('Moved'))
             same = await client.post('/api/compare-text', json={'before': 'We did it.', 'after': 'We did it.'})
             self.assertEqual(same.status_code, 400)
+            progress = await client.get('/api/progress')
+            self.assertEqual(progress.status_code, 200, progress.text)
+            self.assertEqual(progress.json()['tool'], 'get_practice_progress')
+            if os.getenv('INTERVIEW_HISTORY_FILE'):  # only write history when the server under test uses a throwaway file
+                saved = await client.post('/api/progress', json={'question': sample['question'], 'first': sample['first'], 'retry': sample['retry']})
+                self.assertEqual(saved.status_code, 200, saved.text)
+                self.assertNotIn('database', json.dumps(saved.json()['result']['saved']))
+                self.assertGreaterEqual((await client.get('/api/progress')).json()['result']['sessions'], 1)
+                self.assertTrue((await client.delete('/api/progress')).json()['cleared'])
             await client.post('/api/clear', json={'session_id': sid})
         async with streamable_http_client(f'{BASE}/mcp') as (read, write, _):
             async with ClientSession(read, write) as client:
@@ -93,8 +104,8 @@ class LocalIntegration(unittest.IsolatedAsyncioTestCase):
                 self.assertIn('check_answer_text', initialized.instructions)
                 tools = (await client.list_tools()).tools
                 names = {tool.name for tool in tools}
-                self.assertTrue(all(t.annotations.readOnlyHint for t in tools if t.name.startswith(('check_', 'compare_answer'))))
-                self.assertEqual(names, {'get_interview_brief', 'coach_latest_answer', 'compare_retry', 'check_answer_text', 'compare_answer_texts'})
+                self.assertTrue(all(t.annotations.readOnlyHint for t in tools if t.name.startswith(('check_', 'compare_answer', 'get_practice'))))
+                self.assertEqual(names, {'get_interview_brief', 'coach_latest_answer', 'compare_retry', 'check_answer_text', 'compare_answer_texts', 'save_practice_result', 'get_practice_progress'})
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

@@ -43,6 +43,7 @@ Tools (the server also publishes agent instructions describing the practice loop
 
 - `check_answer_text(answer, question?)` — deterministic wording checks with exact quotes and one priority. No key needed.
 - `compare_answer_texts(before, after)` — deterministic per-signal change between two takes, with before/after quotes. No key needed.
+- `get_practice_progress()` / `save_practice_result(question, first_answer, retry_answer?)` — opt-in local history of signal labels and counts (never answer text or audio) so an agent can start a session with context. Deleting history is an app action (`DELETE /api/progress`), deliberately not an MCP tool.
 - `get_interview_brief(session_id)` — retrieve the supplied context and recorded transcript.
 - `coach_latest_answer(session_id)` — call the model, verify quoted evidence exists in the actual answer, attach the rule checks, store the baseline and retry focus.
 - `compare_retry(session_id)` — compare a new answer with the coached baseline and filter unsupported quotes.
@@ -62,11 +63,11 @@ Prior art: [Yoodli](https://yoodli.ai/use-cases/interview-preparation) already p
 Keep the server running, then from this directory:
 
 ```powershell
-..\.venv\Scripts\python -m unittest test_interview test_checks -v
+..\.venv\Scripts\python -m unittest test_interview test_checks test_history -v
 node test_practice.cjs
 ```
 
-Set `INTERVIEW_PORT` when the server under test runs on another port. 16 Python tests cover the rule checks (exact-substring quotes, no score fields, honest unchanged-retry wording), evidence quote filtering, retry requirements, empty answers, transcript deduplication, provider failures, schema checks, session deletion, and HTTP plus real MCP integration (tool list, instructions, annotations, error responses). No provider request is made.
+Set `INTERVIEW_PORT` when the server under test runs on another port. 22 Python tests cover practice history (no text stored, recurring focus, corrupt-file handling, clear), the rule checks (exact-substring quotes, no score fields, honest unchanged-retry wording), evidence quote filtering, retry requirements, empty answers, transcript deduplication, provider failures, schema checks, session deletion, and HTTP plus real MCP integration (tool list, instructions, annotations, error responses). No provider request is made.
 
 Browser QA (October 22, 2026, desktop Chrome on Windows): the full sample flow, browser speech with skip, coaching, retry comparison, and reset/restart were exercised with no console errors, and a 390px-wide layout showed no horizontal overflow. Physical microphone recording, file downloads, real mobile devices, and the live AI paths have not been verified.
 

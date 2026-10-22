@@ -12,5 +12,6 @@ function renderCompare(box,out,title='RULE CHECK · FIRST TAKE VS RETRY'){const 
  const list=el('div','rule-list');r.changes.forEach(c=>{const row=el('div','rule-row');const body=el('div');body.append(el('strong','',`${c.label}: ${c.before_count} → ${c.after_count}`));if(c.before_quotes.length)body.append(quotes(c.before_quotes,'flag'));if(c.after_quotes.length)body.append(quotes(c.after_quotes,'good'));row.append(el('span','pill '+(c.direction==='toward'?'ok':c.direction==='away'?'missing':'same'),MOVE[c.direction]),body);list.append(row);});
  box.append(list,el('p','rule-priority',`Next: ${r.next_step}`),el('p','privacy',`${r.note} ${r.before_words} → ${r.after_words} words. ${r.source}`));}
 function renderError(box,e){box.replaceChildren(el('p','privacy','Rule check unavailable: '+e.message));box.hidden=false;}
-window.answerChecks={check:(text,question='')=>api('/api/check',{text,question}),compare:(before,after)=>api('/api/compare-text',{before,after}),renderCheck,renderCompare,renderError};
+async function clearProgress(){const res=await fetch('/api/progress',{method:'DELETE'});if(!res.ok)throw Error('Could not clear practice history.');return res.json();}
+window.answerChecks={check:(text,question='')=>api('/api/check',{text,question}),compare:(before,after)=>api('/api/compare-text',{before,after}),progress:()=>api('/api/progress'),saveProgress:(question,first,retry='')=>api('/api/progress',{question,first,retry}),clearProgress,renderCheck,renderCompare,renderError};
 })();

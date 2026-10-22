@@ -32,14 +32,16 @@ Behavioral interviews are hard for students applying to technical internships, e
   
   It picks one priority for the next try.
 - You answer the same question again. **Compare first and latest take** runs `compare_answer_texts`, which shows which signals moved in the suggested direction, with before and after quotes. It says so plainly when nothing changed.
+- **Practice history across sessions (opt-in).** *Save results to my progress* stores only signal labels and counts on your computer, never your words or audio. Next time, the app (or an assistant calling `get_practice_progress`) opens with your recurring priority, for example "your own role — moved toward the suggestion on 1 retry."
 - No scores, no accent or personality judgments, no hiring predictions. Every quote is an exact substring of what you said, so evidence cannot be invented.
 - An optional live mode (OpenAI Realtime voice over WebRTC, with the same MCP tools bridged as function calls) is implemented. It is **not verified end to end** because the available API key had no quota. The demo does not show it.
 
 ## How we built it
 
 - **MCP server:** FastMCP from the official Python SDK, mounted on FastAPI, stateless Streamable HTTP with JSON responses. It negotiates protocol 2025-11-25. It ships server instructions that describe the coaching loop for an agent, and tool titles and annotations (the check tools are read-only, idempotent and closed-world).
-- **Five tools:**
+- **Seven tools:**
   - `check_answer_text` and `compare_answer_texts`: deterministic, no key.
+  - `get_practice_progress` and `save_practice_result`: local, opt-in history of derived signals only. Deleting history is deliberately an app action, not an agent tool.
   - `get_interview_brief`: session context.
   - `coach_latest_answer` and `compare_retry`: model-written, with exact-substring quote filtering, plus rule checks attached.
 - **The web app is itself an MCP client:** its `/api/check`, `/api/compare-text` and `/api/tool` endpoints call the real MCP endpoint through the SDK's Streamable HTTP client. The browser therefore shows actual tool output, including the protocol version.
@@ -52,7 +54,7 @@ Behavioral interviews are hard for students applying to technical internships, e
   - Sessions live in memory with expiry.
   - Live mode asks for explicit consent before any audio is sent, and the API key stays on the server.
 - **Tests:**
-  - 16 Python tests: rule checks, quote filtering, session handling, and HTTP plus real MCP integration.
+  - 22 Python tests: rule checks, practice history, quote filtering, session handling, and HTTP plus real MCP integration.
   - Mocked browser-API tests for recording, typed takes, checks and reset.
   - Headless Chrome checks with Chrome's fake microphone device.
 
@@ -65,7 +67,7 @@ Behavioral interviews are hard for students applying to technical internships, e
 ## Accomplishments
 
 - A complete practice loop that works offline with no key: question → answer → quoted evidence → one priority → retry → measured change.
-- A real MCP server that a voice assistant could drive with the same loop, verified at protocol 2025-11-25.
+- A real MCP server that a voice assistant could drive with the same loop, verified at protocol 2025-11-25, with context that carries across sessions without storing what the candidate said.
 - No invented evidence: every quote shown is checked against the actual text.
 
 ## What we learned
@@ -77,7 +79,7 @@ Behavioral interviews are hard for students applying to technical internships, e
 
 - Connect to Alexa+ when access is available, so the loop runs fully by voice.
 - Verify the live AI path end to end with a working key.
-- Add opt-in practice history across sessions, and more question sets (data structures, system design talk-throughs).
+- More question sets (data structures, system design talk-throughs), and history trends over time.
 - Test with actual internship candidates, including non-native speakers, before claiming impact.
 
 ## Product feedback (required)

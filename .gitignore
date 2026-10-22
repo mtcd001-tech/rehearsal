@@ -6,3 +6,4 @@ test-results/
 .claude/settings.local.json
 *.zip
 .claude/
+interview/data/

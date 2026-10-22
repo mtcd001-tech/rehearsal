@@ -14,7 +14,8 @@ The coaching engine is a self-hosted **MCP server** (spec **2025-11-25**, Stream
 | Rule checks on the sample answers | Works. Computed live by the MCP tools `check_answer_text` and `compare_answer_texts` every time the sample runs. |
 | Practice with your own answer: record audio locally, or type an answer | Works. Audio never leaves the browser tab. |
 | Check my words / compare first and latest take | Works. Your typed text goes only to the local server; deterministic rules, no AI model, no scores. |
-| MCP server (5 tools) over Streamable HTTP, protocol 2025-11-25 | Works and is covered by integration tests. |
+| Opt-in practice history across sessions (signal labels and counts only, on this computer) | Works. An agent can open a session with last time's focus via `get_practice_progress`. |
+| MCP server (7 tools) over Streamable HTTP, protocol 2025-11-25 | Works and is covered by integration tests. |
 | Live AI voice interview (OpenAI Realtime over WebRTC) and AI typed practice | Implemented but **not verified end to end** — the available API key had no quota. Treat as unverified. |
 
 ## Run it (about 2 minutes)
@@ -44,7 +45,7 @@ Open **http://127.0.0.1:8766**. No API key or account is needed.
 
 1. **Experience the sample** → *Play sample answer* → *See the coaching*. Under the authored coaching card, a panel shows what the `check_answer_text` MCP tool found in the sample answer, with quotes.
 2. *Try that answer again* → *Play improved answer*. The comparison shows the authored before/after pairs and a panel computed by `compare_answer_texts`.
-3. **Practice my own answer**. Record a take (or choose *No microphone? Type an answer*), write what you said, and press **Check my words**. Add a second take and press **Compare first and latest take**.
+3. **Practice my own answer**. Record a take (or choose *No microphone? Type an answer*), write what you said, and press **Check my words**. Add a second take and press **Compare first and latest take**. Optionally press **Save results to my progress**; next time, the history panel suggests your recurring focus.
 
 ## Use the MCP server from any MCP client
 
@@ -54,6 +55,8 @@ While the server runs, the endpoint is **`http://127.0.0.1:8766/mcp`** (Streamab
 |---|---|---|
 | `check_answer_text(answer, question?)` | No | Wording checks with exact quotes: your own role (I vs we), concrete I-actions, how you verified the result, vague outcomes, fillers, numbers you should be ready to support, reflection, length. Returns one priority to work on. |
 | `compare_answer_texts(before, after)` | No | Which of those signals moved in the suggested direction between two takes, with before/after quotes. Says so plainly when nothing changed. |
+| `get_practice_progress()` | No | Saved sessions, recurring priorities, and a suggested focus, so a voice assistant can start with context. |
+| `save_practice_result(question, first_answer, retry_answer?)` | No | Saves only signal labels, statuses, counts, and the comparison summary — never answer text or audio. Called only when the candidate asks. |
 | `get_interview_brief(session_id)` | No | Session context and transcript for an agent. |
 | `coach_latest_answer(session_id)` | Yes | Model-written coaching; quotes are filtered so only exact substrings of the real answer survive. Also attaches the rule checks. |
 | `compare_retry(session_id)` | Yes | Model-written retry comparison with the same quote filter. |
@@ -86,6 +89,7 @@ The rules are intentionally simple English word lists. They can miss things or m
 - Sample mode sends nothing anywhere except to the local server for the rule-check panels.
 - Local practice keeps audio in the browser tab. Only text you choose to check is sent, and only to `127.0.0.1`.
 - The server binds to loopback, rejects other hosts and origins, and keeps session data in memory only.
+- Practice history is written only when you press *Save results to my progress*, to `interview/data/practice_history.json` (git-ignored), and contains signal labels and counts, not your words. *Clear my history* deletes the file.
 - The optional live AI path sends audio and transcript to OpenAI and asks for consent first. It is off unless you configure a key (`interview/.env`, see `interview/.env.example`).
 
 ## Tests
@@ -94,11 +98,11 @@ With the server running (set `INTERVIEW_PORT` if you started it on another port)
 
 ```powershell
 cd interview
-..\.venv\Scripts\python -m unittest test_interview test_checks -v
+..\.venv\Scripts\python -m unittest test_interview test_checks test_history -v
 node test_practice.cjs
 ```
 
-16 Python tests (rule checks, quote filtering, session handling, HTTP and real MCP integration) and mocked browser-API tests for recording, typed takes, checks, and reset. Model responses are mocked; no paid calls are made.
+22 Python tests (rule checks, practice history, quote filtering, session handling, HTTP and real MCP integration) and mocked browser-API tests for recording, typed takes, checks, and reset. Model responses are mocked; no paid calls are made.
 
 ## Repository layout
 
