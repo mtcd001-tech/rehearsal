@@ -6,6 +6,8 @@ from mcp.client.streamable_http import streamable_http_client
 import server
 from sample import SAMPLE
 
+BASE = f'http://127.0.0.1:{server.PORT}'  # set INTERVIEW_PORT to test a server on another port
+
 class CoachTests(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         self.sid = server.create_session(server.Brief(**SAMPLE['brief']))['session_id']
@@ -61,7 +63,7 @@ class CoachTests(unittest.IsolatedAsyncioTestCase):
 
 class LocalIntegration(unittest.IsolatedAsyncioTestCase):
     async def test_sample_and_mcp_without_provider_calls(self):
-        async with httpx.AsyncClient(base_url='http://127.0.0.1:8766') as client:
+        async with httpx.AsyncClient(base_url=BASE) as client:
             self.assertEqual((await client.get('/')).status_code, 200)
             sample = (await client.get('/api/sample')).json()
             sid = (await client.post('/api/session', json=sample['brief'])).json()['session_id']
@@ -74,13 +76,22 @@ class LocalIntegration(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(blocked.status_code, 403)
             unknown = await client.post('/api/tool', json={'session_id': sid, 'name': 'not_a_tool'})
             self.assertEqual(unknown.status_code, 400)
+            checked = await client.post('/api/check', json={'text': sample['first']})
+            self.assertEqual(checked.status_code, 200, checked.text)
+            self.assertEqual(checked.json()['tool'], 'check_answer_text')
+            self.assertEqual(checked.json()['result']['priority']['id'], 'ownership')
+            compared = await client.post('/api/compare-text', json={'before': sample['first'], 'after': sample['retry']})
+            self.assertEqual(compared.status_code, 200, compared.text)
+            self.assertTrue(compared.json()['result']['summary'].startswith('Moved'))
+            same = await client.post('/api/compare-text', json={'before': 'We did it.', 'after': 'We did it.'})
+            self.assertEqual(same.status_code, 400)
             await client.post('/api/clear', json={'session_id': sid})
-        async with streamable_http_client('http://127.0.0.1:8766/mcp') as (read, write, _):
+        async with streamable_http_client(f'{BASE}/mcp') as (read, write, _):
             async with ClientSession(read, write) as client:
                 initialized = await client.initialize()
                 self.assertEqual(initialized.protocolVersion, '2025-11-25')
                 names = {tool.name for tool in (await client.list_tools()).tools}
-                self.assertEqual(names, {'get_interview_brief', 'coach_latest_answer', 'compare_retry'})
+                self.assertEqual(names, {'get_interview_brief', 'coach_latest_answer', 'compare_retry', 'check_answer_text', 'compare_answer_texts'})
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

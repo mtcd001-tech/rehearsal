@@ -17,6 +17,7 @@ from mcp.client.streamable_http import streamable_http_client
 from mcp.server.fastmcp import FastMCP
 from pydantic import BaseModel, Field
 
+from checks import check_answer, compare_answers
 from sample import SAMPLE
 
 ROOT = Path(__file__).parent
@@ -45,6 +46,14 @@ class TypedAnswer(SessionRef):
 
 class ToolRequest(SessionRef):
     name: str
+
+class AnswerText(BaseModel):
+    text: str = Field(min_length=1, max_length=6000)
+    question: str = Field(default='', max_length=500)
+
+class AnswerPair(BaseModel):
+    before: str = Field(min_length=1, max_length=6000)
+    after: str = Field(min_length=1, max_length=6000)
 
 def get_session(sid):
     if sid not in sessions:
@@ -98,6 +107,7 @@ async def coach_latest_answer(session_id: str) -> dict:
     report['evidence'] = [e for e in report.get('evidence', []) if isinstance(e, dict) and isinstance(e.get('quote'), str) and e['quote'] and e['quote'] in answer and isinstance(e.get('observation'), str) and isinstance(e.get('suggestion'), str)][:3]
     report['outline'] = [x for x in report.get('outline', []) if isinstance(x, str)][:4]
     report['metrics'] = metrics(answer)
+    report['rule_checks'] = check_answer(answer)
     report['source'] = 'AI feedback grounded in the submitted transcript; verify technical advice.'
     s['baseline'] = answer
     s['focus'] = report['retry_focus']
@@ -122,14 +132,27 @@ async def compare_retry(session_id: str) -> dict:
     result['changes'] = [e for e in result.get('changes', []) if isinstance(e, dict) and all(isinstance(e.get(k), str) for k in ('before', 'after', 'why')) and e['before'] and e['after'] and e['before'] in before and e['after'] in after][:4]
     return result
 
-async def via_mcp(name, sid):
+@mcp.tool()
+def check_answer_text(answer: str, question: str = '') -> dict:
+    """Deterministic wording checks on one practice answer: ownership, concrete actions, verification, vague outcomes, fillers,
+    numbers to support, reflection, and length. Quotes are exact substrings of the answer. No AI model, audio analysis, or scores."""
+    return check_answer(answer[:6000], question[:500])
+
+@mcp.tool()
+def compare_answer_texts(before: str, after: str) -> dict:
+    """Deterministically compare a first take with a retry: which wording signals moved in the suggested direction, with exact quotes.
+    Counts describe wording patterns, not answer quality."""
+    return compare_answers(before[:6000], after[:6000])
+
+async def via_mcp(name, sid=None, arguments=None):
     async with streamable_http_client(f'http://127.0.0.1:{PORT}/mcp') as (read, write, _):
         async with ClientSession(read, write) as client:
             init = await client.initialize()
-            result = await client.call_tool(name, {'session_id': sid})
-            if result.isError:
-                raise ValueError(result.content[0].text)
-            return {'result': json.loads(result.content[0].text), 'protocol': init.protocolVersion, 'tool': name}
+            result = await client.call_tool(name, arguments if arguments is not None else {'session_id': sid})
+    # Raised only after the client contexts close; inside them anyio wraps it in an ExceptionGroup (HTTP 500).
+    if result.isError:
+        raise ValueError(re.sub(r'^Error executing tool \w+: ', '', result.content[0].text))
+    return {'result': json.loads(result.content[0].text), 'protocol': init.protocolVersion, 'tool': name}
 
 @asynccontextmanager
 async def lifespan(app):
@@ -211,6 +234,14 @@ async def tool(body: ToolRequest):
     if body.name not in ('get_interview_brief', 'coach_latest_answer', 'compare_retry'):
         raise ValueError('Unknown interview tool.')
     return await via_mcp(body.name, body.session_id)
+
+@app.post('/api/check')
+async def check_text(body: AnswerText):
+    return await via_mcp('check_answer_text', arguments={'answer': body.text, 'question': body.question})
+
+@app.post('/api/compare-text')
+async def compare_text(body: AnswerPair):
+    return await via_mcp('compare_answer_texts', arguments={'before': body.before, 'after': body.after})
 
 @app.post('/api/text')
 async def text_answer(body: TypedAnswer):
