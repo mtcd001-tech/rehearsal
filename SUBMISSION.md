@@ -61,6 +61,7 @@ Behavioral interviews are hard for students applying to technical internships, e
   - The check tools declare `_meta.ui.resourceUri` and return `structuredContent`.
   - The `text/html;profile=mcp-app` resource implements the `ui/initialize` handshake, tool-input and tool-result notifications, size-changed, and host theming.
   - We wrote a small reference host to test it, because we had no third-party host available.
+- **Agent simulation:** `interview/agent_sim.py` is a scripted terminal agent that follows the server instructions and runs the whole loop through real MCP tool calls. It shows the turn order an Alexa+ conversation would use. It is not an LLM.
 - **The web app is itself an MCP client:** its `/api/check`, `/api/compare-text` and `/api/tool` endpoints call the real MCP endpoint through the SDK's Streamable HTTP client. The browser therefore shows actual tool output, including the protocol version.
 - **Local practice:**
   - MediaRecorder with a Web Audio level meter, a two-minute cap and four takes.
@@ -71,7 +72,7 @@ Behavioral interviews are hard for students applying to technical internships, e
   - Sessions live in memory with expiry.
   - Live mode asks for explicit consent before any audio is sent, and the API key stays on the server.
 - **Tests:**
-  - 23 Python tests: rule checks, practice history, quote filtering, session handling, and HTTP plus real MCP integration.
+  - 24 Python tests: rule checks, practice history, quote filtering, session handling, and HTTP plus real MCP integration.
   - Mocked browser-API tests for recording, typed takes, checks and reset.
   - Headless Chrome checks with Chrome's fake microphone device.
 

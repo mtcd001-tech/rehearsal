@@ -1,5 +1,7 @@
 import json
 import os
+import subprocess
+import sys
 import unittest
 from unittest.mock import AsyncMock, patch
 import httpx
@@ -122,6 +124,14 @@ class LocalIntegration(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(called.structuredContent['priority']['id'], 'ownership')
                 self.assertTrue(called.content[0].text)  # text fallback for hosts without MCP Apps
                 self.assertEqual(names, {'get_interview_brief', 'coach_latest_answer', 'compare_retry', 'check_answer_text', 'compare_answer_texts', 'save_practice_result', 'get_practice_progress'})
+
+    def test_agent_simulation_runs_loop_over_mcp(self):
+        env = {**os.environ, 'PYTHONIOENCODING': 'utf-8'}
+        out = subprocess.run([sys.executable, 'agent_sim.py', '--demo', '--url', f'{BASE}/mcp'], capture_output=True, text=True, timeout=60, env=env, encoding='utf-8')
+        self.assertEqual(out.returncode, 0, out.stderr)
+        for expected in ('MCP 2025-11-25', 'tools/call check_answer_text] priority=ownership', 'tools/call compare_answer_texts', 'Moved in the suggested direction'):
+            self.assertIn(expected, out.stdout)
+        self.assertNotIn('save_practice_result', out.stdout)  # never saves unless asked
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

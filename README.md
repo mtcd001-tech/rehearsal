@@ -19,6 +19,7 @@ The coaching engine is a self-hosted **MCP server** (spec **2025-11-25**, Stream
 | Check my words / compare first and latest take | Works. Your typed text goes only to the local server; deterministic rules, no AI model, no scores. |
 | Opt-in practice history across sessions (signal labels and counts only, on this computer) | Works. An agent can open a session with last time's focus via `get_practice_progress`. |
 | MCP server (7 tools) over Streamable HTTP, protocol 2025-11-25 | Works and is covered by integration tests. |
+| Terminal voice-assistant simulation (`interview/agent_sim.py`) driving the loop over MCP | Works; scripted, not an LLM. Covered by an integration test. |
 | MCP Apps view (`ui://rehearsal/answer-check`, SEP-1865) for the check tools | Works in the included local reference host at `/mcp-app-preview`. Not yet tried in a third-party MCP Apps host. |
 | Live AI voice interview (OpenAI Realtime over WebRTC) and AI typed practice | Implemented but **not verified end to end** — the available API key had no quota. Treat as unverified. |
 
@@ -71,6 +72,15 @@ While the server runs, the endpoint is **`http://127.0.0.1:8766/mcp`** (Streamab
 
 Open **http://127.0.0.1:8766/mcp-app-preview** to see it rendered by a minimal reference host included in this repo: it reads the resource over MCP, loads it in a `sandbox="allow-scripts"` iframe, forwards the real tool result, and logs every JSON-RPC message.
 
+### Simulated voice assistant (terminal)
+
+`interview/agent_sim.py` is a scripted agent, **not an LLM and not Alexa**, that follows the server's MCP instructions turn by turn with real tool calls: it reads saved progress, asks a question, calls `check_answer_text`, says the tip with your own quoted phrase, asks for a retry, calls `compare_answer_texts`, and saves only if you pass `--save`.
+
+```powershell
+.venv\Scripts\python interview\agent_sim.py --demo     # authored sample answers
+.venv\Scripts\python interview\agent_sim.py            # type your own answers
+```
+
 ### Try it from Python
 
 Quick check with the official Python SDK (already installed by the requirements):
@@ -115,7 +125,7 @@ cd interview
 node test_practice.cjs
 ```
 
-23 Python tests (rule checks, practice history, quote filtering, session handling, HTTP and real MCP integration) and mocked browser-API tests for recording, typed takes, checks, and reset. Model responses are mocked; no paid calls are made.
+24 Python tests (rule checks, practice history, quote filtering, session handling, HTTP and real MCP integration) and mocked browser-API tests for recording, typed takes, checks, and reset. Model responses are mocked; no paid calls are made.
 
 ## Repository layout
 

@@ -90,3 +90,9 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - `docs/screenshots/` — 7 real headless-Chrome captures + captions README; SUBMISSION lists gallery order.
 - Badge under Maya changed from "AI interviewer" to "Virtual interviewer" (sample/local modes use no AI). aria-label updated.
 - Local practice: "Hear Maya say the tip" / "Hear Maya sum it up" buttons speak the priority with the user's own quoted phrase (verified in Chrome by intercepting speechSynthesis.speak).
+
+### 2026-10-22 (night) — Broader action rule, more questions, agent simulation
+- `checks.py`: I+action rule now accepts lowercase "i", regular past tense, present tense, "I'm …ing"; excludes learned/wanted/"used to"/"need" etc. (fairness for non-native speakers). New test.
+- Five more practice questions (debugging, explaining a project, feedback, deadlines, ambiguity); rule-check regions `aria-live="polite"`.
+- `interview/agent_sim.py`: scripted terminal agent (not an LLM, not Alexa) running the loop via real MCP calls per server instructions; `--demo`, `--save`; integration test runs it as a subprocess.
+- Verification: Python 24/24 OK (8767 server), JS PASS, `agent_sim.py --demo` output reviewed. Repo scanned for control characters after a shell escape turned `\a` into BEL in README (fixed).
