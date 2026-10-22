@@ -10,7 +10,7 @@ ACTION_VERBS = ('added', 'analyzed', 'automated', 'built', 'cached', 'changed', 
                 'debugged', 'deployed', 'designed', 'documented', 'drafted', 'fixed', 'found', 'implemented', 'improved', 'indexed', 'inspected',
                 'investigated', 'led', 'measured', 'migrated', 'narrowed', 'optimized', 'organized', 'owned', 'paired', 'planned', 'profiled',
                 'proposed', 'prototyped', 'rebuilt', 'refactored', 'removed', 'replaced', 'reproduced', 'researched', 'reviewed', 'rewrote',
-                'scheduled', 'set', 'simplified', 'split', 'suggested', 'tested', 'traced', 'tracked', 'trained', 'updated', 'used', 'validated',
+                'scheduled', 'set', 'simplified', 'split', 'suggested', 'tested', 'traced', 'tracked', 'trained', 'updated', 'validated',
                 'wrote', 'asked', 'explained', 'presented', 'talked', 'decided', 'chose', 'taught', 'mentored', 'volunteered')
 VERIFY = r"\b(?:tests?|tested|testing|measured?|measuring|benchmark(?:s|ed)?|verif(?:y|ied)|checked|check|confirmed|monitored|logged|profiled|reproduced|metrics?|latency|before and after|a/b|feedback from|user testing|code review)\b"
 VAGUE = r"\b(?:worked (?:really |very |pretty )?well|made (?:it|things) (?:much |a lot |way )?better|a lot(?! of)|really good|very good|pretty good|went (?:really |pretty )?well|and stuff|things like that|it was good|improved things|some issues|some problems|kind of worked|it helped)\b"
@@ -19,7 +19,15 @@ REFLECT = r"\b(?:learned|next time|in hindsight|i would|i'd|differently|if i did
 CLAIM = r"\b\d+(?:\.\d+)?\s?(?:%|percent\b|x\b|times\b|ms\b|milliseconds\b|seconds\b|users\b|hours\b|requests\b)"
 TEAM = r"\b(?:we|we're|we've|we'd|our|us|the team)\b"
 SELF = r"\b(?:i|i'm|i've|i'd|i'll|my|me|myself)\b"
-SELF_ACTION = r"\bI\s+(?:(?:also|then|first|finally|personally|quickly)\s+)?(?:" + '|'.join(ACTION_VERBS) + r")\b"
+# Broad on purpose: non-native speakers often use present tense ("I write the tests") or type a lowercase "i".
+NOT_ACTIONS = ('learned', 'liked', 'loved', 'wanted', 'needed', 'enjoyed', 'hoped', 'worried', 'assumed', 'believed', 'guessed', 'failed', 'noticed', 'realized', 'seemed')
+IRREGULAR = ('built', 'wrote', 'found', 'led', 'set', 'split', 'chose', 'taught', 'ran', 'rewrote', 'rebuilt', 'made', 'took', 'sent', 'spent', 'brought', 'drew', 'kept')
+PRESENT = ('add', 'build', 'write', 'fix', 'test', 'check', 'debug', 'design', 'implement', 'change', 'create', 'measure', 'review', 'use', 'profile',
+           'refactor', 'deploy', 'inspect', 'compare', 'lead', 'own', 'plan', 'research', 'explain', 'ask', 'choose', 'decide', 'clean', 'update',
+           'remove', 'replace', 'reproduce', 'trace', 'track', 'run', 'automate', 'document', 'optimize', 'organize', 'present', 'mentor')
+ADVERB = r"(?:(?:also|then|first|finally|personally|quickly|actually|just|carefully)\s+)?"
+SELF_ACTION = (r"\b[Ii]\s+" + ADVERB + r"(?:(?!(?:" + '|'.join(NOT_ACTIONS) + r")\b)[a-z]{2,}(?<!e)ed\b(?!\s+to\b)|(?:" + '|'.join(ACTION_VERBS + IRREGULAR + PRESENT) + r")\b)"
+               r"|\b[Ii](?:'m| am)\s+" + ADVERB + r"[a-z]{3,}ing\b")
 STOP = re.compile(r'[.!?;\n]')
 TRAILING = {'a', 'an', 'the', 'and', 'or', 'but', 'for', 'our', 'my', 'to', 'of', 'in', 'on', 'with', 'at', 'by', 'that', 'being', 'is', 'was', 'we', 'i', 'it', 'so'}
 

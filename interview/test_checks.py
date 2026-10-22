@@ -38,6 +38,12 @@ class CheckTests(unittest.TestCase):
         self.assertEqual(claims['status'], 'watch')
         self.assertIn('40%', claims['quotes'][0])
 
+    def test_actions_recognized_for_varied_english(self):
+        # Present tense, lowercase "i", and "I'm ...ing" count; wanting/learning/"used to" do not.
+        for text, expected in (('i fixed the bug and i tested it.', 2), ('I write the tests and I fix bugs every week.', 2),
+                               ("I am building the API and I'm testing it.", 2), ('I learned a lot. I wanted to help. I used to code. I need help.', 0)):
+            self.assertEqual(self.signal(checks.check_answer(text), 'actions')['count'], expected, text)
+
     def test_no_scores_in_output(self):
         result = checks.check_answer(SAMPLE['first'])
         keys = set(result) | {k for s in result['signals'] for k in s}

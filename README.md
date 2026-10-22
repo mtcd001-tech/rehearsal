@@ -4,6 +4,8 @@ Rehearsal is an interview-practice room for technical-internship candidates, inc
 
 The coaching engine is a self-hosted **MCP server** (spec **2025-11-25**, Streamable HTTP). Its core tools are deterministic and need **no API key**, so any MCP client — or a voice assistant such as Alexa+ — can call them. The browser app is a simulated Alexa+-style practice experience built on those same tools.
 
+![Rehearsal: authored coaching above, live check_answer_text MCP results below](docs/screenshots/2-coaching.png)
+
 > Hackathon track: **Alexa+** — self-hosted MCP server, plus a simulated Alexa+ experience in a web app.
 
 ## What works today, and what does not
