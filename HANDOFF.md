@@ -38,7 +38,7 @@ server.py routes/MCP/sessions; audio_review.py shared Gemini JSON/audio; gemini_
 Known risks: qualitative model advice/transcripts can be wrong; English rule lists misclassify; generated drafts need factual review. Browser speech may use OS online services. Setup resets on reload. Async generation/requestVersion guards protect resets; preserve those. PowerShell may display UTF-8 mojibake; inspect bytes before changing encoding.
 
 
-## Update: Oct 22, evening ET (Claude session)
+## Update: Oct 22, evening ET
 
 **Browser QA.** Done in real Chrome via the Claude-in-Chrome extension, against an isolated no-key copy on port 8767. It covered home, setup, consent, the room (desktop and 390 px), the debrief, the sample and the practice panel. The full room → End → debrief → Back flow was exercised with a mocked transport and synthetic oscillator microphone (all mock text prefixed [MOCK]; UI only).
 

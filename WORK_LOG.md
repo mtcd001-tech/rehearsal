@@ -294,12 +294,12 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 
 - Restart verification: current8766 serves new room and microphone worklet; invalid WebSocket session rejected before provider access. Final focused regression15 Python tests plus Live JS lifecycle/PCM test and JS syntax passed after cleanup fixes. No user recordings were sent by these checks.
 
-### 2026-10-22 (16:30 ET) - IN PROGRESS: browser QA of Gemini build + submission doc review (Claude session)
+### 2026-10-22 (16:30 ET) - IN PROGRESS: browser QA of Gemini build + submission doc review
 - Resumed after Codex work; HEAD c50688d, tree clean. Task: run regression, browser-check current UI (setup, interview room, single-answer practice, sample, mobile) with the Claude-in-Chrome extension if connected (no CDP fallback per HANDOFF), fix findings, then reconcile README/SUBMISSION/DEMO with Gemini behavior.
 - Intended files: interview/static/*, docs; no provider-config changes. Gemini calls only if needed and minimal (user authorized Gemini testing; no retry loops on 429/503).
 - Next action: check server on 8766 and run test suites.
 
-### 2026-10-22 (17:15 ET) - Browser QA fixes, batch 1 (Claude session)
+### 2026-10-22 (17:15 ET) - Browser QA fixes, batch 1
 - Real Chrome (Claude-in-Chrome extension) against an isolated no-key copy of the repo on 8767 (git-tracked files only, no .env, scratch history): home, setup dialog, consent dialog, interview room (desktop + 390px iframe), debrief/results, sample flow, practice panel. No console errors.
 - Fixed: (1) 12 more literal `?` glyph corruptions (`·`, `→`, `×`, `…`) in index.html, app.js setup summary, audio-review.js; (2) room length ignored saved setup (always 30) — now preselects setup duration (or the setup form's default); (3) stage's own 00:00 clock showed inside the room next to the countdown — hidden there; (4) mobile room overflowed horizontally (stage 90vw > padded width) — stage slot stretches to the column; (5) after an interview, Maya's card kept "Listen. Think. Answer." / "Conversation ended" — original caption restored.
 - Mocked in-browser flow (synthetic oscillator mic, fake WebSocket, mocked transcript/review endpoints; all text prefixed [MOCK]): room start → countdown → End interview → debrief rendering (summary, keep/work-on, expandable dimensions/answer/transcript) → Back to practice restores page; empty transcript shows "no assessment". UI-only; not Gemini.
