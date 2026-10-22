@@ -63,7 +63,9 @@ The user is busy and expects the agent to do most of the work. Overnight on Oct 
 5. **MCP Apps view:** `interview/mcp_app/answer_check.html` is served as `ui://rehearsal/answer-check` (`text/html;profile=mcp-app`, prefersBorder). The check tools carry `_meta.ui.resourceUri` and `structured_output=True` (this needs `-> dict[str, Any]`). The reference host is at `/mcp-app-preview` (`static/mcp-app-host.html`). The spec was read from `modelcontextprotocol/ext-apps` `specification/draft/apps.mdx`. It has not been tried in a third-party host.
 6. **Practice history:** `interview/history.py`; MCP `save_practice_result` and `get_practice_progress`; `/api/progress` GET/POST/DELETE; the file is `interview/data/practice_history.json` (gitignored); `INTERVIEW_HISTORY_FILE` overrides it.
 7. **Optional captions:** `webkitSpeechRecognition`, opt-in checkbox `#live-captions`, Google disclosure, auto-restart while recording, late results land, user edits win, abort on reset. Mocked tests only; real speech results unverified.
-8. **Live AI paths** (OpenAI Realtime WebRTC and typed AI practice): implemented, **unverified**, consent dialog.
+8. **Ten practice questions.** The 'I + action' rule accepts present tense and a lowercase 'i'. Maya can speak the tip aloud ('Hear Maya say the tip').
+9. **`agent_sim.py`:** scripted assistant turn order with real tool calls. It is not an LLM.
+10. **Live AI paths** (OpenAI Realtime WebRTC and typed AI practice): implemented, **unverified**, consent dialog.
 
 ## File map
 
@@ -75,12 +77,17 @@ The user is busy and expects the agent to do most of the work. Overnight on Oct 
 | `AGENTS.md`, `HANDOFF.md`, `WORK_LOG.md` | Continuity protocol, this snapshot, history |
 | `interview/server.py` | FastAPI and MCP server, endpoints, model calls, sessions |
 | `interview/checks.py` | Deterministic answer checks |
+| `interview/history.py` | Opt-in practice history (derived signals only) |
+| `interview/agent_sim.py` | Scripted terminal agent running the loop over MCP (`--demo`, `--save`) |
+| `interview/mcp_app/answer_check.html` | MCP Apps view (`ui://rehearsal/answer-check`) |
+| `interview/static/mcp-app-host.html` | Local MCP Apps reference host at `/mcp-app-preview` |
+| `docs/screenshots/` | Real captures for the Devpost gallery |
 | `interview/sample.py` | Authored sample scenario |
 | `interview/static/index.html`, `style.css` | UI |
 | `interview/static/app.js` | Sample flow, speech, live/text modes, coaching display |
 | `interview/static/checks.js` | Rule-check renderer and API calls |
 | `interview/static/practice.js` | Local practice: recording, typed takes, checks, compare |
-| `interview/test_interview.py`, `test_checks.py`, `test_practice.cjs` | Tests |
+| `interview/test_interview.py`, `test_checks.py`, `test_history.py`, `test_practice.cjs` | Tests |
 | `trace/` | Paused Trace prototype and its own old docs |
 
 ## Verification status
