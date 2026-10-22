@@ -1,6 +1,6 @@
 # Start here: Rehearsal agent handoff
 
-Last updated: **October 22, 2026, tailored-interview clarification** (user timezone: America/New_York).
+Last updated: **October 22, 2026, readability milestone** (user timezone: America/New_York).
 
 ## Objective and user expectations
 
@@ -152,3 +152,7 @@ Files: `interview/research.py`, `static/research.js`, `server.py`, research test
 Verification for clarification: 8 research Python tests with mocked providers (including plan propagation to text interviewer), JS research/resume mocks and research JS syntax pass. Prior milestone: 22 checks/history/resume Python tests and practice JS mocks passed. New UI and actual provider search/quality are unverified. No server restarted, no paid calls, no remote created. Existing overnight integration/browser results do not cover these new controls.
 
 Next: restart the local server, verify resume preview/apply and research controls in a browser (disabled state first); once the user resolves API access and lifts deferral, verify real cited research and synthesis. Continue submission priorities above. Do not redo overnight work.
+
+## Latest UI milestone
+
+Readability pass completed: larger type/contrast and controls throughout; **Interview setup** navigation; numbered sections for job, experience and interview plan; resume upload followed by editable experience; saved-plan text in expandable details; responsive setup fields and save footer. Existing element IDs and JS behavior retained. HTML nesting/unique IDs verified and research/resume/practice JS mocks passed. Browser inventory was empty, so visual/keyboard/mobile QA remains pending. No paid calls or server restart. Next agent should visually check this UI before claiming it is browser-verified.

@@ -165,3 +165,14 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - Verification: 8 research Python tests PASS with mocked providers, including saved plan propagation to text interviewer; research/resume JS mocks PASS; research JS syntax and git diff checks PASS.
 - Limitations: no paid calls, live model quality/voice and new browser rendering unverified. Fixed sample/local question bank unchanged.
 - Next: browser-check after restart; verify personalized AI interviews only when user resolves API access and lifts deferral.
+
+### 2026-10-22 - IN PROGRESS: readability and setup UX
+- Baseline c94fa1b clean; read handoff/README and inspected UI. Small 8-12px text and dense setup form are main issues.
+- Next: improve typography/contrast, group setup into three labeled sections, simplify copy while preserving IDs/behavior; run regressions. Browser inventory empty, visual QA unavailable.
+
+### 2026-10-22 - COMPLETE: readable UI and guided setup
+- Purpose: make the app easier to read and understand.
+- Changes: `interview/static/index.html` and `style.css`: larger body/control/transcript text, darker labels, 44px controls, simpler navigation/copy, numbered setup sections (job, experience, plan), two-column role/company on desktop, stacked mobile fields, expandable saved-plan editor, explicit save footer. Existing IDs and behavior preserved.
+- Verification: HTML parser confirms balanced elements and unique IDs. Research/resume/practice JS mocked regressions PASS from interview directory. Initial research test invocation from repo root failed due to its relative fixture path; rerun from correct directory passed. No paid calls or server restart.
+- Limits: browser inventory empty; visual layout, keyboard traversal and phone rendering not verified. No new behavior tests added for styling-only changes.
+- Next: open/reload app, inspect desktop/mobile layout and setup dialog; continue pending API/submission work.

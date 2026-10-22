@@ -96,7 +96,7 @@ Local recording logic tests: `node test_practice.cjs` (mocked browser APIs: capt
 
 ## Resume upload
 
-Open **Your brief** or **Edit brief**, then choose a PDF, DOCX, or UTF-8 TXT resume (up to 5 MB). Extraction runs locally in memory with a 10-second worker timeout; original files are not stored. Review/edit the extracted text, click **Use this text in Your experience**, then **Save interview brief**. Apply replaces the draft experience field; selecting a file alone does not overwrite it. Closing the dialog discards an unapplied import.
+Open **Interview setup** or **Edit setup**, then choose a PDF, DOCX, or UTF-8 TXT resume (up to 5 MB). Extraction runs locally in memory with a 10-second worker timeout; original files are not stored. Review/edit the extracted text, click **Use this text in Your experience**, then **Save interview setup**. Apply replaces the draft experience field; selecting a file alone does not overwrite it. Closing the dialog discards an unapplied import.
 
 PDFs must contain selectable text and be unlocked (maximum 15 pages); scanned PDFs need OCR elsewhere first. Legacy `.doc` files are not supported. Imports are limited to 10,000 characters with a visible truncation notice. Complex columns/tables may extract in the wrong order, so review before saving. The authored sample and local rule checks do not personalize themselves from this resume; the saved brief is context for subsequent live/text AI sessions when API access is enabled. Those sessions send the brief to the configured provider as disclosed in the app.
 
@@ -111,10 +111,14 @@ Tests: from `interview/`, run `..\.venv\Scripts\python -m unittest test_resume -
 
 ## Tailored simulated interviews
 
-In **Your brief**, enter the company, target role and job description, then upload or paste your resume. **Build my tailored interview** requests cited public hiring research and a proposed simulation: format, question sequence, difficulty, and project deep dives. Follow-ups and listen-for criteria are grounded in exact excerpts from your resume and the JD. Official information, candidate anecdotes and inference are requested as separate sections. Sources and advice still require your review; citation and quote checks do not establish accuracy or guarantee the interview format.
+In **Interview setup**, enter the company, target role and job description, then upload or paste your resume. **Build my tailored interview** requests cited public hiring research and a proposed simulation: format, question sequence, difficulty, and project deep dives. Follow-ups and listen-for criteria are grounded in exact excerpts from your resume and the JD. Official information, candidate anecdotes and inference are requested as separate sections. Sources and advice still require your review; citation and quote checks do not establish accuracy or guarantee the interview format.
 
-**Use this research for my interview** adds reviewed context to the draft brief; **Save interview brief** makes it available to subsequent live/text sessions. Maya uses the plan to choose questions and adapt follow-ups in subsequent AI text/voice interviews; coaching uses the plan?s listen-for criteria. The authored sample/local question bank remains fixed. Changing the company, role, experience or JD clears stale research notes.
+**Use this research for my interview** adds reviewed context to the draft brief; **Save interview setup** makes it available to subsequent live/text sessions. Maya uses the plan to choose questions and adapt follow-ups in subsequent AI text/voice interviews; coaching uses the plan?s listen-for criteria. The authored sample/local question bank remains fixed. Changing the company, role, experience or JD clears stale research notes.
 
 Research is disabled by default while API access is deferred. Once access is ready, set `INTERVIEW_RESEARCH_ENABLED=1` in `interview/.env` and restart. `INTERVIEW_RESEARCH_MODEL` defaults to `gpt-4.1-mini`. A click makes paid web-search and synthesis calls: only company/role enter the search stage; the resume and JD are sent to the model in the subsequent synthesis stage. The research request sets `store=false`; this does not promise zero provider retention. Reports are not saved to disk by this app.
 
 Verification: `python -m unittest test_research -v` (8 tests) and `node test_research.cjs` cover citation parsing, evidence filtering, the disabled gate, provider request shape, apply and stale-result behavior with mocks. No real provider research or new browser UI has been verified. Implementation reference: https://developers.openai.com/api/docs/guides/tools-web-search
+
+### Readable setup flow
+
+Interview setup groups inputs into **1. The job you want**, **2. Your experience**, and **3. Your interview plan**. Saved plan text is under **Review or edit saved plan**. Larger text, darker labels and responsive fields improve readability. This layout has structural checks and existing mocked interaction tests; visual browser/mobile verification is pending.
