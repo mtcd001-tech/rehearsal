@@ -5,7 +5,12 @@ const questions=[
  ['Tradeoffs','Describe a technical decision where you had to choose between two approaches. What tradeoff did you make?'],
  ['Learning','Tell me about a time you had to learn something unfamiliar to finish a project. How did you approach it?'],
  ['Collaboration','Tell me about a disagreement in a team. What did you do, and what happened?'],
- ['Setbacks','Describe a project that did not go as planned. How did you respond, and what would you change?']
+ ['Setbacks','Describe a project that did not go as planned. How did you respond, and what would you change?'],
+ ['Debugging','Walk me through a bug that was hard to find. How did you narrow it down, and how did you confirm the fix?'],
+ ['Explaining','Explain one of your projects to me as if I were not an engineer. What problem did it solve, and what was your part?'],
+ ['Feedback','Tell me about feedback you received on your work. What did you change because of it?'],
+ ['Deadlines','Tell me about a time you had more work than time. How did you decide what to do first?'],
+ ['Ambiguity','Describe a task where the requirements were unclear. What did you do to make progress?']
 ];
 const MAX_TAKES=4,MIN_WORDS=5;
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let recognition=null,captionFinal='',captionTarget=null,captionVersion=0,programmatic=false;
@@ -45,7 +50,7 @@ function renderTake(t){const card=document.createElement('article');card.classNa
  if(t.url){const audio=document.createElement('audio');audio.controls=true;audio.src=t.url;audio.preload='metadata';/* Chrome's MediaRecorder WebM has no duration header; seek to the end once so the player shows a real length. */audio.onloadedmetadata=()=>{if(audio.duration===Infinity){audio.ontimeupdate=()=>{audio.ontimeupdate=null;audio.currentTime=0;};audio.currentTime=1e101;}};card.append(audio);}
  const label=document.createElement('label');label.textContent=t.typed?'Your answer, written the way you would say it':t.captioned?'Transcript (browser speech recognition draft, if any arrives). Check and correct it.':'Transcript or notes (write or paste what you said)';const text=document.createElement('textarea');text.rows=t.typed?6:3;text.maxLength=6000;text.placeholder=t.typed?'Answer the question above in your own words.':t.captioned?'Captions appear here as the browser returns them. If nothing appears, write what you said.':'Listen to your recording and write what you said. Audio is not automatically transcribed.';label.append(text);
  const stats=document.createElement('p');stats.className='privacy';stats.textContent='No text entered yet.';
- const check=document.createElement('button');check.className='secondary';check.textContent='Check my words';check.disabled=true;const box=document.createElement('div');box.className='rule-check take-check';box.hidden=true;
+ const check=document.createElement('button');check.className='secondary';check.textContent='Check my words';check.disabled=true;const box=document.createElement('div');box.className='rule-check take-check';box.setAttribute?.('aria-live','polite');box.hidden=true;
  text.oninput=()=>{if(!programmatic)t.userEdited=true;t.transcript=text.value;const words=wordCount(text.value);stats.textContent=`${words} words · text only, not an audio fluency measurement`;check.disabled=words<MIN_WORDS;updateCompare();};
  check.onclick=()=>checkTake(t,check,box);
  const actions=document.createElement('div');actions.className='controls';actions.append(check);

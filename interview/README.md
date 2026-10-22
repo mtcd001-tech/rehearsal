@@ -84,7 +84,7 @@ Public GitHub repository, demo video (script in `../DEMO.md`), and final review 
 
 ## Local practice (no API key)
 
-Choose **Practice my own answer**. Pick one of five original behavioral questions, optionally hear it, then **Record my answer** (microphone) or **No microphone? Type an answer**. Recording shows an activity meter and timer and stops automatically at two minutes; up to four takes are kept in the tab.
+Choose **Practice my own answer**. Pick one of ten original behavioral questions (ownership, tradeoffs, learning, collaboration, setbacks, debugging, explaining a project, feedback, deadlines, ambiguity), optionally hear it, then **Record my answer** (microphone) or **No microphone? Type an answer**. Recording shows an activity meter and timer and stops automatically at two minutes; up to four takes are kept in the tab.
 
 For each take, write or paste what you said and press **Check my words**. The text (not the audio) is sent to this app's local server, which runs the deterministic `check_answer_text` MCP tool and shows quoted findings and one priority. After a second take with text, **Compare first and latest take** runs `compare_answer_texts`. Download practice notes exports your text, focus, check results, and comparison as JSON; recordings download separately.
 
