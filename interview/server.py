@@ -4,9 +4,9 @@ import os
 import re
 import secrets
 import time
-from typing import Any
 from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import Any
 
 import httpx
 from dotenv import load_dotenv
@@ -19,8 +19,8 @@ from mcp.server.fastmcp import FastMCP
 from mcp.types import ToolAnnotations
 from pydantic import BaseModel, Field
 
-from checks import check_answer, compare_answers
 import history
+from checks import check_answer, compare_answers
 from sample import SAMPLE
 
 ROOT = Path(__file__).parent
@@ -30,6 +30,7 @@ PORT = int(os.getenv('INTERVIEW_PORT', '8766'))
 def provider_url(path):
     # Override only for local testing against a mock provider; defaults to the real OpenAI API.
     return os.getenv('INTERVIEW_PROVIDER_BASE_URL', 'https://api.openai.com/v1').rstrip('/') + path
+
 sessions = {}
 INSTRUCTIONS = ('Rehearsal coaches behavioral interview practice. Loop: ask one question, let the candidate answer fully, call check_answer_text '
                 'on their exact words, tell them the single priority with one quoted phrase, ask them to answer the same question again, then call '
