@@ -122,3 +122,7 @@ Verification: `python -m unittest test_research -v` (8 tests) and `node test_res
 ### Readable setup flow
 
 Interview setup groups inputs into **1. The job you want**, **2. Your experience**, and **3. Your interview plan**. Saved plan text is under **Review or edit saved plan**. Larger text, darker labels and responsive fields improve readability. This layout has structural checks and existing mocked interaction tests; visual browser/mobile verification is pending.
+
+### Skills to develop
+
+In **Interview setup**, use **Skills I want to improve** to enter one or two goals (up to 1,000 characters), such as clear explanations, English vocabulary, technical reasoning or leadership stories. Save setup to include them in subsequent AI interview and coaching context. Research synthesis also receives these goals; public web search still receives only company/role. Changing goals clears a stale interview plan. Leaving this blank keeps general practice. The authored demo and deterministic local checks are unchanged. Live AI behavior remains unverified; transcript-only feedback cannot judge pronunciation or spoken fluency.

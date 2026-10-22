@@ -176,3 +176,13 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - Verification: HTML parser confirms balanced elements and unique IDs. Research/resume/practice JS mocked regressions PASS from interview directory. Initial research test invocation from repo root failed due to its relative fixture path; rerun from correct directory passed. No paid calls or server restart.
 - Limits: browser inventory empty; visual layout, keyboard traversal and phone rendering not verified. No new behavior tests added for styling-only changes.
 - Next: open/reload app, inspect desktop/mobile layout and setup dialog; continue pending API/submission work.
+
+### 2026-10-22 - IN PROGRESS: skills development goal
+- Baseline 0a181ec clean. Add optional skills field to setup, saved brief, research synthesis and interview/coaching prompts. Preserve API deferral. Next: implement field and propagation, run targeted mocks, update docs.
+
+### 2026-10-22 - COMPLETE: skills development goals
+- Purpose: let users specify skills they want to practice.
+- Changes: setup textarea/help, Brief.skills optional max 1000, save/reopen field mapping, research payload/invalidation, synthesis and interviewer/coach prompts, tests and continuity docs.
+- Verification: 8 research Python tests PASS with mocked providers, including goals reaching synthesis/session/text interviewer but not search; research JS mock PASS for goal-change invalidation; app/research JS syntax PASS.
+- Limitations: fixed sample/local checks unchanged; live personalization and browser UI unverified. No paid calls or server restart.
+- Next: restart app and inspect setup save/reopen; real AI validation awaits user API access.

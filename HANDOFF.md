@@ -156,3 +156,7 @@ Next: restart the local server, verify resume preview/apply and research control
 ## Latest UI milestone
 
 Readability pass completed: larger type/contrast and controls throughout; **Interview setup** navigation; numbered sections for job, experience and interview plan; resume upload followed by editable experience; saved-plan text in expandable details; responsive setup fields and save footer. Existing element IDs and JS behavior retained. HTML nesting/unique IDs verified and research/resume/practice JS mocks passed. Browser inventory was empty, so visual/keyboard/mobile QA remains pending. No paid calls or server restart. Next agent should visually check this UI before claiming it is browser-verified.
+
+## Latest addition: skills development goals
+
+Optional `skills` brief field (max 1,000 chars), labeled **Skills I want to improve**, added to setup after experience. Save/reopen, research synthesis and text/voice/coaching context include it. Goals are treated as learning priorities, not claimed abilities; text alone cannot assess pronunciation/fluency. Skills changes invalidate the research plan. No change to fixed demo/local rule checks. Eight research Python mocks and JS research mocks pass; JS syntax passes. No paid calls, server restart or browser verification. Next: restart and check setup save/reopen; live behavior only after API deferral is lifted.

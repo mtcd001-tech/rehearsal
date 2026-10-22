@@ -40,22 +40,26 @@ class ResearchAsyncTests(unittest.IsolatedAsyncioTestCase):
         public=research.parse_research(provider_result())
         with patch.dict(os.environ,{'INTERVIEW_RESEARCH_ENABLED':'1'}),patch.object(server,'search_company',new=AsyncMock(return_value=public)) as search,patch.object(server,'model_json',new=AsyncMock(return_value={'summary':'Practice explaining API work','questions':[],'experience_probes':[],'gaps':[]})) as model:
             async with httpx.AsyncClient(transport=httpx.ASGITransport(app=server.app),base_url='http://127.0.0.1:8766') as client:
-                r=await client.post('/api/research',json={'role':'Intern','company':'Example','job':'Python','resume':'Private experience'})
+                r=await client.post('/api/research',json={'role':'Intern','company':'Example','job':'Python','resume':'Private experience','skills':'Explain tradeoffs'})
                 self.assertEqual(r.status_code,200,r.text)
                 self.assertEqual(search.call_args.args[:2],('Example','Intern'))
                 self.assertNotIn('Private experience',str(search.call_args))
                 self.assertEqual(model.call_args.args[1]['resume'],'Private experience')
+                self.assertEqual(model.call_args.args[1]['skills'],'Explain tradeoffs')
+                self.assertNotIn('Explain tradeoffs', str(search.call_args))
                 saved=server.create_session(server.Brief(role='Intern',research='Cited context'))
                 self.assertEqual(server.get_interview_brief(saved['session_id'])['brief']['research'],'Cited context')
                 server.clear(server.SessionRef(**saved))
     async def test_text_interviewer_receives_tailored_plan(self):
-        saved = server.create_session(server.Brief(role='Intern', research='Probe API testing; listen for edge cases'))
+        saved = server.create_session(server.Brief(role='Intern', skills='Clear explanations', research='Probe API testing; listen for edge cases'))
         try:
             with patch.object(server, 'model_json', new=AsyncMock(return_value={'reply':'How did you test your API?'})) as model:
                 await server.text_answer(server.TypedAnswer(session_id=saved['session_id'], text='__start__'))
                 prompt, context = model.call_args.args
                 self.assertIn('proposed simulation plan', prompt)
                 self.assertIn('adapt follow-ups', prompt)
+                self.assertIn('skills as learning goals', prompt)
+                self.assertEqual(context['brief']['skills'], 'Clear explanations')
                 self.assertEqual(context['brief']['research'], 'Probe API testing; listen for edge cases')
         finally:
             server.clear(server.SessionRef(**saved))
