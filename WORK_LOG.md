@@ -204,3 +204,4 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - Setup/timer/research/resume JS mocks and app syntax PASS. Browser/audio unverified; no paid calls or restart. Full reload still clears setup.
 - Combined documentation command was blocked by execution policy; used patch tool and simpler documentation commands instead.
 - Next: user runs checklist; fix reported issues.
+- Follow-up integration check caught missing setup-summary DOM element (Unicode-sensitive replacement missed). Added element and asserted presence before finishing.
