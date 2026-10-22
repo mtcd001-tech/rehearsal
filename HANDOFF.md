@@ -167,3 +167,6 @@ Brief fields `round` (recruiter/behavioral/technical/hiring_manager) and `durati
 
 ## Latest: user test pass
 Demo no longer overwrites personal setup; summary shows round/duration and demo export uses fictional brief. Setup/timer/research/resume JS mocks pass. docs/USER_TEST.md contains the manual no-API checklist. Full reload clears page-memory setup. No browser QA or paid calls. Next: incorporate user test findings.
+
+## Latest: answer improvement and voice failure recovery
+User reported live HTTP 429 and requested answer assessment/improvement. Added AI coach improved_answer and missing_details output, labeled draft in coaching UI; original transcript/baseline unchanged. Local rule feedback includes a revision checklist (not AI rewriting). Failed live setup now resets question/state and offers local recovery, retaining setup; explicit 429 message. Tests: 17 Python CoachTests/checks PASS (mock provider), setup/practice/recovery JS mocks PASS and JS syntax PASS. No paid calls, browser rendering or actual AI rewrite quality verified. Next: user tests local checklist; real AI review needs working API access and lifting deferral.

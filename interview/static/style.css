@@ -85,3 +85,5 @@ input::file-selector-button{padding:8px 12px;margin-right:12px;border:1px solid 
 @media(max-width:540px){#brief-dialog{padding:20px 16px;max-height:94dvh}.setup-section{padding:18px 14px}.setup-fields{grid-template-columns:1fr;gap:0}.setup-footer{align-items:stretch;flex-direction:column}.setup-footer button{width:100%}.steps>i{display:none}.step{align-items:flex-start;flex:1}.step strong{max-width:90px}.brand{font-size:21px}nav button{font-size:12px}main{padding:0 4%}.controls>button{flex:1 1 150px}.question-card h2{font-size:21px}}
 
 #brief-dialog select{display:block;width:100%;margin-top:8px;padding:12px;background:white;border:1px solid #bbc4b4;border-radius:6px;min-height:48px}
+
+.answer-improvement{margin-top:24px;padding:20px;border:1px solid #c8d3bf;border-radius:10px;background:#f3f6ed}.answer-improvement h3{font-size:18px;margin:0 0 12px}.answer-improvement blockquote{margin:16px 0;white-space:pre-wrap;font-size:16px;line-height:1.8;color:#34452f}.answer-improvement li{margin:10px 0;font-size:15px}

@@ -28,6 +28,16 @@ class CoachTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(server.sessions[self.sid]['baseline'], SAMPLE['first'])
         self.assertEqual(result['metrics']['filler_tokens'], 1)
 
+    async def test_improvement_draft_preserves_original_answer(self):
+        server.transcript(server.Turn(session_id=self.sid, role='user', text=SAMPLE['first']))
+        report = {**SAMPLE['coaching'], 'improved_answer': 'I worked on [add your actual detail].', 'missing_details': ['What did you personally change?', 123]}
+        with patch.object(server, 'model_json', new=AsyncMock(return_value=report)) as model:
+            result = await server.coach_latest_answer(self.sid)
+        self.assertEqual(result['improved_answer'], report['improved_answer'])
+        self.assertEqual(result['missing_details'], ['What did you personally change?'])
+        self.assertEqual(server.sessions[self.sid]['turns'][-1]['text'], SAMPLE['first'])
+        self.assertIn('Rewrite only facts stated in latest_answer', model.call_args.args[0])
+
     async def test_retry_requires_new_answer_and_filters_quotes(self):
         with self.assertRaises(ValueError):
             await server.compare_retry(self.sid)

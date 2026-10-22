@@ -133,3 +133,7 @@ Setup now offers recruiter screening, behavioral, technical, or hiring manager r
 
 ### Manual testing
 See docs/USER_TEST.md at repository root for the no-API test pass. Personal setup survives demo start; full reload clears page-memory setup. The page shows saved round/duration. Run node test_setup.cjs from interview for the mocked regression.
+
+### Answer analysis and improvement
+Local Check my words now includes an Improve your next answer revision checklist from deterministic signals. It is not a semantic assessment or AI rewrite. For AI interviews, Review my answer returns evidence-based analysis plus a suggested clearer draft and missing-detail questions. The draft is labeled for review, uses placeholders where facts are missing, and never replaces the original transcript. Instructions constrain the rewrite to the submitted answer, but generated advice still requires fact checking. AI coaching needs working API access; no paid calls were made to validate this feature.
+Failed live setup now resets the question and screen consistently, closes the setup dialog, preserves personal setup and offers local practice. HTTP 429 explains quota/rate-limit possibilities.

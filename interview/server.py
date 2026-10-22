@@ -139,13 +139,19 @@ async def coach_latest_answer(session_id: str) -> dict:
         'evidence (array of at most 3 objects with quote,observation,suggestion). Quotes MUST be exact nonempty substrings of latest_answer. '
         'Separate language clarity from technical correctness. Do not assess accent, pronunciation, confidence, personality, or hiring suitability. '
         'Do not invent accomplishments, metrics, or experience. Use questions/placeholders where facts are missing. No numeric scores. '
-        'Give one priority for a retry; state when technical correctness cannot be assessed.',
+        'Give one priority for a retry; state when technical correctness cannot be assessed. '
+        'Also return improved_answer (string) and missing_details (array of up to 3 questions). '
+        'Rewrite only facts stated in latest_answer; do not import resume facts or invent actions/results. '
+        'Use [add your actual detail] placeholders for missing facts. Keep the candidate voice and meaning. '
+        'This is a suggested draft for review, not a verified answer. Keep the entire response concise.',
         {'brief': s['brief'], 'conversation': s['turns'][-8:], 'latest_answer': answer})
     required = ('summary', 'strength', 'structure', 'language', 'knowledge', 'retry_focus')
     if not all(isinstance(report.get(k), str) for k in required):
         raise ValueError('The coaching response was incomplete. Please try again.')
     report['evidence'] = [e for e in report.get('evidence', []) if isinstance(e, dict) and isinstance(e.get('quote'), str) and e['quote'] and e['quote'] in answer and isinstance(e.get('observation'), str) and isinstance(e.get('suggestion'), str)][:3]
     report['outline'] = [x for x in report.get('outline', []) if isinstance(x, str)][:4]
+    report['improved_answer'] = report.get('improved_answer', '') if isinstance(report.get('improved_answer', ''), str) else ''
+    report['missing_details'] = [x for x in (report.get('missing_details') or []) if isinstance(x, str)][:3]
     report['metrics'] = metrics(answer)
     report['rule_checks'] = check_answer(answer)
     report['source'] = 'AI feedback grounded in the submitted transcript; verify technical advice.'

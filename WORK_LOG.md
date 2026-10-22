@@ -205,3 +205,12 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - Combined documentation command was blocked by execution policy; used patch tool and simpler documentation commands instead.
 - Next: user runs checklist; fix reported issues.
 - Follow-up integration check caught missing setup-summary DOM element (Unicode-sensitive replacement missed). Added element and asserted presence before finishing.
+
+### 2026-10-22 - IN PROGRESS: failure recovery and answer improvement
+- User requests analysis and improved answer after interview. Implement explicit AI suggested rewrite/missing details in existing coaching; add local no-API revision checklist; fix failed voice/reset stale question. Baseline 819d4b7. Next: code, mocked tests, docs. No paid calls.
+
+### 2026-10-22 - COMPLETE: answer improvement and failure recovery
+- Changes: server coach prompt/output for improved draft and missing questions; coaching UI text rendering; local revision checklist; reset/failed connection cleanup and 429 recovery wording; tests/docs.
+- Verification: 17 CoachTests/checks Python tests PASS with mocked provider; setup/practice/recovery JS mocks PASS; app/checks syntax PASS. Initial test-edit command used wrong venv path, corrected before running. No paid calls.
+- Limits: draft facts are prompt-constrained, not independently verified; local checks are deterministic, not semantic analysis. Browser rendering and actual model quality unverified.
+- Next: user tests local revision checklist; verify real AI coaching once API access is available.
