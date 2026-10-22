@@ -1,47 +1,35 @@
-﻿# Demo recording script — target 2 minutes 35 seconds
+# Rehearsal — demo video script (target 2:40, hard limit under 3:00)
 
-Record the actual app at http://127.0.0.1:8765. Use your own narration; no third-party music or footage is necessary. This is a script, not a completed video.
+Record at 1440×900 or larger in Chrome. Start the server first (`.venv\Scripts\python interview\server.py`) and open `http://127.0.0.1:8766`. Turn system volume up so the browser speech is audible. Use no copyrighted music.
 
-## 0:00–0:18 — The problem
+Only show what works today: the authored sample, the live rule checks, local practice, and the MCP server. **Do not show or imply a live AI conversation** — that path is unverified.
 
-Screen: The disappearing subsets example, then jump to the end.
+| Time | On screen | Say (paraphrase in your own voice) |
+|---|---|---|
+| 0:00–0:15 | Practice room with Maya | "Behavioral interviews are hard for internship candidates, especially in a second language. The usual feedback is a score or 'use STAR.' Rehearsal shows you the exact words to change." |
+| 0:15–0:45 | Click **Experience the sample** → **Play sample answer**. Let the first answer play, then the follow-up; use *Skip narration* if needed. | "This is an authored sample, clearly labelled. The candidate says 'we worked on the database' and 'it worked well.' Maya asks the follow-up a real interviewer would: what did *you* do, and how did you check it?" |
+| 0:45–1:15 | **See the coaching**. Scroll to the panel "Computed now by the check_answer_text MCP tool." | "Above is the authored coaching. Below is computed live by our MCP server: it quotes 'we built an events app,' finds no 'I + action' phrase, flags 'made it better' and 'worked well,' and gives one priority. Every quote is an exact substring — evidence can't be invented. No scores." |
+| 1:15–1:40 | **Try that answer again** → **Play improved answer** → scroll to the comparison and the `compare_answer_texts` panel. | "Same story, told clearly. The comparison tool shows what actually moved: 'I' statements from 1 to 5, vague outcomes from 4 to 0, and an honest limit — 'we did not record a latency benchmark.'" |
+| 1:40–2:15 | **Practice my own answer**. Record a short take (or type one), write what you said, press **Check my words**. Add a second, improved take and press **Compare first and latest take**. | "Now it's my turn. Audio stays in this browser tab. I check my words, fix the one priority, and the comparison tells me honestly whether my retry changed." |
+| 2:15–2:40 | Terminal: run the Python snippet from the README against `http://127.0.0.1:8766/mcp`; show `2025-11-25` and the JSON result. Optionally show `interview/server.py` tool definitions. | "It's a self-hosted MCP server — spec 2025-11-25 over Streamable HTTP, with instructions and read-only annotations for agents. The web app is an MCP client of the same tools, so Alexa+ or any agent can run this loop by voice." |
+| 2:40–2:50 | Back to the app; README "What works today" table. | "Live AI voice is built but unverified, and we say so. Rehearsal: one change at a time, with proof." |
 
-Say: “This backtracking program finishes without an exception. But all eight answers are empty. Reading the source does not make the mistake obvious. Trace lets you see what your code actually did.”
+## Recording checklist
 
-## 0:18–0:58 — Find the evidence
+- [ ] Server started from a fresh terminal; page reloaded before recording.
+- [ ] Microphone permission granted in Chrome before recording (or use the typed take).
+- [ ] The words "authored sample" and "computed now by the … MCP tool" are visible on screen.
+- [ ] No API key, `.env`, or personal data visible in the terminal or editor.
+- [ ] Video under 3:00, uploaded publicly to YouTube or Vimeo; link pasted into `SUBMISSION.md` and Devpost.
 
-Click “Find shared references.” Show the response, the selected timeline event, and the object memory. Step forward several times or play slowly.
+## Suggested typed takes for the practice segment (or say your own)
 
-Say: “Find shared references. That question calls our MCP navigation tool and moves the canvas to recorded evidence. These result entries point to one object. As backtracking changes path, every saved reference sees the change. The animation is driven by real Python execution, not an invented model response.”
+First take:
 
-## 0:58–1:25 — Compare a correction
+> So we, um, built a dashboard for our club. We had some problems with loading and we made it better. It worked well.
 
-Click “Compare with a correction.” Show before and after outputs. Inspect result references if time permits.
+Retry:
 
-Say: “This example's correction stores a copy instead. We rerun the program and compare its actual output with an explicit expected answer. Each subset now owns its snapshot. This is an authored example patch, not a claim to automatically fix arbitrary code.”
+> I owned the loading problem on our club dashboard. I profiled the page and found we fetched every event at once, so I added pagination and tested it on a slow connection. It loaded noticeably faster, but I did not measure it, so next time I would record load times before and after.
 
-## 1:25–1:55 — Watch an error happen
-
-Choose “One step too far.” Click “Show the error.” Highlight the attempted access panel, i = 4, and the four-element list. Step back once, then forward.
-
-Say: “For an index error, Trace jumps to the exact failing event. The list has four slots, zero through three. The loop asks for slot four. There is no element to reach.”
-
-## 1:55–2:18 — Platform integration
-
-Show the MCP status below the command panel. Optionally briefly show README endpoint and tool names without losing the app demonstration.
-
-Say: “This is our Alexa+ experience simulation. The working server uses Streamable HTTP and MCP protocol 2025-11-25. Our web demo uses deterministic commands; an MCP agent can call the same trace, inspection, and navigation tools. We are not connected to an Alexa device.”
-
-## 2:18–2:35 — Close
-
-Choose the recursion example and use “Next return.”
-
-Say: “Trace turns a confusing execution into something you can inspect and ask about. The prototype supports short local Python programs. Our next step is testing with learners and adding a model-driven assistant while keeping every runtime claim grounded in the trace.”
-
-## Recording checks
-
-- Keep all claims consistent with what is working on screen.
-- Check readable browser zoom and clear narration.
-- Keep the finished video below three minutes.
-- Upload as public to YouTube or Vimeo and test the link signed out.
-- Do not include credentials or unrelated personal tabs.
+These were used in automated browser QA; the comparison reports that all six tracked signals moved toward the suggestion.

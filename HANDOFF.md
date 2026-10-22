@@ -1,149 +1,119 @@
 # Start here: Rehearsal agent handoff
 
-Last updated: **October 22, 2026** (user timezone: America/New_York).
+Last updated: **October 22, 2026, overnight** (user timezone: America/New_York).
 
 ## Objective and user expectations
 
-Build a compelling Amazon Developer Hackathon submission. The active idea is **Rehearsal**, an interview-practice app: a person-like interviewer asks tailored questions, listens to spoken answers, gives specific evidence-based coaching, and helps the user retry. The intended initial audience is technical-internship candidates, including non-native English speakers. Broader interview types are a future direction, not implemented coverage.
+Build a compelling Amazon Developer Hackathon submission. The active project is **Rehearsal** (`interview/`): an interview-practice app where an illustrated interviewer asks behavioral questions, the candidate answers (voice recorded locally, or typed), and feedback quotes their exact words, names one priority, and compares the retry. Audience: technical-internship candidates, including non-native English speakers.
 
-The user is busy and expects the agent to do most implementation and preparation. They liked Rehearsal's appearance and said to keep going. They now explicitly require a durable handoff and ongoing work log so another agent can continue. Follow `AGENTS.md` on every turn.
+The user is busy and expects the agent to do most of the work. Overnight on Oct 22 they said: commit, write submission materials, and keep developing autonomously; they will review later. Follow `AGENTS.md` on every turn.
 
-## Active decision / constraints
+## Active decisions / constraints
 
-- **Rehearsal in `interview/` is active.** Root-level Trace is a paused earlier code-visualizer prototype; preserve it.
-- User chose: **“Build the sample flow first; I’ll handle API access later.”** Do not keep retrying paid requests or block independent progress on API access.
-- Sample and local rehearsal must be labeled honestly. No canned output represented as live AI; no fabricated scores, transcripts, measurements, experience, or feedback evidence.
-- User values animation and a convincing experience, not just static screens. The interviewer is currently a custom animated SVG illustration, not photorealistic video.
-- No need to ask permission repeatedly for ordinary implementation/testing. Do not claim the app or hackathon submission is complete when required external steps remain.
+- **Never credit Claude, Codex, or any AI as co-author** in commits, PRs, or docs (explicit user rule; also in `AGENTS.md`).
+- Rehearsal in `interview/` is active. Trace was moved to `trace/` (paused; preserve it; not the submission).
+- User chose "build the sample flow first; I'll handle API access later." **Do not make paid API calls.** The key had `429 insufficient_quota`; Realtime client-secret returned 500.
+- Honesty: authored sample content is labelled as authored; rule checks are labelled deterministic/no AI; the live AI path is labelled unverified. No fabricated scores, transcripts, metrics, or feedback evidence.
+- Publishing (GitHub repo creation/push, YouTube upload, Devpost submission) is outward-facing: **the user must do it or explicitly approve it.** No remote exists yet.
+- Ordinary implementation and testing do not need repeated permission.
 
-## Hackathon essentials previously verified
+## Hackathon essentials (re-verified Oct 22 from the official rules page)
 
-- Event: Build, Ship, Shape: Amazon Developer Hackathon.
-- Deadline: **October 23, 2026, 3:00 p.m. EDT / noon PDT**. Target an earlier submission buffer.
-- Proposed track: **Alexa+ simulated experience**, backed by actual MCP tools. Private Alexa+ preview access is unavailable to entrants; physical hardware and public app hosting are not required for this path.
-- MCP requirement: specification 2025-11-25 or later, Streamable HTTP. Local handshake verified at 2025-11-25.
-- Submission needs GitHub source/run instructions, public YouTube/Vimeo demo under 3 minutes, project description, and honest tool feedback. Public GitHub requires an open-source license; private access has named-reviewer requirements.
-- No AWS credits available; no mini challenge eligibility claimed.
-- Organizer update instructs freezing submitted code/video/materials after deadline until winners are announced (expected December 3).
-- Verify current official rules again before final submission, especially if an agent resumes later.
-
-Sources:
-- https://amazonappdev2026.devpost.com/rules
-- https://amazonappdev2026.devpost.com/details/faqs
-- https://amazonappdev2026.devpost.com/resources
-- https://amazonappdev2026.devpost.com/updates/46539-final-stretch
+- Deadline **Fri Oct 23, 2026, 12:00 p.m. PT / 3:00 p.m. ET**.
+- Track: **Alexa+**. Either a self-hosted MCP server (spec ≥ 2025-11-25, Streamable HTTP), or a simulated Alexa+ experience. Rehearsal qualifies on both.
+- Required:
+  - GitHub repo with setup instructions. Public repos need a detectable open-source license (MIT is present).
+  - Text description.
+  - Public YouTube/Vimeo demo under 3 minutes.
+  - Product feedback per tool: what it was used for, what worked, what needs work, onboarding, would you build again.
+  - Track selection.
+- Optional friction log (task, steps, expected vs. actual, severity, workaround, suggestion) earns **up to a 10% bonus**. Optional feature requests (with a priority).
+- Judging criteria, equally weighted:
+  - Tech implementation.
+  - Design.
+  - Potential impact.
+  - Quality of idea. "Basic MCP wrapper" is called obvious; "context-aware add-on that maintains state across sessions", "MCP Apps", and media cards are called creative.
+- Freeze submitted materials after the deadline until winners are announced (~Dec 3).
+- Sources: https://amazonappdev2026.devpost.com/rules (WebFetch got 403; curl with a browser user agent worked), `/details/faqs`, `/resources`.
 
 ## Workspace and launch
 
-- Windows PowerShell; workspace `D:\hackamazon`.
-- Existing Python 3.11 virtual environment: `D:\hackamazon\.venv`.
-- Node available (v22.23.1 observed).
-- Git initialized, but **all project files remain untracked; no commits or remote publication are established** as of this handoff. Do not assume Git provides a backup.
-- Start Rehearsal from workspace root:
+- Windows; workspace `D:\hackamazon`; venv `D:\hackamazon\.venv` (Python 3.11.9; packages match `interview/requirements.txt`). Node v22.
+- Run: `.venv\Scripts\python interview\server.py` → http://127.0.0.1:8766 (or `interview/start.ps1`). `INTERVIEW_PORT` changes the port.
+- **The user's own server process on 8766** was started before the overnight work, so it is running **old code** until restarted. Do not kill it without reason. The agent used its own server on **8767** for testing.
+- Tests (server must be running; set `INTERVIEW_PORT` to match):
+  - `cd interview; ..\.venv\Scripts\python -m unittest test_interview test_checks -v`
+  - `node test_practice.cjs`
+- Headless browser QA: the Claude-in-Chrome extension disconnected overnight. The agent used a CDP driver in its session scratchpad (not in the repo): headless Chrome with `--use-fake-ui-for-media-stream --use-fake-device-for-media-stream`.
 
-```powershell
-.venv\Scripts\python interview\server.py
-```
+## Implemented behavior
 
-- Open `http://127.0.0.1:8766`.
-- Alternative: `interview/start.ps1`.
-- Server may have been started manually by the user. Agent-owned server was stopped after prior tests. Check port/process state before starting another instance; do not terminate unrelated processes.
-- Trace runs separately with root `server.py` on port 8765. Do not confuse the two servers or their similarly named test modules.
-
-## Implemented Rehearsal behavior
-
-### 1. Authored sample experience
-
-- Warm cream/orange interface, illustrated seated interviewer (Maya), blinking/breathing/speaking animations, transcript panel, question card, sample timer.
-- Browser speech synthesis narrates the original sample question, first answer, follow-up, and improved retry. Skip narration is available.
-- Flow: Experience the sample → Play sample answer → See the coaching → Try that answer again → Play improved answer.
-- Coaching cites sample phrases; separates structure, language, and technical depth. Retry comparison shows exact before/after text. JSON practice notes can be downloaded.
-- Sample always uses fictional authored context, even if the user edits the brief. Labels disclose it is not a live AI interview.
-
-### 2. Local microphone rehearsal (latest feature)
-
-- Entry: **Practice my own answer**.
-- Five original behavioral questions (ownership, tradeoffs, learning, collaboration, setbacks).
-- Browser MediaRecorder captures microphone audio locally, with Web Audio activity meter and timer. Automatic stop at two minutes; maximum four takes per session.
-- Each take has playback, manual transcript/notes field, word count of those notes, and audio download. User sets a retry focus and uses self-review prompts; notes export as JSON.
-- **No upload, automatic transcription, or AI evaluation in this mode.** Browser speech synthesis can optionally read the question.
-- Reset/switching modes/closing tab discards undownloaded recordings. Microphone tracks and object URLs are cleaned up. Delayed permission after reset is handled.
-
-### 3. Live API paths implemented but not verified end to end
-
-- FastAPI local server, OpenAI Realtime WebRTC setup, server-created ephemeral client secret, AI-generated audio output, microphone input/transcript events, typed AI practice.
-- Editable brief: role, team/company, experience, job description.
-- Explicit live-mode data-use dialog before connecting microphone. Standard API key stays on server. Browser gets a short-lived secret. Live sessions stop after ten minutes.
-- MCP tools: `get_interview_brief`, `coach_latest_answer`, `compare_retry`.
-- Browser gateway calls actual local MCP Streamable HTTP endpoint; Realtime function tools bridge to it.
-- Model coaching/comparison quotes are filtered against actual answer text. Baseline/focus are stored for retry. No accent/personality/employability scores.
-- Session state is in memory, cleaned roughly two hours after creation (30-second interval), on reset, or server exit. Host/Origin restrictions and loopback bind; not a public multi-user service.
+1. **Authored sample:** animated SVG interviewer (Maya), browser speech with skip, transcript, coaching tabs, retry, before/after comparison, JSON download. The coaching and comparison sections also show **live panels computed by the MCP tools** on the sample text.
+2. **Deterministic rule checks** (`interview/checks.py`):
+   - Signals: ownership (I vs we, and I+action), concrete actions, verification, vague outcomes, fillers (text only), numeric claims to support, reflection or limits, length.
+   - Quotes are exact substrings. One priority is chosen. Compare reports per-signal count direction, honestly.
+   - No scores.
+3. **MCP server** (FastMCP, stateless Streamable HTTP, protocol 2025-11-25):
+   - Tools: `check_answer_text`, `compare_answer_texts` (no key); `get_interview_brief`; `coach_latest_answer` and `compare_retry` (need a key; quote-filtered; coach also attaches rule checks).
+   - Server `instructions` describe the coaching loop for agents. Tools have titles and annotations (the check tools are read-only and idempotent).
+   - Web endpoints `/api/tool`, `/api/check`, `/api/compare-text` call the real MCP endpoint via the SDK client. Tool errors now return 400 with a readable message (previously 500).
+4. **Local practice:**
+   - Record (MediaRecorder, meter, 2-minute cap, 4 takes) or type a take. Per-take **Check my words**; **Compare first and latest take**.
+   - JSON export includes the checks. Audio never leaves the tab. The WebM Infinity-duration fix is in.
+5. **Live AI paths** (OpenAI Realtime WebRTC and typed AI practice): implemented, **unverified**, consent dialog.
 
 ## File map
 
 | Path | Role |
 |---|---|
-| `AGENTS.md` | Mandatory continuity workflow |
-| `HANDOFF.md` | This current-state snapshot |
-| `WORK_LOG.md` | Append-only milestone history |
-| `interview/README.md` | Setup, capabilities, limits, verification |
-| `interview/server.py` | FastAPI endpoints, MCP tools, model requests, session management |
-| `interview/sample.py` | Original sample brief, answers, coaching, comparison |
-| `interview/static/index.html` | Practice room, SVG interviewer, dialogs, local recording panel |
-| `interview/static/style.css` | Responsive visual design and animations |
-| `interview/static/app.js` | Sample flow, speech, live WebRTC, transcript, coaching, reset |
-| `interview/static/practice.js` | Local microphone rehearsal; no network calls |
-| `interview/test_interview.py` | Backend/model-mock and local HTTP/MCP tests |
-| `interview/test_practice.cjs` | Pure JS recording lifecycle tests using mocked browser APIs |
-| `interview/.env.example` | Placeholder configuration; never put real secrets here |
-| `interview/requirements.txt`, `start.ps1` | Dependencies and launch helper |
-| Root `README.md`, `SUBMISSION.md`, `DEMO.md`, `trace-submission.zip` | **Old Trace materials, not valid Rehearsal submission assets** |
+| `README.md` | Rehearsal overview, setup, MCP usage, status table (judge-facing) |
+| `SUBMISSION.md` | Devpost text draft, product feedback, friction log, feature requests; has **[fill in]** markers |
+| `DEMO.md` | Timed demo script under 3 minutes and recording checklist |
+| `AGENTS.md`, `HANDOFF.md`, `WORK_LOG.md` | Continuity protocol, this snapshot, history |
+| `interview/server.py` | FastAPI and MCP server, endpoints, model calls, sessions |
+| `interview/checks.py` | Deterministic answer checks |
+| `interview/sample.py` | Authored sample scenario |
+| `interview/static/index.html`, `style.css` | UI |
+| `interview/static/app.js` | Sample flow, speech, live/text modes, coaching display |
+| `interview/static/checks.js` | Rule-check renderer and API calls |
+| `interview/static/practice.js` | Local practice: recording, typed takes, checks, compare |
+| `interview/test_interview.py`, `test_checks.py`, `test_practice.cjs` | Tests |
+| `trace/` | Paused Trace prototype and its own old docs |
 
-## Verification already performed
+## Verification status
 
-From `D:\hackamazon\interview`, with Rehearsal server running for integration tests:
-
-```powershell
-..\.venv\Scripts\python -m unittest test_interview -v
-node test_practice.cjs
-node --check static/app.js
-node --check static/practice.js
-```
-
-- **8 Python tests passed** before latest frontend-only local recording addition: exact evidence filtering, retry prerequisites, empty-answer handling, deduplication, provider failure handling, malformed report rejection, session deletion, HTTP/MCP integration. Model responses are mocked; local HTTP/MCP calls are real.
-- **JS recording lifecycle tests passed** after latest addition: record/stop saves take, reset cleanup, late permission releases tracks, permission denial recovers.
-- JS syntax checks passed for both files.
-- Earlier static check found no missing/duplicate literal DOM IDs before local recording addition; repeat if relevant after new HTML changes.
-- **Real-browser QA done 2026-10-22 via Claude in Chrome** (desktop Chrome, Windows): full sample flow incl. speech/skip, coaching, retry, comparison, reset/restart; no console errors; no duplicate IDs; 390px mobile layout (iframe) has no horizontal overflow. Fixed three `?`-corrupted labels and sample-mode button-state bugs (see WORK_LOG). Re-ran Python 8/8 and JS tests after fixes.
-- **Still unverified:** physical microphone record/playback/download (Record not clicked — permission prompt blocks automation), file-download clicks, real mobile device, live/text AI paths.
-
-## API blocker and configuration
-
-- An inherited `OPENAI_API_KEY` was present; no value was exposed or written to files.
-- Minimal text request returned **429 `insufficient_quota`**. Realtime client-secret request returned **500 `server_error`**. Do not assume the latter is definitively a billing error.
-- User explicitly deferred resolving API access. No provider requests were made after that choice.
-- Future working key should be set locally in `interview/.env`, excluded by root `.gitignore`, or environment. `load_dotenv(..., override=True)` allows that file to override the inherited key.
-- Default models: `gpt-4.1-mini` text; `gpt-realtime` voice. Verify current availability/docs when enabling.
-- Configuration presence is not proof of working quota or voice access.
+- **Python:** 16/16 OK against the agent's 8767 server.
+- **JS:** mocked tests PASS. `node --check` passes on all scripts.
+- **Real Chrome (extension, earlier on Oct 22), desktop:** sample flow, speech/skip, reset/restart; no console errors.
+- **Headless Chrome (overnight):**
+  - Sample rule panels show real MCP output.
+  - Local practice: recording with the **fake** microphone device, playback duration, check, typed take, compare, reset.
+  - 390px viewport: no horizontal overflow.
+  - Screenshots reviewed.
+- **Not verified:** physical microphone, real phone, file-download clicks, live AI paths, and new code on the user's 8766 server (it needs a restart).
 
 ## Next priorities
 
-1. Sample flow and layout are browser-verified. Remaining manual check: user records a take in **Practice my own answer** (record/stop/playback/retry/download, permission denial). Chrome automation is allowed without prompts via gitignored `.claude/settings.local.json`; avoid clicking Record/downloads through automation.
-2. Keep the intended product centered on natural voice interviews and evidence-based retry coaching. Local recording is a useful interim feature, not a substitute for the unverified live AI goal.
-3. Once user explicitly resolves API access: verify a real short voice conversation, transcription timing, tool calls after completed candidate turns, generated follow-ups, baseline/retry comparison, interruption, disconnect/error recovery, and costs. Do not invent successful integration.
-4. Strengthen differentiation. Yoodli already provides interview roleplay and feedback; a realistic avatar alone is not original. Intended focus is transparent coaching and demonstrable retry improvement for internship communication. No customer validation yet.
-5. Prepare **new Rehearsal** demo script, accurate submission copy, actual tool feedback/friction log, and GitHub repo. Do not reuse Trace descriptions. Public video and Devpost submission are not done.
-6. Keep this file and the work log current after every milestone, per user request.
+1. The user should restart their server, try the sample and Practice-my-own-answer with a real microphone, then review `README.md`, `SUBMISSION.md`, and `DEMO.md`.
+2. User actions needed:
+   - Create a public GitHub repo and push. Ensure the MIT license shows in About.
+   - Record and upload the demo.
+   - Fill in the **[fill in]** markers.
+   - Submit on Devpost before **Oct 23, 12:00 p.m. PT**.
+3. Optional improvements, if time remains:
+   - Opt-in practice history across sessions (an MCP tool for progress; the judges' "state across sessions" criterion).
+   - An MCP App UI resource for the check card. Verify the MCP Apps spec first.
+   - Browser speech-recognition captions, opt-in. In Chrome the audio goes to Google, so disclose it.
+4. Never claim live AI works until it is verified with a working key and the user allows paid calls.
 
-## Known risks / things to inspect
+## Known risks
 
-- Realtime input transcription may arrive after a model tool call. Current gateway waits for saves already queued but does not guarantee an unfinished transcription has arrived. Validate before claiming feedback always targets the latest spoken answer.
-- Sample speech voices depend on browser/OS; unsupported speech falls back to readable text. Avatar animation is stylized, not true lip synchronization.
-- Local audio capture is tested with mocks only. Codec support and physical device behavior need browser verification.
-- Some shell output displayed mojibake when reading UTF-8 with PowerShell defaults. Inspect actual bytes/browser rendering before rewriting encodings; do not assume the files are corrupted from terminal display alone. Three labels with literal `?` corruption were fixed 2026-10-22; if new ones appear, grep for ` ? ` in static files.
-- Frontend scripts are compact and share global state. Be careful with reset, in-flight narration, pending microphone permission, and switching between sample/local/live/text modes.
-- No repository commits, deployment, public video, or hackathon submission yet.
+- Rule checks use English word lists. They can misfire ("profiled" counts as verification) and will miss paraphrases. They are presented as prompts, not judgments.
+- Realtime transcription may arrive after a tool call (live path; unverified).
+- Speech voices vary by operating system. The avatar is stylized, with no lip sync.
+- Frontend scripts share global state (`mode`, `generation`, `phase`). Be careful with reset and in-flight async work; generation and requestVersion guards are used.
+- PowerShell may display UTF-8 as mojibake. Check the actual bytes before "fixing" the encoding.
 
 ## Current work state
 
-No half-written implementation is intentionally pending. Latest completed work: first real-browser QA and sample-flow fixes (2026-10-22). Nothing is committed to git yet — recommend asking the user to approve a first commit and GitHub repo. The next agent should read the log, inspect current files/status, then continue the priorities above rather than restarting or rebuilding the app.
+Everything described above is committed on `main` (see `git log`). There is no remote. If an agent resumes: read the latest `WORK_LOG.md` entries, run the tests, then continue with Next priorities item 3, or help the user with item 2.

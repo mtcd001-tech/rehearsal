@@ -1,111 +1,158 @@
-﻿# Devpost submission draft — Trace
+# Rehearsal — Devpost submission draft
 
-Status: local working prototype; not submitted. Review this copy against the final recorded demo before publishing.
+> Draft for the Build, Ship, Shape: Amazon Developer Hackathon. Review every claim before pasting it into Devpost. Items marked **[fill in]** need the author's input. Deadline: **Friday, October 23, 2026, 12:00 p.m. PT (3:00 p.m. ET)**.
 
-## Tagline
+## Basics
 
-See where your reasoning and your Python code diverge.
+- **Project name:** Rehearsal
+- **Tagline:** Interview practice that quotes your own words back to you, names one thing to fix, and shows whether your retry fixed it.
+- **Primary track:** Alexa+ (self-hosted MCP server, spec 2025-11-25 over Streamable HTTP, plus a simulated Alexa+ experience in a web app)
+- **Mini challenges:** None claimed.
+- **Repository:** **[fill in GitHub URL]** (public, MIT license detectable in the About section)
+- **Demo video:** **[fill in YouTube/Vimeo URL]** (public, under 3 minutes)
+- **Built with:** Python, FastAPI, Model Context Protocol Python SDK (`mcp` 1.30.0, FastMCP, Streamable HTTP), vanilla JavaScript, Web Speech Synthesis API, MediaRecorder and Web Audio APIs, OpenAI Realtime and Chat Completions APIs (optional path, unverified)
 
 ## Inspiration
 
-Backtracking can be difficult to understand from source code alone. A beginner can follow every line and still miss that several results point to the same mutable list. We wanted to make the invisible execution state visible and let learners navigate directly to the evidence behind their confusion.
+Behavioral interviews are hard for students applying to technical internships, especially when English is not their first language. The usual feedback is either a generic tip ("use STAR") or a single score that gives no clue about what to say differently. The most common problem in real answers is very specific: people say "we worked on it" and "it worked well," so the interviewer never hears what *they* did or how they knew it worked.
 
 ## What it does
 
-Trace runs short Python programs locally and records actual execution events. The interface pairs source code with a call stack, collection contents, stable object references, a call journey, and output. Learners can step, rewind, or play through execution.
-
-A conversational command panel can jump to the first exception, repeated references, the next variable change, or a function return. These commands invoke a real MCP tool over Streamable HTTP. Two original examples provide an authored correction and a rerun against an explicit expected output: an off-by-one index error and backtracking that saves references instead of snapshots.
+- An illustrated interviewer, Maya, asks a behavioral question and speaks it with the browser's speech synthesis.
+- You answer. In the sample you hear a realistic first answer; in practice mode you record yourself (audio stays in the browser) or type your answer.
+- **Check my words** runs the `check_answer_text` MCP tool. It quotes your exact phrases and flags:
+  - whether your own role is clear ("I" versus "we"),
+  - concrete "I + action" phrases,
+  - whether you said how you verified the result,
+  - vague outcomes ("made it better", "worked well"),
+  - filler words in the text,
+  - numbers you should be ready to support,
+  - reflection or honest limits,
+  - and length.
+  
+  It picks one priority for the next try.
+- You answer the same question again. **Compare first and latest take** runs `compare_answer_texts`, which shows which signals moved in the suggested direction, with before and after quotes. It says so plainly when nothing changed.
+- No scores, no accent or personality judgments, no hiring predictions. Every quote is an exact substring of what you said, so evidence cannot be invented.
+- An optional live mode (OpenAI Realtime voice over WebRTC, with the same MCP tools bridged as function calls) is implemented. It is **not verified end to end** because the available API key had no quota. The demo does not show it.
 
 ## How we built it
 
-CPython's sys.settrace captures call, line, return, and exception events in a child process. A graph serializer preserves shared object identities and cycles. FastAPI serves the interface and trace APIs. The official MCP Python SDK exposes trace_python, inspect_step, and navigate_trace through Streamable HTTP, with protocol 2025-11-25 verified by integration tests.
-
-The frontend is plain JavaScript, HTML, and CSS. Execution state comes from Python, not from a generated explanation.
-
-## Alexa+ track fit
-
-We built a simulated Alexa+ conversational debugging experience backed by a working MCP server. Its visual surface changes in response to tool calls, while run IDs and current-step context carry the investigation across questions. We do not claim access to Amazon's private Alexa+ tools or a connection to an Alexa device.
-
-The current web demo uses a deterministic command router, not an LLM. External MCP-compatible agents can use the same tools. We deliberately expose the boundary between observed runtime facts and explanatory guidance.
+- **MCP server:** FastMCP from the official Python SDK, mounted on FastAPI, stateless Streamable HTTP with JSON responses. It negotiates protocol 2025-11-25. It ships server instructions that describe the coaching loop for an agent, and tool titles and annotations (the check tools are read-only, idempotent and closed-world).
+- **Five tools:**
+  - `check_answer_text` and `compare_answer_texts`: deterministic, no key.
+  - `get_interview_brief`: session context.
+  - `coach_latest_answer` and `compare_retry`: model-written, with exact-substring quote filtering, plus rule checks attached.
+- **The web app is itself an MCP client:** its `/api/check`, `/api/compare-text` and `/api/tool` endpoints call the real MCP endpoint through the SDK's Streamable HTTP client. The browser therefore shows actual tool output, including the protocol version.
+- **Local practice:**
+  - MediaRecorder with a Web Audio level meter, a two-minute cap and four takes.
+  - Typed takes when no microphone is available.
+  - JSON export of your notes and check results.
+- **Safety:**
+  - The server binds to loopback and checks Host and Origin headers.
+  - Sessions live in memory with expiry.
+  - Live mode asks for explicit consent before any audio is sent, and the API key stays on the server.
+- **Tests:**
+  - 16 Python tests: rule checks, quote filtering, session handling, and HTTP plus real MCP integration.
+  - Mocked browser-API tests for recording, typed takes, checks and reset.
+  - Headless Chrome checks with Chrome's fake microphone device.
 
 ## Challenges
 
-- Preserving aliasing instead of serializing each reference as an independent list.
-- Explaining that a line event captures state before execution, while return and exception events have different meanings.
-- Separating an actual exception from an incorrect result: the latter needs an explicit expectation.
-- Keeping the local prototype bounded without claiming that filtering Python syntax makes a secure sandbox.
+- **No API access during the build.** A minimal request returned `429 insufficient_quota`. So the coaching loop needed to work without any model. Deterministic rules turned out to be a better default for trust anyway: they never invent evidence.
+- **MCP errors became HTTP 500.** Errors raised inside the MCP client context reached our web endpoints as an `ExceptionGroup`, so every tool error showed up as "Internal Server Error." See the friction log.
+- **Honest labels.** Keeping the authored sample, the deterministic checks and the unverified AI path clearly separated in the UI took deliberate design.
 
 ## Accomplishments
 
-The tests verify shared-list identity and independent copies, exact failed index access, recursive parent/child calls, cyclic references, and end-to-end MCP navigation. The demo requires no cloud credentials or device.
+- A complete practice loop that works offline with no key: question → answer → quoted evidence → one priority → retry → measured change.
+- A real MCP server that a voice assistant could drive with the same loop, verified at protocol 2025-11-25.
+- No invented evidence: every quote shown is checked against the actual text.
+
+## What we learned
+
+- Useful interview feedback is mostly about specificity. Pointing at the exact phrase "we worked on the database" teaches more than any score.
+- Agent-facing tools need instructions and honest annotations, not just function signatures.
 
 ## What's next
 
-Validate the experience with learners; improve evidence-based explanations; add a genuine model-driven MCP client and optional voice interaction; build a hardened execution service before offering public code execution. More languages and subject domains are out of this prototype's scope.
+- Connect to Alexa+ when access is available, so the loop runs fully by voice.
+- Verify the live AI path end to end with a working key.
+- Add opt-in practice history across sessions, and more question sets (data structures, system design talk-throughs).
+- Test with actual internship candidates, including non-native speakers, before claiming impact.
 
-## Built with
+## Product feedback (required)
 
-Python, CPython tracing, MCP Python SDK, Streamable HTTP, FastAPI, Uvicorn, JavaScript, HTML, CSS.
+### Model Context Protocol — specification and Python SDK (`mcp` 1.30.0)
 
-## Product feedback draft (observations from this build)
+- **Used for:** the self-hosted coaching server (FastMCP, Streamable HTTP, stateless, JSON responses) and the client inside our own web backend.
+- **What worked well:** a decorated Python function becomes a typed tool quickly. Streamable HTTP mounted cleanly into FastAPI. Protocol 2025-11-25 negotiated with no extra configuration. `instructions`, tool `title` and `ToolAnnotations` were easy to add.
+- **What needs work:** error handling across the client boundary (friction entries 1 and 2). There is no app `version` parameter on `FastMCP(...)`, so `serverInfo.version` reports the SDK version, `1.30.0` (entry 3).
+- **Onboarding:** reaching a working tool call took one short server plus the SDK client example. The error-handling behavior took longer to understand than the setup.
+- **Would we build with it again?** Yes. It gives one well-defined surface that both our web app and a voice assistant can call.
 
-### MCP Python SDK
+### Alexa+ (track)
 
-Purpose: expose the trace as tools and call navigation tools from the web application.
+- **Used for:** target platform. We built the self-hosted MCP server path and a simulated Alexa+ experience.
+- **What worked well:** the rules clearly allow a self-hosted MCP server or a simulation, so we could build without hardware.
+- **What needs work:** entrants cannot connect a local MCP server to Alexa+ itself, so we could not test real voice turn-taking with our tools (entry 4).
+- **Onboarding:** **[fill in from your own experience with the developer portal, if any]**
+- **Would we build with it again?** Yes, if an Alexa+ test harness becomes available. Practice by voice is exactly the interaction this product needs.
 
-Worked well: typed tool definitions made discoverable input schemas straightforward; the SDK supplied both server and HTTP client pieces. Integration testing verified protocol 2025-11-25 and actual tool execution.
+### OpenAI Realtime API and Chat Completions (optional live path)
 
-Needs work: the older streamablehttp_client helper still ran but emitted a deprecation warning, making the similarly named client helpers easy to confuse. We changed to streamable_http_client.
+- **Used for:** optional live voice interviewer and AI coaching. Ephemeral client secrets keep the standard key on the server.
+- **What worked well:** the WebRTC flow and client-secret design fit a browser app with a local backend.
+- **What needs work:** we could not verify it. A minimal text request returned HTTP 429 `insufficient_quota`, and the Realtime client-secret request returned HTTP 500 `server_error` with the same key.
+- **Would we build with it again?** Undecided until it can be verified.
 
-Onboarding: successful tool discovery and navigation were reached during this build; no precise timing benchmark was recorded.
+### Browser APIs (Chrome): MediaRecorder, Web Audio, Speech Synthesis
 
-Would use again: yes, because the same runtime evidence can be exposed to multiple agent clients without reimplementing the trace engine.
+- **What worked well:** fully local recording and playback with no upload.
+- **What needs work:** Chrome's MediaRecorder WebM files report `duration = Infinity`, so the audio player shows no length until you seek (entry 5). Speech-synthesis voices vary by operating system.
 
-### FastAPI and Uvicorn
+## Friction log (optional; up to a 10% bonus)
 
-Purpose: serve the local interface, validation endpoints, and mounted MCP application.
+Every entry below was observed during this build.
 
-Worked well: typed request bodies and ASGI lifecycle support allowed the trace API and MCP session manager to share one local service.
+1. **Exceptions inside the MCP client context arrive as `ExceptionGroup`**
+   - **Task:** return a tool's error message from our web endpoint.
+   - **Steps:** called `ClientSession.call_tool` inside `streamable_http_client(...)` and `ClientSession(...)`, then raised `ValueError(result.content[0].text)` when `isError` was true.
+   - **Expected:** our `ValueError` handler returns HTTP 400 with the message.
+   - **Actual:** the exception left the async context wrapped in an `ExceptionGroup`. FastAPI returned HTTP 500 "Internal Server Error" for every tool error, for example "Session expired."
+   - **Severity:** Medium. Users saw meaningless errors and the bug was silent in unit tests.
+   - **Workaround:** keep the result, exit both contexts, then raise.
+   - **Suggestion:** document this in the client quickstart, or unwrap single-exception groups in the SDK's context managers.
+2. **Tool errors are plain text with a fixed prefix**
+   - **Task:** show a tool's error to the user.
+   - **Actual:** `CallToolResult.isError` is true and the text is `"Error executing tool compare_answer_texts: <message>"`.
+   - **Severity:** Low.
+   - **Workaround:** strip the prefix with a regular expression.
+   - **Suggestion:** a structured error field (code plus message) separate from the display text.
+3. **No server version setting in FastMCP**
+   - **Task:** identify our server build to clients.
+   - **Actual:** `initialize` reports `serverInfo.version = '1.30.0'`, the SDK's version. `FastMCP.__init__` has no `version` parameter.
+   - **Severity:** Low.
+   - **Workaround:** none yet.
+   - **Suggestion:** add a `version` argument.
+4. **No way to test a local MCP server with Alexa+**
+   - **Task:** verify that our tools work in a real Alexa+ voice turn.
+   - **Actual:** Alexa+ access is not available to entrants, so we built a web simulation.
+   - **Severity:** High for this track.
+   - **Workaround:** simulated experience plus MCP integration tests.
+   - **Suggestion:** a public Alexa+ simulator or test console that can connect to a developer's Streamable HTTP MCP endpoint.
+5. **MediaRecorder WebM duration is Infinity in Chrome**
+   - **Task:** play back a local recording with a seek bar.
+   - **Actual:** `audio.duration === Infinity` after `loadedmetadata`.
+   - **Severity:** Low.
+   - **Workaround:** seek to a very large time once, then back to zero.
+   - **Suggestion (browser platform):** write duration metadata when recording stops.
 
-Needs work: no library defect established during this build. Mounting and lifecycle ownership require care and deserve a small complete example.
+## Feature requests (optional)
 
-Onboarding: local service and endpoint tests passed.
+- **Alexa+ developer test console for self-hosted MCP servers.** Lets track entrants verify real voice behavior. Priority: Critical.
+- **Structured tool errors in the MCP Python SDK.** Lets clients show clean messages without parsing strings. Priority: Important.
+- **`version` argument for FastMCP.** Lets clients identify server builds. Priority: Nice-to-have.
 
-Would use again: yes, for local tools and API prototypes.
+## What was built during the submission period
 
-### CPython sys.settrace
-
-Purpose: capture actual execution events.
-
-Worked well: frames expose local state and events distinguish calls, lines, returns, and exceptions.
-
-Needs work: line events happen before the source statement executes, which needs explicit UI labeling; object identity must be preserved by the application serializer. These are design constraints, not reported Python defects.
-
-Onboarding: small controlled examples were useful for confirming event semantics.
-
-Would use again: yes for an educational tracer, with tighter runtime isolation for public deployment.
-
-### Browser platform
-
-Purpose: render the interactive trace with standard HTML, CSS, and JavaScript.
-
-Worked well: no frontend build toolchain is needed.
-
-Needs work / onboarding: browser visual verification is pending because no browser surface was available in the build environment. Do not describe the interface as visually verified until that check is done.
-
-Would use again: yes, subject to completing responsive and accessibility checks.
-
-## Optional friction log
-
-1. Task: connect an MCP HTTP client. Steps: imported the older streamablehttp_client helper and ran the integration test. Expected: clean client setup. Actual: working connection plus deprecation warning. Severity: low. Workaround: use streamable_http_client. Suggestion: emphasize the renamed helper in migration examples. Retest after the change passed.
-
-Do not claim a guaranteed judging bonus. Do not invent additional friction entries.
-
-## Remaining submission fields
-
-- GitHub repository URL: pending.
-- Public YouTube/Vimeo URL, under three minutes: pending.
-- Primary track: Alexa+.
-- Mini challenges: none claimed.
-- Team members / eligibility / final terms: user review required.
-- Final code and video must be frozen by October 23, 2026 at 3 p.m. EDT.
+All of Rehearsal (`interview/`) was created during the submission period, in October 2026. The `trace/` folder is a separate earlier experiment from the same week and is not part of this submission.

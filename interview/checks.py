@@ -45,6 +45,9 @@ def quotes(text, pattern, limit=3, flags=re.I, max_words=7):
             break
     return out
 
+def plural(n, word):
+    return f'{n} {word}' + ('' if n == 1 else 's')
+
 def count(text, pattern, flags=re.I):
     return len(re.findall(pattern, text, flags))
 
@@ -60,11 +63,11 @@ def check_answer(text, question=''):
     signals = []
 
     if team and (me == 0 or actions == 0):
-        status, note = 'missing', f'"We/our" appears {team} times, but no phrase says what you did ("I" followed by an action). A listener cannot tell your part.'
+        status, note = 'missing', f'"We/our" appears {plural(team, "time")}, but no phrase says what you did ("I" followed by an action). A listener cannot tell your part.'
     elif team >= 2 * max(me, 1) and team >= 3:
-        status, note = 'watch', f'"We/our" appears {team} times and "I/my" {me} times. Make sure your own part is clear.'
+        status, note = 'watch', f'"We/our" appears {plural(team, "time")} and "I/my" {plural(me, "time")}. Make sure your own part is clear.'
     else:
-        status, note = 'ok', f'"I/my" appears {me} times and "we/our" {team} times.'
+        status, note = 'ok', f'"I/my" appears {plural(me, "time")} and "we/our" {plural(team, "time")}.'
     signals.append({'id': 'ownership', 'label': 'Your own role', 'status': status, 'count': me, 'other_count': team, 'note': note,
                     'quotes': quotes(text, r'\b(?:we|the team|our team)\b', 3) if status != 'ok' else quotes(text, SELF_ACTION, 3, 0),
                     'suggestion': 'Say "I" for the parts you did: what you inspected, chose, built, or tested.'})

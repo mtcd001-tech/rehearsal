@@ -2,7 +2,7 @@
 
 # Rehearsal — interview practice
 
-A sample-first prototype for practicing behavioral interviews, with an illustrated AI interviewer, spoken dialogue, transcript-linked feedback, and a retry comparison. Trace remains in the parent directory and is unchanged.
+A practice room for behavioral interviews: an illustrated interviewer, spoken questions, feedback tied to your exact words, one priority to fix, and a retry comparison. The coaching engine is a self-hosted MCP server whose core tools are deterministic and need no API key. The repository overview is in the [root README](../README.md); the paused Trace prototype now lives in `../trace/`.
 
 ## Try it now
 
@@ -12,7 +12,7 @@ From D:\hackamazon:
 .venv\Scripts\python interview\server.py
 ```
 
-Open **http://127.0.0.1:8766**. Click **Experience the sample**, then **Play sample answer**, **See the coaching**, **Try that answer again**, and **Play improved answer**. Skip narration advances the current spoken segment. Download practice notes exports only the displayed session as JSON.
+Open **http://127.0.0.1:8766**. Click **Experience the sample**, then **Play sample answer**, **See the coaching**, **Try that answer again**, and **Play improved answer**. The coaching and comparison each include a panel computed live by the `check_answer_text` / `compare_answer_texts` MCP tools on the sample text. Skip narration advances the current spoken segment. Download practice notes exports only the displayed session as JSON.
 
 Alternatively run `interview/start.ps1` from PowerShell. For a fresh checkout: create a Python 3.11+ virtual environment, install this directory's `requirements.txt`, then run `server.py`.
 
@@ -22,7 +22,7 @@ Alternatively run `interview/start.ps1` from PowerShell. For a fresh checkout: c
 - Displays an original SVG interviewer with breathing, blinking, and speaking animation. This is an illustration, not generated human video or photorealistic lip sync.
 - Shows a first answer, an interviewer follow-up, feedback tied to exact phrases, and a clearer retry.
 - Separates structure, language clarity, and technical depth.
-- Keeps the sample in browser memory. No microphone or model API is used in this mode. Browser voice availability varies; text remains readable if speech fails. Some OS/browser voices may use their own online speech service.
+- Keeps the sample in browser memory. No microphone or model API is used in this mode. The rule-check panels send the authored sample text to the local server only. Browser voice availability varies; text remains readable if speech fails. Some OS/browser voices may use their own online speech service.
 - The sample always uses its own fictional context. Editing Your brief affects subsequent live/text sessions, not the authored sample.
 
 ## Live implementation and current blocker
@@ -39,13 +39,15 @@ Live voice sends audio and context to OpenAI; text practice and coaching send th
 
 Streamable HTTP endpoint: **http://127.0.0.1:8766/mcp**
 
-Tools:
+Tools (the server also publishes agent instructions describing the practice loop, plus titles and read-only annotations):
 
+- `check_answer_text(answer, question?)` — deterministic wording checks with exact quotes and one priority. No key needed.
+- `compare_answer_texts(before, after)` — deterministic per-signal change between two takes, with before/after quotes. No key needed.
 - `get_interview_brief(session_id)` — retrieve the supplied context and recorded transcript.
-- `coach_latest_answer(session_id)` — call the model, verify quoted evidence exists in the actual answer, store the baseline and retry focus.
+- `coach_latest_answer(session_id)` — call the model, verify quoted evidence exists in the actual answer, attach the rule checks, store the baseline and retry focus.
 - `compare_retry(session_id)` — compare a new answer with the coached baseline and filter unsupported quotes.
 
-The web tool gateway invokes the real MCP endpoint. Realtime function calls are bridged through the same gateway. Protocol **2025-11-25** was verified locally. Coaching model calls were tested with mocks, not a functioning paid API.
+The web endpoints `/api/tool`, `/api/check`, and `/api/compare-text` invoke the real MCP endpoint through the SDK's Streamable HTTP client. Realtime function calls are bridged through the same gateway. Protocol **2025-11-25** was verified locally. Coaching model calls were tested with mocks, not a functioning paid API.
 
 This is an **Alexa+ experience simulation**, not an Alexa device integration. The sample alone is not a competitive demonstration of the live integration; validate an actual AI interview before submitting.
 
@@ -60,11 +62,11 @@ Prior art: [Yoodli](https://yoodli.ai/use-cases/interview-preparation) already p
 Keep the server running, then from this directory:
 
 ```powershell
-..\.venv\Scripts\python -m unittest test_interview -v
-node --check static/app.js
+..\.venv\Scripts\python -m unittest test_interview test_checks -v
+node test_practice.cjs
 ```
 
-Eight tests passed: evidence quote filtering, retry requirements, empty-answer handling, transcript deduplication, failed-provider behavior, response schema checks, session deletion, and local HTTP/MCP integration. No provider request is needed for these tests.
+Set `INTERVIEW_PORT` when the server under test runs on another port. 16 Python tests cover the rule checks (exact-substring quotes, no score fields, honest unchanged-retry wording), evidence quote filtering, retry requirements, empty answers, transcript deduplication, provider failures, schema checks, session deletion, and HTTP plus real MCP integration (tool list, instructions, annotations, error responses). No provider request is made.
 
 Browser QA (October 22, 2026, desktop Chrome on Windows): the full sample flow, browser speech with skip, coaching, retry comparison, and reset/restart were exercised with no console errors, and a 390px-wide layout showed no horizontal overflow. Physical microphone recording, file downloads, real mobile devices, and the live AI paths have not been verified.
 
@@ -76,12 +78,14 @@ Browser QA (October 22, 2026, desktop Chrome on Windows): the full sample flow, 
 
 ## Still required before hackathon submission
 
-Working API billing/access; actual live voice validation; browser QA; stronger differentiation/customer validation; public GitHub repository; accurate demo video; updated submission copy and tool feedback. Existing Trace submission drafts in the parent directory do not describe this project and must not be submitted as Rehearsal's materials.
+Public GitHub repository, demo video (script in `../DEMO.md`), and final review of `../SUBMISSION.md` by the author. Live voice/AI validation needs working API access; until then the submission presents the deterministic MCP tools, local practice, and the authored sample, and labels the live path as unverified. Learner impact is not validated.
 
-## Local microphone rehearsal (no API key)
+## Local practice (no API key)
 
-Choose **Practice my own answer**. Pick one of five original behavioral questions, optionally hear it, then select **Record my answer** and grant microphone permission. A live activity meter and timer indicate recording. Stop saves the take in the current browser tab; two minutes stops it automatically. Listen, add your own transcript/notes, pick a focus, and record a retry. Up to four takes can be compared by listening to their players. Download audio and notes separately if you want to keep them.
+Choose **Practice my own answer**. Pick one of five original behavioral questions, optionally hear it, then **Record my answer** (microphone) or **No microphone? Type an answer**. Recording shows an activity meter and timer and stops automatically at two minutes; up to four takes are kept in the tab.
 
-This mode does not upload recordings, call an AI provider, or automatically transcribe. Its prompts are self-review, not generated feedback. Reset, switching modes, or closing the tab discards undownloaded recordings. Microphone tracks are released on stop/reset and on leaving the page. Browser recording support and permission are required.
+For each take, write or paste what you said and press **Check my words**. The text (not the audio) is sent to this app's local server, which runs the deterministic `check_answer_text` MCP tool and shows quoted findings and one priority. After a second take with text, **Compare first and latest take** runs `compare_answer_texts`. Download practice notes exports your text, focus, check results, and comparison as JSON; recordings download separately.
 
-Local recording logic tests: `node test_practice.cjs` from this directory. These use mocked browser APIs to check capture/stop, cleanup, delayed permission, and permission-denial recovery. They do not replace a physical microphone/browser check.
+Audio is never uploaded and is not transcribed automatically. Reset, switching modes, or closing the tab discards undownloaded takes. Microphone tracks are released on stop, reset, and leaving the page.
+
+Local recording logic tests: `node test_practice.cjs` (mocked browser APIs: capture/stop, cleanup, delayed permission, permission denial, typed takes, check gating, comparison arguments, stale results after reset, take limit). In headless Chrome with Chrome's fake microphone device, a real MediaRecorder take was recorded, played (duration fixed from Chrome's WebM `Infinity`), checked, compared, and reset. A physical microphone has not been tested by the agent.

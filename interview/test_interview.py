@@ -90,7 +90,10 @@ class LocalIntegration(unittest.IsolatedAsyncioTestCase):
             async with ClientSession(read, write) as client:
                 initialized = await client.initialize()
                 self.assertEqual(initialized.protocolVersion, '2025-11-25')
-                names = {tool.name for tool in (await client.list_tools()).tools}
+                self.assertIn('check_answer_text', initialized.instructions)
+                tools = (await client.list_tools()).tools
+                names = {tool.name for tool in tools}
+                self.assertTrue(all(t.annotations.readOnlyHint for t in tools if t.name.startswith(('check_', 'compare_answer'))))
                 self.assertEqual(names, {'get_interview_brief', 'coach_latest_answer', 'compare_retry', 'check_answer_text', 'compare_answer_texts'})
 
 if __name__ == '__main__':

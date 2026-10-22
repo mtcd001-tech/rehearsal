@@ -1,84 +1,119 @@
-> **Agent starting point:** Read [HANDOFF.md](HANDOFF.md), [AGENTS.md](AGENTS.md), and [WORK_LOG.md](WORK_LOG.md) first. The active project is **Rehearsal in `interview/`**; this root README describes the paused Trace prototype.
+# Rehearsal — interview practice that shows you exactly what to change
 
-# Trace
+Rehearsal is an interview-practice room for technical-internship candidates, including non-native English speakers. An illustrated interviewer asks a behavioral question, you answer out loud or in writing, and you get feedback tied to the **exact words you used**, one priority to fix, and a side-by-side check of whether your retry actually changed.
 
-**See where your reasoning and your code diverge.**
+The coaching engine is a self-hosted **MCP server** (spec **2025-11-25**, Streamable HTTP). Its core tools are deterministic and need **no API key**, so any MCP client — or a voice assistant such as Alexa+ — can call them. The browser app is a simulated Alexa+-style practice experience built on those same tools.
 
-Trace is a local Python execution explorer with an MCP-controlled visual debugger. It records real Python execution, displays the call stack and object identities, and navigates to evidence behind index errors and shared mutable lists.
+> Hackathon track: **Alexa+** — self-hosted MCP server, plus a simulated Alexa+ experience in a web app.
 
-## Run on Windows
+## What works today, and what does not
 
-Requires Python 3.11 or later. No API key, Amazon device, or cloud account is required.
+| Part | Status |
+|---|---|
+| Authored sample interview (animated interviewer, browser speech, coaching, retry, comparison) | Works. The sample answers and the main coaching card are **written by hand** and labelled as such. |
+| Rule checks on the sample answers | Works. Computed live by the MCP tools `check_answer_text` and `compare_answer_texts` every time the sample runs. |
+| Practice with your own answer: record audio locally, or type an answer | Works. Audio never leaves the browser tab. |
+| Check my words / compare first and latest take | Works. Your typed text goes only to the local server; deterministic rules, no AI model, no scores. |
+| MCP server (5 tools) over Streamable HTTP, protocol 2025-11-25 | Works and is covered by integration tests. |
+| Live AI voice interview (OpenAI Realtime over WebRTC) and AI typed practice | Implemented but **not verified end to end** — the available API key had no quota. Treat as unverified. |
+
+## Run it (about 2 minutes)
+
+Requires Python 3.11+ and a recent Chrome or Edge.
+
+**Windows (PowerShell)**
 
 ```powershell
+git clone <this repository> rehearsal
+cd rehearsal
 python -m venv .venv
-.venv\Scripts\python -m pip install -r requirements-lock.txt
-.venv\Scripts\python server.py
+.venv\Scripts\python -m pip install -r interview\requirements.txt
+.venv\Scripts\python interview\server.py
 ```
 
-Open **http://127.0.0.1:8765**. Keep the terminal running. Alternatively, run `start.ps1` from PowerShell.
+**macOS / Linux**
 
-On macOS/Linux, substitute `.venv/bin/python` for `.venv\Scripts\python`. Install from `requirements.txt` there; the Windows lock includes platform-specific dependencies.
-
-## Three walkthroughs
-
-1. **The disappearing subsets:** choose “Find shared references.” Several saved answers point to the same list. Step forward to watch `path.pop()` mutate the object all those answers reference. Select “Compare with a correction” to run `path.copy()` instead and check against an explicit expected result.
-2. **One step too far:** choose “Show the error.” The canvas jumps to the actual `IndexError` and displays index 4 against four valid slots, 0–3. Compare the corrected loop.
-3. **Inside the call stack:** watch five factorial calls descend, then use “Next return” to inspect the unwind.
-
-Edit the source to run your own short program. Use the slider, playback, arrow buttons, or keyboard left/right arrows to navigate. A **line** event shows state **before** that line executes. Call, return, and exception events have their own semantics and labels.
-
-## Alexa+ hackathon track
-
-This is an **Alexa+ experience simulation**, not a deployed Alexa integration and not Amazon's private simulator. The working MCP server exposes:
-
-- `trace_python(source)`: execute and retain a trace; return its ID and result summary.
-- `inspect_step(run_id, step)`: retrieve recorded frames, object memory, and exceptions.
-- `navigate_trace(run_id, target, current_step, variable)`: locate an error, repeated references, the next variable change, a return, or a timeline position.
-
-Endpoint: **http://127.0.0.1:8765/mcp**. Transport: **Streamable HTTP**. Verified negotiated protocol: **2025-11-25**. An MCP client can discover and call these tools directly.
-
-The web command panel connects as an MCP client through the same HTTP endpoint. It currently uses a **deterministic intent router**, not an LLM. Supported phrases include “show the error,” “find shared references,” “when did path change,” “next return,” “start,” “end,” “next,” and “previous.” Unsupported questions are explicitly reported. There is no fabricated model output, voice recognition, or automatic general-purpose bug fixing. The two correction buttons are authored example patches and are labeled as such.
-
-## Architecture
-
-```text
-Browser -> FastAPI /api/run -> subprocess -> CPython sys.settrace
-Browser -> /api/ask -> deterministic intent router
-                    -> MCP Streamable HTTP client
-                    -> navigate_trace -> recorded evidence -> canvas position
-External MCP client -> /mcp -> trace_python / inspect_step / navigate_trace
+```bash
+git clone <this repository> rehearsal && cd rehearsal
+python3 -m venv .venv
+.venv/bin/python -m pip install -r interview/requirements.txt
+.venv/bin/python interview/server.py
 ```
 
-Object identities remain stable across a run. The serializer records heap references instead of recursively duplicating shared lists, including cycles. Call records have parent IDs and entry/exit events. No LLM generates execution states.
+Open **http://127.0.0.1:8766**. No API key or account is needed.
 
-## Scope and execution limits
+1. **Experience the sample** → *Play sample answer* → *See the coaching*. Under the authored coaching card, a panel shows what the `check_answer_text` MCP tool found in the sample answer, with quotes.
+2. *Try that answer again* → *Play improved answer*. The comparison shows the authored before/after pairs and a panel computed by `compare_answer_texts`.
+3. **Practice my own answer**. Record a take (or choose *No microphone? Type an answer*), write what you said, and press **Check my words**. Add a second take and press **Compare first and latest take**.
 
-- Trusted local snippets only. **This is not a hardened sandbox. Do not expose this service publicly or run untrusted code.**
-- The server binds to loopback and checks Host/Origin. These are defense-in-depth, not process isolation.
-- A child process gets a four-second execution timeout; traces stop at 600 events. Imports, classes, async, generators, exception handling, and most attribute access are rejected.
-- Programs are limited to 12,000 source characters. Snapshot output is truncated to 4,000 characters; each collection shows at most 60 items, with bounded nesting.
-- No OS memory quota is implemented; expressions can allocate memory before a timeout. This is one reason this build stays local.
-- Variable-change navigation compares the innermost visible variable by name; it is not full data-flow analysis or a causal proof. Shared references are legal Python, not automatically a bug.
-- Runs are held in memory, with only the most recent 24 retained; restarting the server clears them.
-- No LeetCode integration, scraped questions, user accounts, analytics, paid services, or hosted deployment.
-- Google Fonts is an optional network request for typography; system font fallbacks work offline.
+## Use the MCP server from any MCP client
 
-## Verification
+While the server runs, the endpoint is **`http://127.0.0.1:8766/mcp`** (Streamable HTTP, stateless, JSON responses).
 
-Start the server, then in another terminal:
+| Tool | Needs API key | What it does |
+|---|---|---|
+| `check_answer_text(answer, question?)` | No | Wording checks with exact quotes: your own role (I vs we), concrete I-actions, how you verified the result, vague outcomes, fillers, numbers you should be ready to support, reflection, length. Returns one priority to work on. |
+| `compare_answer_texts(before, after)` | No | Which of those signals moved in the suggested direction between two takes, with before/after quotes. Says so plainly when nothing changed. |
+| `get_interview_brief(session_id)` | No | Session context and transcript for an agent. |
+| `coach_latest_answer(session_id)` | Yes | Model-written coaching; quotes are filtered so only exact substrings of the real answer survive. Also attaches the rule checks. |
+| `compare_retry(session_id)` | Yes | Model-written retry comparison with the same quote filter. |
+
+Quick check with the official Python SDK (already installed by the requirements):
+
+```python
+import asyncio
+from mcp import ClientSession
+from mcp.client.streamable_http import streamable_http_client
+
+async def main():
+    async with streamable_http_client('http://127.0.0.1:8766/mcp') as (read, write, _):
+        async with ClientSession(read, write) as session:
+            print((await session.initialize()).protocolVersion)        # 2025-11-25
+            result = await session.call_tool('check_answer_text', {'answer': 'We fixed the bug and it worked well.'})
+            print(result.content[0].text)
+
+asyncio.run(main())
+```
+
+## Why the checks are rules, not a model
+
+Interview feedback is only useful if you can trust it. Every quote Rehearsal shows is sliced from your own words, so evidence cannot be invented. The rules never produce a score, never comment on accent or personality, and say "text only, not an audio fluency measurement" where that matters. When the AI coaching path is enabled, its quotes go through the same exact-substring filter.
+
+The rules are intentionally simple English word lists. They can miss things or misfire (for example, "profiled" counts as checking your work). They are prompts for a better retry, not a judgment of the answer.
+
+## Privacy
+
+- Sample mode sends nothing anywhere except to the local server for the rule-check panels.
+- Local practice keeps audio in the browser tab. Only text you choose to check is sent, and only to `127.0.0.1`.
+- The server binds to loopback, rejects other hosts and origins, and keeps session data in memory only.
+- The optional live AI path sends audio and transcript to OpenAI and asks for consent first. It is off unless you configure a key (`interview/.env`, see `interview/.env.example`).
+
+## Tests
+
+With the server running (set `INTERVIEW_PORT` if you started it on another port):
 
 ```powershell
-.venv\Scripts\python -m unittest test_trace -v
-node --check static/app.js
+cd interview
+..\.venv\Scripts\python -m unittest test_interview test_checks -v
+node test_practice.cjs
 ```
 
-The tests check actual alias identities, independent copied lists, exact out-of-bounds access, recursive call relationships, line-event timing, cycles, rejected syntax, event limits, HTTP endpoints, origin rejection, and MCP initialization/tool execution. Browser visual QA remains pending because this build environment exposed no browser automation surface.
+16 Python tests (rule checks, quote filtering, session handling, HTTP and real MCP integration) and mocked browser-API tests for recording, typed takes, checks, and reset. Model responses are mocked; no paid calls are made.
 
-## Prior art and positioning
+## Repository layout
 
-[Python Tutor](https://pythontutor.com/) already visualizes execution, frames, and references. Trace does **not** claim to invent execution visualization. Its prototype focus is evidence-directed conversational navigation plus a before/after learning loop. Differentiation and educational effectiveness still need user validation.
+| Path | Contents |
+|---|---|
+| `interview/` | Rehearsal: FastAPI app, MCP server, rule checks, sample scenario, web client, tests |
+| `interview/README.md` | Detailed behavior, limits, and verification notes |
+| `SUBMISSION.md`, `DEMO.md` | Hackathon submission text, product feedback, friction log, demo script |
+| `trace/` | An earlier, paused prototype (code-tracing visualizer). Not part of this submission. |
+| `HANDOFF.md`, `WORK_LOG.md`, `AGENTS.md` | Development handoff notes and log |
 
-## Submission preparation
+## Prior art and honest positioning
 
-See `SUBMISSION.md` for draft Devpost copy and `DEMO.md` for a recording script. These are drafts, not evidence of a submitted entry. The GitHub repository, public demo video, and final Devpost submission are still to be completed. No AWS Builder or Open Source mini challenge eligibility is claimed.
+Interview-roleplay tools already exist (for example [Yoodli](https://yoodli.ai/use-cases/interview-preparation)). Rehearsal's angle is narrower: evidence you can verify, one change at a time, and a retry comparison that shows whether the change happened — exposed as an MCP server so a voice assistant can run the same loop. Learner impact has not been measured yet.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
