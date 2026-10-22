@@ -21,12 +21,15 @@ TEAM = r"\b(?:we|we're|we've|we'd|our|us|the team)\b"
 SELF = r"\b(?:i|i'm|i've|i'd|i'll|my|me|myself)\b"
 SELF_ACTION = r"\bI\s+(?:(?:also|then|first|finally|personally|quickly)\s+)?(?:" + '|'.join(ACTION_VERBS) + r")\b"
 STOP = re.compile(r'[.!?;\n]')
+TRAILING = {'a', 'an', 'the', 'and', 'or', 'but', 'for', 'our', 'my', 'to', 'of', 'in', 'on', 'with', 'at', 'by', 'that', 'being', 'is', 'was', 'we', 'i', 'it', 'so'}
 
 def phrase(text, start, max_words=7):
     """Exact substring from start up to max_words words, ending before sentence punctuation."""
     end = STOP.search(text, start)
     chunk = text[start:end.start() if end else len(text)]
     words = list(re.finditer(r'\S+', chunk))[:max_words]
+    while len(words) > 2 and words[-1].group().lower().strip(',:') in TRAILING:
+        words.pop()
     return chunk[:words[-1].end()].rstrip(',:') if words else ''
 
 def quotes(text, pattern, limit=3, flags=re.I, max_words=7):
