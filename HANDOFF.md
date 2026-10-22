@@ -160,3 +160,7 @@ Readability pass completed: larger type/contrast and controls throughout; **Inte
 ## Latest addition: skills development goals
 
 Optional `skills` brief field (max 1,000 chars), labeled **Skills I want to improve**, added to setup after experience. Save/reopen, research synthesis and text/voice/coaching context include it. Goals are treated as learning priorities, not claimed abilities; text alone cannot assess pronunciation/fluency. Skills changes invalidate the research plan. No change to fixed demo/local rule checks. Eight research Python mocks and JS research mocks pass; JS syntax passes. No paid calls, server restart or browser verification. Next: restart and check setup save/reopen; live behavior only after API deferral is lifted.
+
+## Latest addition: interview round and length
+
+Brief fields `round` (recruiter/behavioral/technical/hiring_manager) and `duration` (string 5/15/30) default to behavioral/15. Setup save/reopen and research invalidation include both. Research synthesis and interviewer/coaching prompts receive both. Voice browser timer disconnects at selected limit; text gives one reminder without discarding input; sample unaffected. Existing 10-minute UI cutoff replaced. Nine research Python mocks, research/practice JS mocks, syntax and new timer boundary mocks pass. No paid calls/server restart/browser or live voice verification. Next: restart, check selectors/save/reopen and live behavior after API deferral ends.

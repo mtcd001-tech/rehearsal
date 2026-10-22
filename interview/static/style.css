@@ -83,3 +83,5 @@ input::file-selector-button{padding:8px 12px;margin-right:12px;border:1px solid 
 #research-status:empty,#resume-status:empty{display:none}
 @media(max-width:800px){.room-grid{grid-template-columns:1fr}.conversation-panel{min-height:480px;max-height:650px}.welcome{align-items:flex-start;flex-direction:column}.steps{gap:10px}.steps>i{width:20px}.step strong{font-size:12px}header{padding:0 4%;gap:12px}nav{gap:14px}.header-right .mode-chip{display:none}}
 @media(max-width:540px){#brief-dialog{padding:20px 16px;max-height:94dvh}.setup-section{padding:18px 14px}.setup-fields{grid-template-columns:1fr;gap:0}.setup-footer{align-items:stretch;flex-direction:column}.setup-footer button{width:100%}.steps>i{display:none}.step{align-items:flex-start;flex:1}.step strong{max-width:90px}.brand{font-size:21px}nav button{font-size:12px}main{padding:0 4%}.controls>button{flex:1 1 150px}.question-card h2{font-size:21px}}
+
+#brief-dialog select{display:block;width:100%;margin-top:8px;padding:12px;background:white;border:1px solid #bbc4b4;border-radius:6px;min-height:48px}

@@ -186,3 +186,12 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - Verification: 8 research Python tests PASS with mocked providers, including goals reaching synthesis/session/text interviewer but not search; research JS mock PASS for goal-change invalidation; app/research JS syntax PASS.
 - Limitations: fixed sample/local checks unchanged; live personalization and browser UI unverified. No paid calls or server restart.
 - Next: restart app and inspect setup save/reopen; real AI validation awaits user API access.
+
+### 2026-10-22 - IN PROGRESS: interview round and duration
+- Baseline 3414690 clean. Add validated round and 5/15/30-minute choices, pass to research/session prompts, update voice cutoff and text time reminder. No paid calls. Next: implementation and targeted tests.
+
+### 2026-10-22 - COMPLETE: interview round and duration
+- Changes: validated Brief fields, setup selectors and defaults, research payload/invalidation, round/pacing prompts, selected voice cutoff and nonblocking text reminder; docs and test_timer.cjs.
+- Verification: 9 Python research tests PASS (mocked provider; includes validation and propagation); research/practice JS mocks PASS; app syntax PASS; timer boundary mocks PASS for all three lengths/modes, single notification and sample exclusion. Initial timer-file write used a duplicated interview path and failed; corrected path and test passed.
+- Limits: live/browser behavior and AI pacing unverified; browser timer can be delayed in background tabs. No paid calls or server restart.
+- Next: restart and browser-check setup save/reopen; working API access needed for real interview validation.

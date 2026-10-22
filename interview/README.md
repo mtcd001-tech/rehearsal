@@ -31,7 +31,7 @@ The app includes WebRTC Realtime voice, a server-side ephemeral-token endpoint, 
 
 When ready, copy `.env.example` to `.env` in this directory and set a working key locally. Do not put it in a chat, browser source, screenshot, or Git commit. Restart the server. Explicit values in `.env` override inherited environment values.
 
-Click Start live interview to read the data-use explanation and opt into microphone access. The standard API key stays on the server; the browser receives a short-lived client secret. Live sessions stop after ten minutes. End conversation closes the WebRTC connection and microphone tracks. Reset clears this app's in-memory session. This does not erase provider-side records.
+Click Start live interview to read the data-use explanation and opt into microphone access. The standard API key stays on the server; the browser receives a short-lived client secret. Live sessions stop at the selected 5-, 15-, or 30-minute limit. End conversation closes the WebRTC connection and microphone tracks. Reset clears this app's in-memory session. This does not erase provider-side records.
 
 Live voice sends audio and context to OpenAI; text practice and coaching send the brief and transcript. Raw audio is not stored by this app. Live session state is in server memory, cleaned approximately two hours after creation (30-second cleanup interval), on Reset, or at server shutdown. The local service is single-user, loopback-only, and not prepared for public hosting. No analytics or webcam capture is included.
 
@@ -126,3 +126,7 @@ Interview setup groups inputs into **1. The job you want**, **2. Your experience
 ### Skills to develop
 
 In **Interview setup**, use **Skills I want to improve** to enter one or two goals (up to 1,000 characters), such as clear explanations, English vocabulary, technical reasoning or leadership stories. Save setup to include them in subsequent AI interview and coaching context. Research synthesis also receives these goals; public web search still receives only company/role. Changing goals clears a stale interview plan. Leaving this blank keeps general practice. The authored demo and deterministic local checks are unchanged. Live AI behavior remains unverified; transcript-only feedback cannot judge pronunciation or spoken fluency.
+
+### Interview round and length
+
+Setup now offers recruiter screening, behavioral, technical, or hiring manager rounds, and 5/15/30 minutes (defaults: behavioral, 15 minutes). These choices reach the research plan and AI interview/coaching context. Changing either clears a stale research plan. Voice disconnects at the chosen limit; text shows one reminder and allows you to finish. The fixed sample is unaffected. Timer behavior is covered by `node test_timer.cjs` with mocked time, not a live voice test. Browser timer scheduling can be delayed in background tabs.

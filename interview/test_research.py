@@ -9,6 +9,12 @@ def provider_result():
     return {'status':'completed','output':[{'type':'web_search_call'},{'type':'message','content':[{'type':'output_text','text':'Official process [1]. Formats vary.','annotations':[{'type':'url_citation','start_index':17,'end_index':20,'url':'https://example.com/careers','title':'Careers'}]}]}]}
 
 class ResearchTests(unittest.TestCase):
+    def test_round_and_duration_validation(self):
+        self.assertEqual(server.Brief(role='Intern').duration, '15')
+        for fields in ({'round':'unknown'}, {'duration':'90'}):
+            with self.assertRaises(ValueError):
+                server.Brief(role='Intern', **fields)
+
     def test_citations_preserve_text(self):
         r=research.parse_research(provider_result())
         self.assertEqual(''.join(x['text'] for x in r['blocks'][0]['parts']),'Official process [1]. Formats vary.')
@@ -40,12 +46,14 @@ class ResearchAsyncTests(unittest.IsolatedAsyncioTestCase):
         public=research.parse_research(provider_result())
         with patch.dict(os.environ,{'INTERVIEW_RESEARCH_ENABLED':'1'}),patch.object(server,'search_company',new=AsyncMock(return_value=public)) as search,patch.object(server,'model_json',new=AsyncMock(return_value={'summary':'Practice explaining API work','questions':[],'experience_probes':[],'gaps':[]})) as model:
             async with httpx.AsyncClient(transport=httpx.ASGITransport(app=server.app),base_url='http://127.0.0.1:8766') as client:
-                r=await client.post('/api/research',json={'role':'Intern','company':'Example','job':'Python','resume':'Private experience','skills':'Explain tradeoffs'})
+                r=await client.post('/api/research',json={'role':'Intern','company':'Example','job':'Python','resume':'Private experience','skills':'Explain tradeoffs','round':'technical','duration':'5'})
                 self.assertEqual(r.status_code,200,r.text)
                 self.assertEqual(search.call_args.args[:2],('Example','Intern'))
                 self.assertNotIn('Private experience',str(search.call_args))
                 self.assertEqual(model.call_args.args[1]['resume'],'Private experience')
                 self.assertEqual(model.call_args.args[1]['skills'],'Explain tradeoffs')
+                self.assertEqual(model.call_args.args[1]['round'],'technical')
+                self.assertEqual(model.call_args.args[1]['duration'],'5')
                 self.assertNotIn('Explain tradeoffs', str(search.call_args))
                 saved=server.create_session(server.Brief(role='Intern',research='Cited context'))
                 self.assertEqual(server.get_interview_brief(saved['session_id'])['brief']['research'],'Cited context')
