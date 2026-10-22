@@ -306,3 +306,8 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - Tests: all 9 JS suites PASS, all static JS syntax OK. Python unaffected (59 OK earlier this session).
 - Not done: real Gemini Live session with a physical mic (needs the user's voice); research/text quota paths.
 - Next: commit; docs review for Gemini-era claims.
+
+### 2026-10-22 (17:30 ET) - One live Gemini check each (fictional/public data, no retries)
+- Text path (`gemini_questions.practice_question`, fictional brief): SUCCESS in 4.6 s, returned a tailored question. Earlier 503 appears transient.
+- Company research (`research.search_company('Amazon','Software Development Engineer Intern')`): HTTP 429 again. Not retried. Likely Search-grounding quota on this key; research stays unverified live.
+- No personal data sent; key not printed.
