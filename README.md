@@ -21,6 +21,7 @@ The coaching engine is a self-hosted **MCP server** (spec **2025-11-25**, Stream
 | MCP server (7 tools) over Streamable HTTP, protocol 2025-11-25 | Works and is covered by integration tests. |
 | Terminal voice-assistant simulation (`interview/agent_sim.py`) driving the loop over MCP | Works; scripted, not an LLM. Covered by an integration test. |
 | MCP Apps view (`ui://rehearsal/answer-check`, SEP-1865) for the check tools | Works in the included local reference host at `/mcp-app-preview`. Not yet tried in a third-party MCP Apps host. |
+| Gemini Live timed interview | New focused 5/15/30-minute voice mode with end-only review. Live synthetic spoken turn succeeded; real microphone and full 30-minute run remain unverified. |
 | Gemini recorded-answer review and tailored questions | Live synthetic audio and fictional follow-up tests succeeded. Browser microphone/conversion/UI testing is still pending. |
 | Gemini text interview, coaching and company research | Implemented with the same Gemini key. Mocked regression passed; live migration checks returned text HTTP 503 and search HTTP 429. |
 
@@ -126,7 +127,7 @@ cd interview
 node test_practice.cjs
 ```
 
-50 Python tests passed against a temporary local server (including real MCP integration), plus eight JS mock test files. Automated regression uses mocked model responses. Separate authorized live tests verified Gemini on synthetic audio and a fictional follow-up; real browser capture/UI remains pending.
+59 Python tests passed against a temporary local server (including real MCP integration), plus nine JS mock test files. Automated regression uses mocked model responses. Separate authorized live tests verified Gemini on synthetic audio and a fictional follow-up; real browser capture/UI remains pending.
 
 ## Repository layout
 
@@ -153,4 +154,10 @@ Resume upload is available in **Interview setup** (PDF/DOCX/TXT, local extractio
 
 Save your role, resume/JD, goals and interview round in Interview setup. Choose Practice my own answer, then **Ask a question from my setup**. Use **Hear the question**, enable **Analyze after I stop recording (Gemini)**, record and stop. The result includes a transcript, evidence-based analysis, estimated delivery observations and a draft to verify. **Practice this answer again** restores the same question; **Ask me a follow-up** generates a question grounded in that answer. Retry comparisons only combine takes for the same question. Four takes per page session; download before Reset.
 
-This is turn-based recorded practice using Gemini, not a continuous Gemini Live connection. Company research now uses Gemini Google Search grounding, but live verification hit HTTP 429. The old OpenAI voice path has been removed. Gemini question generation uses supplied context; it does not search the web. Details and verification limits: [interview README](interview/README.md).
+Single-answer practice remains turn-based. The new **Enter interview room** mode uses continuous Gemini Live audio, automatic turn detection and a timed ending, with analysis only afterward. Company research now uses Gemini Google Search grounding, but live verification hit HTTP 429. The old OpenAI voice path has been removed. Gemini question generation uses supplied context; it does not search the web. Details and verification limits: [interview README](interview/README.md).
+
+## Full mock interview
+
+Choose **Enter interview room**, set 5/15/30 minutes, and allow the microphone. Speak naturally: Maya asks questions and follow-ups without per-answer buttons. No coaching during the interview; the final review unlocks when time expires or you end the session. Use headphones. The same Gemini key streams audio and setup to Google. Raw audio is not saved. Install updated requirements and restart first.
+
+The quieter UI keeps single-answer practice/demo in an expandable section and presents feedback as a summary, priority and expandable details. Final interview review is based on the received transcript, not a validated vocal assessment. Gemini Live setup, interviewer audio and a synthetic candidate turn were verified separately; browser visuals, real microphone behavior and a full 30-minute connection remain to be tested. See interview/README.md.

@@ -47,7 +47,7 @@ Behavioral interviews are hard for students applying to technical internships, e
 - **Practice history across sessions (opt-in).** *Save results to my progress* stores only signal labels and counts on your computer, never your words or audio. Next time, the app (or an assistant calling `get_practice_progress`) opens with your recurring priority, for example "your own role — moved toward the suggestion on 1 retry."
 - **MCP App card.** The check tools are linked to an MCP Apps view (`ui://rehearsal/answer-check`, SEP-1865). Hosts that support MCP Apps can render the quoted findings as an interactive card instead of raw JSON. A local reference host at `/mcp-app-preview` shows the full handshake.
 - No scores, no accent or personality judgments, no hiring predictions. Evidence quotes are matched to the submitted text or generated transcript; transcription and advice can still be wrong.
-- All active AI features use one Gemini key. Continuous voice is not implemented. Migrated text and grounded company research passed mocked tests, but live checks returned HTTP 503 and 429 respectively; end-to-end verification is pending.
+- All active AI features use one Gemini key. A separate Gemini Live timed interview is now implemented, with automatic turn detection and final-only coaching. Its complete 30-minute browser experience is not yet verified. Migrated text and grounded company research passed mocked tests, but live checks returned HTTP 503 and 429 respectively; end-to-end verification is pending.
 
 ### Gemini recorded practice update
 
@@ -197,3 +197,7 @@ Every entry below was observed during this build.
 ## What was built during the submission period
 
 All of Rehearsal (`interview/`) was created during the submission period, in October 2026. The `trace/` folder is a separate earlier experiment from the same week and is not part of this submission.
+
+### Full interview and visual redesign update
+
+Enter interview room starts a 5/15/30-minute Gemini Live conversation with no per-question buttons or coaching. Maya probes answers under time pressure; the microphone stops at the end and a transcript-based debrief follows. The clean focused room hides training tools; final feedback reveals details on demand. Live synthetic tests received interviewer audio, sent a fictional spoken answer, received a follow-up and ended cleanly. Automatic timeout, reconnect and review gating have mocked tests; real mic and full 30-minute validation remain pending. Do not claim the remaining tests are complete in submission materials.

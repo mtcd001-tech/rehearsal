@@ -267,3 +267,29 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - Verification: GET /api/status now gemini-recorded/provider gemini/key_configured true/research_enabled true. No AI requests or quota retries.
 - Limits: actual research availability still subject to prior429; restarting cleared server sessions. Browser page-memory data remains until refresh.
 - Next: user can retry research from current page; preserve setup/recordings before refreshing.
+
+### 2026-10-22 - IN PROGRESS: focused interview room and uninterrupted mock interview
+- User changes priority: cleaner UI, continuous timed interview with feedback only at end. Previous recorded practice remains optional. Next: concise review cards, Gemini Live audio bridge with automatic turn detection/timed end, final session review, lifecycle tests. Live quota/browser limits will be explicit.
+
+### 2026-10-22 - Interview implementation checkpoint
+- Added live_interview.py Gemini websocket bridge with automatic speech detection, context compression, resumption, bounded audio/transcripts and timed ending; final review endpoint rejects active sessions. New focused full-screen room with microphone worklet/playback, countdown and end-only analysis; feedback now summary/priority plus expandable sections. Added websockets15.0.1 dependency.
+- Syntax checks passed. Browser inventory empty; no visual/microphone QA yet. Next: lifecycle/mock tests, one fictional Live handshake if available, fix issues, docs.
+
+### 2026-10-22 - Interview regression checkpoint
+- Changes: focused room/consent, continuous PCM input/native output, timed end and final review UI; concise expandable single-answer report; no background-page interaction during live mode.
+- Verification: 59 Python tests PASS, nine JS suites PASS and all JS syntax. HTML balanced/IDs unique/scripts present. Provider mocked in regression; owned test process tree stopped. Initial commands with wrong working-directory paths were corrected.
+- Live: setup accepted, actual Maya audio received. First synthetic-input harness timed out because22050Hz fixture did not meet its16000Hz assertion; corrected conversion test underway. No personal data used. Browser inventory empty; visual/real mic30-minute test pending.
+- Next: finish synthetic test, reconcile docs, restart app, commit. New objective supersedes earlier decision to keep continuous Live out of scope.
+
+### 2026-10-22 - Live synthetic interview verified
+- Actual Gemini Live setup accepted. Corrected22050Hz fixture conversion to16kHz PCM; synthetic answer streamed in100ms packets. Received native interviewer audio, two completed model turns, candidate transcript and clean end with no error. No personal data sent. First fixture harness timeout was not an application failure; no quota loop used.
+- Voice resumption/timer are mocked-test verified only; real browser audio/UI/full30-minute behavior remain unverified. Final review fictional provider check pending. Next: update final result, restart user app with websocket dependency and commit.
+
+### 2026-10-22 - COMPLETE: focused full-interview implementation
+- Purpose: user requested realistic hands-free timed interview, with analysis only after completion, and cleaner UI.
+- Changes: full-screen interview mode/native Gemini audio, safe mic/playback cleanup, automatic turns/deadline, context compression/resumption, post-interview debrief/export; compact expandable recording reviews; README/demo/submission/HANDOFF updated. Historical single-answer mode retained in expandable section.
+- Verification:59 Python tests and nine JS mock suites passed; syntax/HTML IDs/nesting/script paths/diff checks passed. Live synthetic exchange succeeded with two model turns and candidate transcription. Separate live fictional final review succeeded (one answer review/two priorities). No personal data used. Provider success does not validate all advice.
+- Limits: no available browser surface; current visual layout, physical mic/echo/interruptions and full30-minute session remain unverified. Resumption/timer tested with mocks. Prior company research429 remains independent. No publication performed.
+- Next: restart8766 with current code; user refresh after preserving recordings, test5-minute interview first and then30-minute stability. Save transcript/review before returning to practice.
+
+- Restart verification: current8766 serves new room and microphone worklet; invalid WebSocket session rejected before provider access. Final focused regression15 Python tests plus Live JS lifecycle/PCM test and JS syntax passed after cleanup fixes. No user recordings were sent by these checks.

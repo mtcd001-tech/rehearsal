@@ -28,6 +28,20 @@ Resume extraction runs locally in memory with a 10-second subprocess timeout. Or
 
 Research uses Gemini Google Search grounding with company/role only. Resume/JD/goals do not enter the search stage. The subsequent Gemini synthesis receives them to tailor the simulation. Sources are linked inline; Google's search suggestions are shown in a sandboxed frame. Official information, anecdotes and inferred practice format are distinguished by the prompt. Uncited or incomplete results are rejected. Links/evidence checks do not prove all claims accurate. Changing setup inputs clears a stale plan. This is simulated preparation, not confirmed company questions.
 
+## Full mock interview
+
+Enter interview room is now the primary mode. Choose 5, 15 or 30 minutes (room defaults to 30), allow the microphone once, and speak naturally. Gemini Live asks spoken questions and follow-ups using saved setup. There are no per-answer Record/Next buttons and no coaching panels during the interview. Use headphones. Automatic speech detection handles turns; interruptions stop queued interviewer audio. End interview is always available, and the countdown ends the session automatically.
+
+The focused room shows Maya, connection/microphone state and a countdown. The server separately enforces duration. Context compression and session resumption are enabled for longer sessions. A connection rollover may briefly pause the audio; the UI asks you to hold your thought. Network/access failures end the session honestly, retaining received transcripts for review. The app does not silently retry quota failures or pretend to complete the requested duration.
+
+When it ends, the microphone stops and the app requests a transcript-based review: summary, strengths, priority improvements, and expandable question-by-question analysis with quoted evidence and suggested rewrites. Feedback is unavailable through the review endpoint while the session is active. No transcript means no invented assessment. This final review cannot measure vocal fluency/pronunciation; generated transcripts/drafts need checking. Download the transcript/review before returning to practice; returning clears the server session.
+
+GEMINI_LIVE_MODEL defaults to gemini-3.8-live and is independent of GEMINI_MODEL. The same server-side key is used. Install updated requirements (websockets==15.0.1). Microphone PCM streams through a same-origin local WebSocket to Google; no raw audio file is stored. Saved setup is sent to Google on start. The browser uses AudioWorklet with mono16kHz input and 24kHz model playback. The session's input/output transcripts are held in server memory. Closing the page stops the mic/connection.
+
+The single-answer practice/demo now live in an expandable section. Recording feedback uses a concise summary and next-step card, with analysis, draft and transcript in expandable sections instead of a long wall of text.
+
+Live setup, native interviewer audio, synthetic candidate answer/follow-up and a separate fictional final review verified; the complete 30-minute physical-microphone experience and current visual layout still require browser testing. Automated tests use mocked audio/transport, including timer, reconnect, cancellation, review gating and PCM conversion. Official protocol references: https://ai.google.dev/api/live and https://ai.google.dev/gemini-api/docs/live-api/session-management .
+
 ## Recorded interview - no typing required
 
 Choose Practice my own answer. Select a built-in question or Ask a question from my setup. The latter explicitly sends your saved brief, including resume/JD if supplied, to Gemini. Hear the question reads it with browser speech.
@@ -46,7 +60,7 @@ Optional browser captions are separate: in Chrome they send audio to Google's sp
 
 Gemini text interview sends setup and typed answers to Google. Review my answer uses the same Gemini key through the MCP coaching tool; it returns analysis, quoted evidence, a suggested draft and missing-detail questions. Try that answer again and Compare my retry support the revision loop. Text practice shows a reminder at the selected duration and lets you finish. Transcript-only feedback cannot assess pronunciation or spoken fluency.
 
-The retired OpenAI voice path is removed from the UI. Legacy /api/token returns 410 without contacting a provider. No OpenAI key or calls are required.
+The retired OpenAI voice path remains removed. Legacy /api/token returns 410; the new Gemini Live path is /api/interview/live. No OpenAI key or calls are required.
 
 ## Local tools and authored demo
 

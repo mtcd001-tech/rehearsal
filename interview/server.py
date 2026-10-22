@@ -11,7 +11,7 @@ from typing import Any, Literal
 
 import httpx
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, WebSocket
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from mcp import ClientSession
@@ -27,6 +27,7 @@ from resume_import import MAX_BYTES
 from research import search_company, validate_plan, PLAN_PROMPT
 from audio_review import review_audio, MAX_AUDIO_BYTES, gemini_json
 from gemini_questions import practice_question
+from live_interview import run_interview, final_review
 
 ROOT = Path(__file__).parent
 load_dotenv(ROOT / '.env', override=True)
@@ -407,6 +408,31 @@ async def text_answer(body: TypedAnswer):
         transcript(Turn(session_id=body.session_id, role='user', text=body.text))
     transcript(Turn(session_id=body.session_id, role='assistant', text=reply))
     return {'reply': reply}
+
+@app.websocket('/api/interview/live')
+async def interview_live(ws: WebSocket, session_id: str):
+    allowed = (f'http://127.0.0.1:{PORT}', f'http://localhost:{PORT}')
+    if ws.headers.get('origin') not in allowed or ws.url.hostname not in ('127.0.0.1', 'localhost', 'testserver'):
+        await ws.close(code=1008)
+        return
+    state = sessions.get(session_id)
+    if state is None:
+        await ws.close(code=1008)
+        return
+    if state.get('interview_active') or state.get('interview_ended'):
+        await ws.close(code=1008)
+        return
+    await ws.accept()
+    await run_interview(ws, state)
+
+@app.post('/api/interview/review')
+async def interview_review(body: SessionRef):
+    return await final_review(get_session(body.session_id))
+
+@app.post('/api/interview/transcript')
+def interview_transcript(body: SessionRef):
+    state = get_session(body.session_id)
+    return {'turns': state.get('interview_turns', []), 'ended': state.get('interview_ended', False)}
 
 @app.post('/api/token')
 async def token(body: SessionRef):

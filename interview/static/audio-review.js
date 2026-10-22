@@ -22,14 +22,24 @@ function attach(card,t,text,isCurrent,auto,skills){
  try{const audio=await wav(t.blob);if(!isCurrent())return;
  const r=await fetch('/api/audio-review?'+new URLSearchParams({question:t.question,skills}),{method:'POST',headers:{'Content-Type':'audio/wav'},body:audio});const data=await r.json();if(!r.ok)throw Error(data.detail||'Audio review failed.');if(!isCurrent())return;
  t.audio_review=data;box.replaceChildren();box.hidden=false;
- for(const [title,key] of [['What you said','transcript'],['Overall feedback','summary'],['What worked','strength'],['Structure','structure'],['Language clarity','language'],['Technical reasoning','knowledge'],['Delivery observations (AI estimate)','delivery'],['Your next improvement','retry_focus'],['Suggested answer - verify facts and fill brackets','improved_answer']]){box.append(el('h3',title),el('p',data[key]));}
- for(const e of data.evidence||[])box.append(el('blockquote',e.quote),el('p',e.observation+' '+e.suggestion));
- for(const q of data.missing_details||[])box.append(el('p','Detail to add: '+q));box.append(el('p',data.source));
+ box.className='review-report';
+ const heading=el('div');heading.className='review-heading';heading.append(el('span','YOUR ANSWER REVIEW'),el('h3','One answer. A clearer next step.'));box.append(heading);
+ const overview=el('div');overview.className='review-overview';overview.append(el('p',data.summary));box.append(overview);
+ const focus=el('div');focus.className='review-priority';focus.append(el('span','FOCUS FOR YOUR NEXT TRY'),el('p',data.retry_focus));box.append(focus);
+ const strength=el('p',data.strength);strength.className='review-strength';box.append(strength);
+ function detail(title,copy){const d=el('details'),summary=el('summary',title);d.className='review-detail';d.append(summary,el('p',copy));box.append(d);return d;}
+ const analysis=detail('Explore the feedback','');
+ for(const [title,key] of [['Structure','structure'],['Language clarity','language'],['Technical reasoning','knowledge'],['Delivery ? AI estimate','delivery']]){const section=el('section');section.append(el('h4',title),el('p',data[key]));analysis.append(section);}
+ for(const e of data.evidence||[]){const quote=el('blockquote',e.quote);analysis.append(quote,el('p',e.observation+' '+e.suggestion));}
+ const draft=detail('A clearer version of your answer',data.improved_answer);draft.append(el('p','Suggested draft: verify every fact and fill in missing details truthfully.'));
+ for(const q of data.missing_details||[])draft.append(el('p',q));
+ detail('Your transcript',data.transcript);
+ const source=el('p',data.source);source.className='privacy';box.append(source);
  const retry=el('button','Practice this answer again');retry.className='secondary';retry.onclick=()=>{if(window.localPractice?.chooseQuestion(t.question)){$('local-focus').value=data.retry_focus||'';speak(t.question);}};box.append(retry);
  if(window.practiceQuestions){const next=el('button','Ask me a follow-up');next.className='secondary';next.onclick=()=>window.practiceQuestions.followup(t);box.append(next);}
 
  if(text.value===original&&!t.userEdited){text.value=data.transcript;text.oninput();}
- status.textContent='Review ready. Record another take to practice the improvement. Your original audio is unchanged.';
+ status.textContent='Review ready. Your original recording is unchanged.';
  }catch(e){if(isCurrent())status.textContent=e.message+' Your recording is still available.';}finally{if(isCurrent())button.disabled=false;}};
  if(auto)button.onclick();
 }

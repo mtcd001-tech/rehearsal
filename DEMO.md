@@ -4,7 +4,7 @@ Record at 1440×900 or larger in Chrome. Start the server first (`.venv\Scripts\
 
 The original no-key script below remains a fallback. See the Gemini route at the end before making a new recording.
 
-Only show what works today: the authored sample, the live rule checks, local practice, and the MCP server. **Do not show or imply a live AI conversation** — continuous voice is not implemented.
+Only show what works today: the authored sample, the live rule checks, local practice, and the MCP server. **Do not show or imply a live AI conversation** — the full 30-minute Live experience is not yet verified.
 
 | Time | On screen | Say (paraphrase in your own voice) |
 |---|---|---|
@@ -15,7 +15,7 @@ Only show what works today: the authored sample, the live rule checks, local pra
 | 1:40–2:10 | **Practice my own answer**. Record a short take (or type one), write what you said, press **Check my words**. Add a second, improved take and press **Compare first and latest take**. | "Now it's my turn. Audio stays in this browser tab. I check my words, fix the one priority, and the comparison tells me honestly whether my retry changed." |
 | 2:10–2:15 | Press **Save results to my progress**; point at the history panel ("Most frequent priority: your own role"). | "If I choose, it remembers my focus across sessions — counts only, never my words." |
 | 2:15–2:40 | Open `http://127.0.0.1:8766/mcp-app-preview` (footer link *MCP App preview*), click **Call check_answer_text**; point at the card and the JSON-RPC log (`ui/initialize` → `tool-result`). Optionally run `.venv\Scripts\python interview\agent_sim.py --demo` to show an assistant-style turn order with real tool calls. | "It's a self-hosted MCP server — spec 2025-11-25 over Streamable HTTP, with instructions and read-only annotations for agents. The web app is an MCP client of the same tools, so Alexa+ or any agent can run this loop by voice." |
-| 2:40–2:50 | Back to the app; README "What works today" table. | "Gemini practice is turn-based; continuous voice is not implemented. Rehearsal: one change at a time, with proof." |
+| 2:40–2:50 | Back to the app; README "What works today" table. | "Gemini practice is turn-based; the full 30-minute Live experience is not yet verified. Rehearsal: one change at a time, with proof." |
 
 ## Fallback: silent captioned walkthrough
 
@@ -64,3 +64,7 @@ Use fictional resume/JD and answers, never your key or personal contact details.
 API wait times count toward the recording length; rehearse timing. If editing out waits, label the cut rather than claiming instantaneous processing.
 
 Migration check: all active AI features now use Gemini. Text and company research returned HTTP 503/429 during live verification. Rehearse availability before recording; do not show mocked research as live.
+
+## Full interview mode update
+
+The current primary flow is Enter interview room -> allow mic -> uninterrupted questions/follow-ups -> timed ending -> final review. Gemini Live synthetic speech passed a complete exchange, but a physical microphone/full 30-minute session is not yet verified. Browser-check the 5-minute option before filming. A demo under 3 minutes must be explicitly labelled as an excerpt of a longer interview, or show End interview; do not imply a shortened clip is a complete 30-minute run. Coaching is only shown after ending.
