@@ -60,7 +60,9 @@ The user is busy and expects the agent to do most of the work. Overnight on Oct 
 4. **Local practice:**
    - Record (MediaRecorder, meter, 2-minute cap, 4 takes) or type a take. Per-take **Check my words**; **Compare first and latest take**.
    - JSON export includes the checks. Audio never leaves the tab. The WebM Infinity-duration fix is in.
-5. **Live AI paths** (OpenAI Realtime WebRTC and typed AI practice): implemented, **unverified**, consent dialog.
+5. **MCP Apps view:** `interview/mcp_app/answer_check.html` is served as `ui://rehearsal/answer-check` (`text/html;profile=mcp-app`, prefersBorder). The check tools carry `_meta.ui.resourceUri` and `structured_output=True` (this needs `-> dict[str, Any]`). The reference host is at `/mcp-app-preview` (`static/mcp-app-host.html`). The spec was read from `modelcontextprotocol/ext-apps` `specification/draft/apps.mdx`. It has not been tried in a third-party host.
+6. **Practice history:** `interview/history.py`; MCP `save_practice_result` and `get_practice_progress`; `/api/progress` GET/POST/DELETE; the file is `interview/data/practice_history.json` (gitignored); `INTERVIEW_HISTORY_FILE` overrides it.
+7. **Live AI paths** (OpenAI Realtime WebRTC and typed AI practice): implemented, **unverified**, consent dialog.
 
 ## File map
 
@@ -82,7 +84,7 @@ The user is busy and expects the agent to do most of the work. Overnight on Oct 
 
 ## Verification status
 
-- **Python:** 16/16 OK against the agent's 8767 server.
+- **Python:** 22/22 OK against the agent's 8767 server (run with `INTERVIEW_HISTORY_FILE` pointing to a scratch file).
 - **JS:** mocked tests PASS. `node --check` passes on all scripts.
 - **Real Chrome (extension, earlier on Oct 22), desktop:** sample flow, speech/skip, reset/restart; no console errors.
 - **Headless Chrome (overnight):**
@@ -101,8 +103,7 @@ The user is busy and expects the agent to do most of the work. Overnight on Oct 
    - Fill in the **[fill in]** markers.
    - Submit on Devpost before **Oct 23, 12:00 p.m. PT**.
 3. Optional improvements, if time remains:
-   - Opt-in practice history across sessions (an MCP tool for progress; the judges' "state across sessions" criterion).
-   - An MCP App UI resource for the check card. Verify the MCP Apps spec first.
+   - Try the MCP App in a real MCP Apps host if the user has one.
    - Browser speech-recognition captions, opt-in. In Chrome the audio goes to Google, so disclose it.
 4. Never claim live AI works until it is verified with a working key and the user allows paid calls.
 

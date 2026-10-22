@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rehearsal · MCP App preview</title>
+<style>
+:root{--bg:#f8f7f3;--ink:#252b28;--muted:#8a8d83;--line:#e3e4db;--orange:#ce643e;--panel:#fffefb}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171a18;--ink:#eceee6;--muted:#a1a797;--line:#323833;--panel:#1e211f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 system-ui,-apple-system,'Segoe UI',sans-serif}
+main{max-width:1100px;margin:0 auto;padding:28px 16px 48px}
+h1{font-size:24px;margin:0 0 4px}
+.lede{color:var(--muted);margin:0 0 20px;max-width:760px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
+label{display:block;font-size:12px;color:var(--muted);margin:10px 0 4px}
+textarea{width:100%;border:1px solid var(--line);border-radius:6px;padding:10px;font:13px/1.6 inherit;background:var(--bg);color:var(--ink)}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+button{border-radius:7px;padding:10px 14px;font-size:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+button.primary{background:var(--orange);border-color:var(--orange);color:#fff}
+iframe{width:100%;border:1px solid var(--line);border-radius:10px;background:#fff;min-height:120px;display:block}
+.eyebrow{font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted)}
+#log{font:11px/1.5 ui-monospace,Consolas,monospace;white-space:pre-wrap;max-height:260px;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px;margin-top:8px;color:var(--muted)}
+.meta{font-size:12px;color:var(--muted)}
+a{color:var(--orange)}
+@media(max-width:820px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<span class="eyebrow">MCP Apps · SEP-1865 · io.modelcontextprotocol/ui</span>
+<h1>Answer-check card, rendered by a local reference host</h1>
+<p class="lede">Rehearsal's MCP server publishes <code>ui://rehearsal/answer-check</code> (<code>text/html;profile=mcp-app</code>) and links it to <code>check_answer_text</code> and <code>compare_answer_texts</code>. Hosts that support MCP Apps render tool results with that card. This page is a minimal host written for testing: it reads the resource over MCP, loads it in a sandboxed iframe, and speaks the postMessage JSON-RPC protocol. It is not a third-party product. <a href="/">Back to Rehearsal</a></p>
+<div class="grid">
+<section class="panel">
+<label for="first">First answer</label>
+<textarea id="first" rows="5">So we, um, built a dashboard for our club. We had some problems with loading and we made it better. It worked well.</textarea>
+<label for="retry">Retry (for the comparison)</label>
+<textarea id="retry" rows="5">I owned the loading problem on our club dashboard. I profiled the page and found we fetched every event at once, so I added pagination and tested it on a slow connection. It loaded noticeably faster, but I did not measure it, so next time I would record load times before and after.</textarea>
+<div class="row"><button id="run-check" class="primary">Call check_answer_text</button><button id="run-compare">Call compare_answer_texts</button></div>
+<p class="meta" id="resource-meta">Reading UI resource…</p>
+<span class="eyebrow">JSON-RPC between host and view</span>
+<div id="log" aria-live="polite"></div>
+</section>
+<section class="panel">
+<span class="eyebrow">View (sandboxed iframe, scripts only)</span>
+<div id="frame-slot"><p class="meta">Call a tool to render its result.</p></div>
+</section>
+</div>
+</main>
+<script>
+(()=>{
+const $=id=>document.getElementById(id);let html='',frame=null,current=null;
+const log=(dir,msg)=>{const line=`${dir} ${msg.method||('result #'+msg.id)} ${JSON.stringify(msg.params||msg.result||{}).slice(0,140)}`;$('log').textContent+=line+'\n';$('log').scrollTop=$('log').scrollHeight;};
+const toView=msg=>{log('host → view',msg);frame.contentWindow.postMessage(msg,'*');};
+async function json(path,body){const r=await fetch(path,body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:undefined);const d=await r.json();if(!r.ok)throw Error(d.detail||'Request failed');return d;}
+async function load(){try{const res=await json('/api/app-resource');html=res.text;$('resource-meta').textContent=`resources/read ${res.uri} · ${res.mimeType} · ${html.length} chars · linked tools: ${res.linked_tools.join(', ')}`;}catch(e){$('resource-meta').textContent='Could not read the UI resource: '+e.message;}}
+async function run(name,args){if(!html)return;$('log').textContent='';const result=await json('/api/app-call',{name,arguments:args}).catch(e=>({isError:true,content:[{type:'text',text:e.message}]}));
+ current={args,result};frame=document.createElement('iframe');frame.setAttribute('sandbox','allow-scripts');frame.title='Rehearsal answer check view';frame.srcdoc=html;$('frame-slot').replaceChildren(frame);}
+window.addEventListener('message',e=>{if(!frame||e.source!==frame.contentWindow)return;const m=e.data;if(!m||m.jsonrpc!=='2.0')return;log('view → host',m);
+ if(m.method==='ui/initialize')toView({jsonrpc:'2.0',id:m.id,result:{protocolVersion:'2025-06-18',hostInfo:{name:'rehearsal-preview-host',version:'1.0.0'},hostCapabilities:{},hostContext:{theme:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light',displayMode:'inline',availableDisplayModes:['inline']}}});
+ else if(m.method==='ui/notifications/initialized'&&current){toView({jsonrpc:'2.0',method:'ui/notifications/tool-input',params:{arguments:current.args}});toView({jsonrpc:'2.0',method:'ui/notifications/tool-result',params:current.result});}
+ else if(m.method==='ui/notifications/size-changed'&&m.params?.height)frame.style.height=Math.min(Math.max(m.params.height,120),1600)+'px';
+ else if(m.id!==undefined&&m.method)toView({jsonrpc:'2.0',id:m.id,error:{code:-32601,message:'Method not supported by this preview host'}});});
+$('run-check').onclick=()=>run('check_answer_text',{answer:$('first').value});
+$('run-compare').onclick=()=>run('compare_answer_texts',{before:$('first').value,after:$('retry').value});
+load();
+})();
+</script>
+</body>
+</html>

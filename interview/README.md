@@ -43,6 +43,7 @@ Tools (the server also publishes agent instructions describing the practice loop
 
 - `check_answer_text(answer, question?)` — deterministic wording checks with exact quotes and one priority. No key needed.
 - `compare_answer_texts(before, after)` — deterministic per-signal change between two takes, with before/after quotes. No key needed.
+- Both check tools link to the MCP Apps view `ui://rehearsal/answer-check` (`mcp_app/answer_check.html`) and return `structuredContent`. `/mcp-app-preview` is a minimal local reference host for it (sandboxed iframe, postMessage JSON-RPC, message log); `/api/app-resource` and `/api/app-call` back that page through the real MCP endpoint.
 - `get_practice_progress()` / `save_practice_result(question, first_answer, retry_answer?)` — opt-in local history of signal labels and counts (never answer text or audio) so an agent can start a session with context. Deleting history is an app action (`DELETE /api/progress`), deliberately not an MCP tool.
 - `get_interview_brief(session_id)` — retrieve the supplied context and recorded transcript.
 - `coach_latest_answer(session_id)` — call the model, verify quoted evidence exists in the actual answer, attach the rule checks, store the baseline and retry focus.

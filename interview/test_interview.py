@@ -87,6 +87,12 @@ class LocalIntegration(unittest.IsolatedAsyncioTestCase):
             self.assertTrue(compared.json()['result']['summary'].startswith('Moved'))
             same = await client.post('/api/compare-text', json={'before': 'We did it.', 'after': 'We did it.'})
             self.assertEqual(same.status_code, 400)
+            app_res = (await client.get('/api/app-resource')).json()
+            self.assertEqual(app_res['linked_tools'], ['check_answer_text', 'compare_answer_texts'])
+            raw = await client.post('/api/app-call', json={'name': 'compare_answer_texts', 'arguments': {'before': sample['first'], 'after': sample['retry']}})
+            self.assertIn('structuredContent', raw.json())
+            self.assertEqual((await client.post('/api/app-call', json={'name': 'save_practice_result', 'arguments': {}})).status_code, 422)
+            self.assertEqual((await client.get('/mcp-app-preview')).status_code, 200)
             progress = await client.get('/api/progress')
             self.assertEqual(progress.status_code, 200, progress.text)
             self.assertEqual(progress.json()['tool'], 'get_practice_progress')
@@ -105,6 +111,16 @@ class LocalIntegration(unittest.IsolatedAsyncioTestCase):
                 tools = (await client.list_tools()).tools
                 names = {tool.name for tool in tools}
                 self.assertTrue(all(t.annotations.readOnlyHint for t in tools if t.name.startswith(('check_', 'compare_answer', 'get_practice'))))
+                linked = {t.name for t in tools if (t.meta or {}).get('ui', {}).get('resourceUri') == server.APP_URI}
+                self.assertEqual(linked, {'check_answer_text', 'compare_answer_texts'})
+                resources = {str(r.uri): r for r in (await client.list_resources()).resources}
+                self.assertEqual(resources[server.APP_URI].mimeType, 'text/html;profile=mcp-app')
+                view = (await client.read_resource(server.APP_URI)).contents[0]
+                self.assertEqual(view.mimeType, 'text/html;profile=mcp-app')
+                self.assertIn('ui/initialize', view.text)
+                called = await client.call_tool('check_answer_text', {'answer': 'We fixed it and it worked well.'})
+                self.assertEqual(called.structuredContent['priority']['id'], 'ownership')
+                self.assertTrue(called.content[0].text)  # text fallback for hosts without MCP Apps
                 self.assertEqual(names, {'get_interview_brief', 'coach_latest_answer', 'compare_retry', 'check_answer_text', 'compare_answer_texts', 'save_practice_result', 'get_practice_progress'})
 
 if __name__ == '__main__':

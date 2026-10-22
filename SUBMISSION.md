@@ -33,6 +33,7 @@ Behavioral interviews are hard for students applying to technical internships, e
   It picks one priority for the next try.
 - You answer the same question again. **Compare first and latest take** runs `compare_answer_texts`, which shows which signals moved in the suggested direction, with before and after quotes. It says so plainly when nothing changed.
 - **Practice history across sessions (opt-in).** *Save results to my progress* stores only signal labels and counts on your computer, never your words or audio. Next time, the app (or an assistant calling `get_practice_progress`) opens with your recurring priority, for example "your own role — moved toward the suggestion on 1 retry."
+- **MCP App card.** The check tools are linked to an MCP Apps view (`ui://rehearsal/answer-check`, SEP-1865). Hosts that support MCP Apps can render the quoted findings as an interactive card instead of raw JSON. A local reference host at `/mcp-app-preview` shows the full handshake.
 - No scores, no accent or personality judgments, no hiring predictions. Every quote is an exact substring of what you said, so evidence cannot be invented.
 - An optional live mode (OpenAI Realtime voice over WebRTC, with the same MCP tools bridged as function calls) is implemented. It is **not verified end to end** because the available API key had no quota. The demo does not show it.
 
@@ -44,6 +45,10 @@ Behavioral interviews are hard for students applying to technical internships, e
   - `get_practice_progress` and `save_practice_result`: local, opt-in history of derived signals only. Deleting history is deliberately an app action, not an agent tool.
   - `get_interview_brief`: session context.
   - `coach_latest_answer` and `compare_retry`: model-written, with exact-substring quote filtering, plus rule checks attached.
+- **MCP Apps:**
+  - The check tools declare `_meta.ui.resourceUri` and return `structuredContent`.
+  - The `text/html;profile=mcp-app` resource implements the `ui/initialize` handshake, tool-input and tool-result notifications, size-changed, and host theming.
+  - We wrote a small reference host to test it, because we had no third-party host available.
 - **The web app is itself an MCP client:** its `/api/check`, `/api/compare-text` and `/api/tool` endpoints call the real MCP endpoint through the SDK's Streamable HTTP client. The browser therefore shows actual tool output, including the protocol version.
 - **Local practice:**
   - MediaRecorder with a Web Audio level meter, a two-minute cap and four takes.
@@ -149,10 +154,26 @@ Every entry below was observed during this build.
    - **Workaround:** seek to a very large time once, then back to zero.
    - **Suggestion (browser platform):** write duration metadata when recording stops.
 
+6. **FastMCP silently omits `structuredContent` for `-> dict`**
+   - **Task:** return `structuredContent` so an MCP Apps view can render tool results.
+   - **Steps:** a tool annotated `-> dict` returned only text content. Adding `structured_output=True` then failed at startup with `InvalidSignature: ... return type <class 'dict'> is not serializable for structured output`.
+   - **Expected:** a plain `dict` is treated as an object.
+   - **Actual:** with no annotation it was silently text-only; with the flag it raised an error.
+   - **Severity:** Low to Medium. MCP Apps views depend on `structuredContent`.
+   - **Workaround:** annotate `-> dict[str, Any]` and pass `structured_output=True`.
+   - **Suggestion:** accept a bare `dict` as `dict[str, Any]`, or warn when an MCP Apps-linked tool returns no `structuredContent`.
+7. **No reference host for testing MCP Apps views locally**
+   - **Task:** verify our `ui://` view before submission.
+   - **Actual:** we had no MCP Apps-capable host, so we wrote a minimal host page to run the handshake.
+   - **Severity:** Medium.
+   - **Workaround:** `/mcp-app-preview` in this repo.
+   - **Suggestion:** an official browser-based MCP Apps inspector or test host.
+
 ## Feature requests (optional)
 
 - **Alexa+ developer test console for self-hosted MCP servers.** Lets track entrants verify real voice behavior. Priority: Critical.
 - **Structured tool errors in the MCP Python SDK.** Lets clients show clean messages without parsing strings. Priority: Important.
+- **Browser-based MCP Apps test host or inspector.** Lets view authors debug the handshake without a full chat client. Priority: Important.
 - **`version` argument for FastMCP.** Lets clients identify server builds. Priority: Nice-to-have.
 
 ## What was built during the submission period

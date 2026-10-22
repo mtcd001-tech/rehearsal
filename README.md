@@ -16,6 +16,7 @@ The coaching engine is a self-hosted **MCP server** (spec **2025-11-25**, Stream
 | Check my words / compare first and latest take | Works. Your typed text goes only to the local server; deterministic rules, no AI model, no scores. |
 | Opt-in practice history across sessions (signal labels and counts only, on this computer) | Works. An agent can open a session with last time's focus via `get_practice_progress`. |
 | MCP server (7 tools) over Streamable HTTP, protocol 2025-11-25 | Works and is covered by integration tests. |
+| MCP Apps view (`ui://rehearsal/answer-check`, SEP-1865) for the check tools | Works in the included local reference host at `/mcp-app-preview`. Not yet tried in a third-party MCP Apps host. |
 | Live AI voice interview (OpenAI Realtime over WebRTC) and AI typed practice | Implemented but **not verified end to end** — the available API key had no quota. Treat as unverified. |
 
 ## Run it (about 2 minutes)
@@ -60,6 +61,14 @@ While the server runs, the endpoint is **`http://127.0.0.1:8766/mcp`** (Streamab
 | `get_interview_brief(session_id)` | No | Session context and transcript for an agent. |
 | `coach_latest_answer(session_id)` | Yes | Model-written coaching; quotes are filtered so only exact substrings of the real answer survive. Also attaches the rule checks. |
 | `compare_retry(session_id)` | Yes | Model-written retry comparison with the same quote filter. |
+
+### MCP Apps view
+
+`check_answer_text` and `compare_answer_texts` carry `_meta.ui.resourceUri = "ui://rehearsal/answer-check"` and return `structuredContent`. The resource (`text/html;profile=mcp-app`) is a self-contained card that speaks the MCP Apps postMessage protocol (`ui/initialize`, `ui/notifications/tool-input`, `ui/notifications/tool-result`, `ui/notifications/size-changed`), adapts to the host theme, and needs no network access. Hosts without MCP Apps still get the full JSON text result.
+
+Open **http://127.0.0.1:8766/mcp-app-preview** to see it rendered by a minimal reference host included in this repo: it reads the resource over MCP, loads it in a `sandbox="allow-scripts"` iframe, forwards the real tool result, and logs every JSON-RPC message.
+
+### Try it from Python
 
 Quick check with the official Python SDK (already installed by the requirements):
 
