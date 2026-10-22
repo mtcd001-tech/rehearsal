@@ -130,3 +130,6 @@ In **Interview setup**, use **Skills I want to improve** to enter one or two goa
 ### Interview round and length
 
 Setup now offers recruiter screening, behavioral, technical, or hiring manager rounds, and 5/15/30 minutes (defaults: behavioral, 15 minutes). These choices reach the research plan and AI interview/coaching context. Changing either clears a stale research plan. Voice disconnects at the chosen limit; text shows one reminder and allows you to finish. The fixed sample is unaffected. Timer behavior is covered by `node test_timer.cjs` with mocked time, not a live voice test. Browser timer scheduling can be delayed in background tabs.
+
+### Manual testing
+See docs/USER_TEST.md at repository root for the no-API test pass. Personal setup survives demo start; full reload clears page-memory setup. The page shows saved round/duration. Run node test_setup.cjs from interview for the mocked regression.

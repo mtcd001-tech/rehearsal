@@ -164,3 +164,6 @@ Optional `skills` brief field (max 1,000 chars), labeled **Skills I want to impr
 ## Latest addition: interview round and length
 
 Brief fields `round` (recruiter/behavioral/technical/hiring_manager) and `duration` (string 5/15/30) default to behavioral/15. Setup save/reopen and research invalidation include both. Research synthesis and interviewer/coaching prompts receive both. Voice browser timer disconnects at selected limit; text gives one reminder without discarding input; sample unaffected. Existing 10-minute UI cutoff replaced. Nine research Python mocks, research/practice JS mocks, syntax and new timer boundary mocks pass. No paid calls/server restart/browser or live voice verification. Next: restart, check selectors/save/reopen and live behavior after API deferral ends.
+
+## Latest: user test pass
+Demo no longer overwrites personal setup; summary shows round/duration and demo export uses fictional brief. Setup/timer/research/resume JS mocks pass. docs/USER_TEST.md contains the manual no-API checklist. Full reload clears page-memory setup. No browser QA or paid calls. Next: incorporate user test findings.

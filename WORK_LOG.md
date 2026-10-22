@@ -195,3 +195,12 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - Verification: 9 Python research tests PASS (mocked provider; includes validation and propagation); research/practice JS mocks PASS; app syntax PASS; timer boundary mocks PASS for all three lengths/modes, single notification and sample exclusion. Initial timer-file write used a duplicated interview path and failed; corrected path and test passed.
 - Limits: live/browser behavior and AI pacing unverified; browser timer can be delayed in background tabs. No paid calls or server restart.
 - Next: restart and browser-check setup save/reopen; working API access needed for real interview validation.
+
+### 2026-10-22 - IN PROGRESS: setup continuity and user test pass
+- Baseline 0c69781 clean. Found startSample replaces personal brief with sample data. Next: preserve saved setup, show round/duration summary, keep demo export fictional, add regression and practical test checklist. No paid calls.
+
+### 2026-10-22 - COMPLETE: setup continuity and user test pass
+- Fixed demo replacing personal brief; added round/duration summary; demo export uses sample brief. Added test_setup.cjs and docs/USER_TEST.md.
+- Setup/timer/research/resume JS mocks and app syntax PASS. Browser/audio unverified; no paid calls or restart. Full reload still clears setup.
+- Combined documentation command was blocked by execution policy; used patch tool and simpler documentation commands instead.
+- Next: user runs checklist; fix reported issues.

@@ -1,0 +1,10 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const code=fs.readFileSync('static/app.js','utf8');
+const start=code.slice(code.indexOf('async function startSample()'),code.indexOf('async function sampleRuleCheck('));
+const render=code.slice(code.indexOf('function renderBrief()'),code.indexOf('function openBrief('));
+const nodes=new Map();const $=id=>{if(!nodes.has(id))nodes.set(id,{value:'',textContent:''});return nodes.get(id);};
+const personal={role:'Data Engineer',company:'Example',resume:'Private experience',skills:'Clear explanations',round:'technical',duration:'5',research:'My plan'};
+const ctx={$,brief:{...personal},sample:{brief:{role:'Fictional intern'},question:'Demo question'},mode:'text',generation:1,reset:async()=>{},clock(){},addTurn(){},speak:async()=>{}};
+vm.createContext(ctx);vm.runInContext(render+start,ctx);
+(async()=>{await ctx.startSample();assert.deepEqual(ctx.brief,personal);assert.equal($('brief-skills').value,personal.skills);assert.equal($('brief-round').value,'technical');assert.equal($('brief-duration').value,'5');assert.match($('setup-summary').textContent,/Technical.*5 minutes/);
+ctx.brief={role:'Intern'};ctx.renderBrief();assert.equal($('brief-round').value,'behavioral');assert.equal($('brief-duration').value,'15');console.log('PASS: demo preserves personal setup; form restores goals/round/duration; summary and legacy defaults (mock DOM).');})().catch(e=>{console.error(e);process.exitCode=1;});
