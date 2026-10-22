@@ -1,160 +1,82 @@
-> **Continuing agent:** Read [HANDOFF.md](../HANDOFF.md), [AGENTS.md](../AGENTS.md), and [WORK_LOG.md](../WORK_LOG.md) before editing. Update the handoff and log after each meaningful milestone.
+# Rehearsal - Gemini interview practice
 
-# Rehearsal — interview practice
+Continuing agents: read ../AGENTS.md, ../HANDOFF.md and latest ../WORK_LOG.md before editing. Keep the log and snapshot current after each milestone.
 
-A practice room for behavioral interviews: an illustrated interviewer, spoken questions, feedback tied to your exact words, one priority to fix, and a retry comparison. The coaching engine is a self-hosted MCP server whose core tools are deterministic and need no API key. The repository overview is in the [root README](../README.md); the paused Trace prototype now lives in `../trace/`.
+## Run
 
-## Try it now
+From the repository root, install interview/requirements.txt into the Python 3.11+ virtual environment, then run:
 
-From D:\hackamazon:
+    .venv\Scripts\python interview\server.py
 
-```powershell
-.venv\Scripts\python interview\server.py
-```
+Open http://127.0.0.1:8766. Restart the server after configuration/backend changes; refresh the browser after UI changes. The local service is single-user and loopback-only, not ready for public hosting.
 
-Open **http://127.0.0.1:8766**. Click **Experience the sample**, then **Play sample answer**, **See the coaching**, **Try that answer again**, and **Play improved answer**. The coaching and comparison each include a panel computed live by the `check_answer_text` / `compare_answer_texts` MCP tools on the sample text. Skip narration advances the current spoken segment. Download practice notes exports only the displayed session as JSON.
+Copy .env.example to interview/.env if no .env exists, and set GEMINI_API_KEY locally. Never paste or commit the key. All active AI features use this Gemini key. GEMINI_MODEL defaults to gemini-3.5-flash; GEMINI_RESEARCH_MODEL defaults to the same. Older GEMINI_AUDIO_MODEL is a fallback only when GEMINI_MODEL is unset. INTERVIEW_PORT defaults to 8766. Explicit .env values override inherited environment values.
 
-Alternatively run `interview/start.ps1` from PowerShell. For a fresh checkout: create a Python 3.11+ virtual environment, install this directory's `requirements.txt`, then run `server.py`.
+Company research is enabled by default and only runs after a click. Set INTERVIEW_RESEARCH_ENABLED=0 to disable it. API quotas, search access and availability depend on the Google account. A key does not guarantee available quota. No automatic retry loops.
 
-## What sample mode does
+## Set up your interview
 
-- Plays an original, authored engineering-internship scenario using browser speech synthesis when supported.
-- Displays an original SVG interviewer with breathing, blinking, and speaking animation. This is an illustration, not generated human video or photorealistic lip sync.
-- Shows a first answer, an interviewer follow-up, feedback tied to exact phrases, and a clearer retry.
-- Separates structure, language clarity, and technical depth.
-- Keeps the sample in browser memory. No microphone or model API is used in this mode. The rule-check panels send the authored sample text to the local server only. Browser voice availability varies; text remains readable if speech fails. Some OS/browser voices may use their own online speech service.
-- The sample always uses its own fictional context. Editing Your brief affects subsequent live/text sessions, not the authored sample.
+Open Interview setup or Edit setup:
 
-## Live implementation and current blocker
+1. Enter company, target role and job description.
+2. Upload a resume (PDF/DOCX/UTF-8 TXT, maximum 5 MB), review the extracted text and explicitly Apply it, or paste your experience.
+3. Choose recruiter, behavioral, technical or hiring-manager round; 5/15/30-minute target; and optional Skills I want to improve.
+4. Optionally choose Research this company & build my plan. Review sources and the proposed questions, then Use this interview plan.
+5. Save interview setup. Reopening or trying the authored demo preserves it within the current page. Full reload discards setup; no browser persistence has been added.
 
-The app includes WebRTC Realtime voice, a server-side ephemeral-token endpoint, typed AI practice, and MCP tools for context, coaching, and retry comparison. **These AI paths are not verified end to end.** The configured API credential returned `429 insufficient_quota` for a minimal text request, and Realtime token setup returned HTTP 500. Work on provider access was deferred at the user's request. No further provider calls were made after that decision.
+Resume extraction runs locally in memory with a 10-second subprocess timeout. Original files are not saved. PDFs must have selectable text, be unlocked and have at most 15 pages; there is no OCR or legacy DOC support. Text is capped at 10,000 characters with a notice. Columns/tables can extract in the wrong order; review the preview.
 
-When ready, copy `.env.example` to `.env` in this directory and set a working key locally. Do not put it in a chat, browser source, screenshot, or Git commit. Restart the server. Explicit values in `.env` override inherited environment values.
+Research uses Gemini Google Search grounding with company/role only. Resume/JD/goals do not enter the search stage. The subsequent Gemini synthesis receives them to tailor the simulation. Sources are linked inline; Google's search suggestions are shown in a sandboxed frame. Official information, anecdotes and inferred practice format are distinguished by the prompt. Uncited or incomplete results are rejected. Links/evidence checks do not prove all claims accurate. Changing setup inputs clears a stale plan. This is simulated preparation, not confirmed company questions.
 
-Click Start live interview to read the data-use explanation and opt into microphone access. The standard API key stays on the server; the browser receives a short-lived client secret. Live sessions stop at the selected 5-, 15-, or 30-minute limit. End conversation closes the WebRTC connection and microphone tracks. Reset clears this app's in-memory session. This does not erase provider-side records.
+## Recorded interview - no typing required
 
-Live voice sends audio and context to OpenAI; text practice and coaching send the brief and transcript. Raw audio is not stored by this app. Live session state is in server memory, cleaned approximately two hours after creation (30-second cleanup interval), on Reset, or at server shutdown. The local service is single-user, loopback-only, and not prepared for public hosting. No analytics or webcam capture is included.
+Choose Practice my own answer. Select a built-in question or Ask a question from my setup. The latter explicitly sends your saved brief, including resume/JD if supplied, to Gemini. Hear the question reads it with browser speech.
 
-## MCP and hackathon positioning
+Enable Analyze after I stop recording (Gemini) before recording, or click Analyze my recording with Gemini on a saved take. Record -> Stop -> automatic transcript and review. This uploads the recording, question and skills to Google. The audio-review request itself does not include the resume. Browser speech voices may use an operating-system online service.
 
-Streamable HTTP endpoint: **http://127.0.0.1:8766/mcp**
+Feedback covers the answer's structure, language and technical reasoning, quotes from the generated transcript, qualitative delivery observations, one retry focus and a suggested draft. Drafts can add unsupported inferences; verify facts and fill placeholders truthfully. Delivery observations are AI estimates, not validated pronunciation, fluency, personality or hiring scores. Transcription can be wrong; correct it if needed. User edits are not overwritten by late model/caption results.
 
-Tools (the server also publishes agent instructions describing the practice loop, plus titles and read-only annotations):
+Practice this answer again restores the question and focus. Ask me a follow-up sends the selected answer transcript (including corrections) and setup to Gemini. It generates a related question without claiming to search the web. Record another answer when ready. This is turn-based recording, not continuous Gemini Live voice.
 
-- `check_answer_text(answer, question?)` — deterministic wording checks with exact quotes and one priority. No key needed.
-- `compare_answer_texts(before, after)` — deterministic per-signal change between two takes, with before/after quotes. No key needed.
-- Both check tools link to the MCP Apps view `ui://rehearsal/answer-check` (`mcp_app/answer_check.html`) and return `structuredContent`. `/mcp-app-preview` is a minimal local reference host for it (sandboxed iframe, postMessage JSON-RPC, message log); `/api/app-resource` and `/api/app-call` back that page through the real MCP endpoint.
-- `get_practice_progress()` / `save_practice_result(question, first_answer, retry_answer?)` — opt-in local history of signal labels and counts (never answer text or audio) so an agent can start a session with context. Deleting history is an app action (`DELETE /api/progress`), deliberately not an MCP tool.
-- `get_interview_brief(session_id)` — retrieve the supplied context and recorded transcript.
-- `coach_latest_answer(session_id)` — call the model, verify quoted evidence exists in the actual answer, attach the rule checks, store the baseline and retry focus.
-- `compare_retry(session_id)` — compare a new answer with the coached baseline and filter unsupported quotes.
+Recordings stop at two minutes; up to four takes stay in page memory. The chosen 5/15/30 minutes is a target session length, not a hard recording-session cutoff. Download before Reset or closing the page. WAV conversion is mono 16 kHz; upload limit is 12 MB. Server uploads are not written to disk. Failures preserve the browser recording.
 
-The web endpoints `/api/tool`, `/api/check`, and `/api/compare-text` invoke the real MCP endpoint through the SDK's Streamable HTTP client. Realtime function calls are bridged through the same gateway. Protocol **2025-11-25** was verified locally. Coaching model calls were tested with mocks, not a functioning paid API.
+Optional browser captions are separate: in Chrome they send audio to Google's speech-recognition service. They are off by default. They are not needed for Gemini review.
 
-This is an **Alexa+ experience simulation**, not an Alexa device integration. The sample alone is not a competitive demonstration of the live integration; validate an actual AI interview before submitting.
+## Text interview and coaching
 
-## Boundaries
+Gemini text interview sends setup and typed answers to Google. Review my answer uses the same Gemini key through the MCP coaching tool; it returns analysis, quoted evidence, a suggested draft and missing-detail questions. Try that answer again and Compare my retry support the revision loop. Text practice shows a reminder at the selected duration and lets you finish. Transcript-only feedback cannot assess pronunciation or spoken fluency.
 
-This is practice feedback, not a hiring decision, clinical assessment, or validated skill score. No numeric confidence, personality, accent, or employability scores are produced. Transcript-only feedback cannot assess pronunciation or audio fluency. The coach is instructed not to invent experience or performance metrics. Quote filtering prevents invented evidence snippets but does not guarantee that all generated advice is correct.
+The retired OpenAI voice path is removed from the UI. Legacy /api/token returns 410 without contacting a provider. No OpenAI key or calls are required.
 
-Prior art: [Yoodli](https://yoodli.ai/use-cases/interview-preparation) already provides interview roleplay and feedback. Rehearsal does not claim that category as novel. The intended focus is a transparent, evidence-based retry loop for technical internship communication; distinctiveness and learner impact remain to be validated.
+## Local tools and authored demo
 
-## Verification
+Experience the sample is a fictional authored scenario, not model-generated feedback about the user. It uses browser speech and the deterministic MCP rule panels. The demo exports its own fictional brief and does not overwrite personal setup.
 
-Keep the server running, then from this directory:
+Check my words uses local wording rules, exact text quotes and a revision checklist. Compare first and latest take compares the first/latest eligible takes answering the same question, never unrelated follow-ups. These counts are prompts for revision, not answer-quality scores. English word lists can miss or misclassify phrasing.
 
-```powershell
-..\.venv\Scripts\python -m unittest test_interview test_checks test_history -v
-node test_practice.cjs
-```
+Optional practice history stores only derived signal labels/counts on this computer, not answer text or audio. It is gitignored at interview/data/practice_history.json; INTERVIEW_HISTORY_FILE overrides it. Saved history persists until cleared; recordings and transcripts do not. Downloads may include transcripts and AI feedback, so review before sharing.
 
-Set `INTERVIEW_PORT` when the server under test runs on another port. For UI testing of the AI paths without paid calls, `INTERVIEW_PROVIDER_BASE_URL` can point the server at a local mock chat-completions endpoint (leave it unset in normal use; it defaults to `https://api.openai.com/v1`). Anything produced that way is mock output and must not be presented as AI feedback. 24 Python tests cover practice history (no text stored, recurring focus, corrupt-file handling, clear), the rule checks (exact-substring quotes, no score fields, honest unchanged-retry wording), evidence quote filtering, retry requirements, empty answers, transcript deduplication, provider failures, schema checks, session deletion, and HTTP plus real MCP integration (tool list, instructions, annotations, error responses). No provider request is made.
+## MCP and simulation
 
-Browser QA (October 22, 2026, desktop Chrome on Windows): the full sample flow, browser speech with skip, coaching, retry comparison, and reset/restart were exercised with no console errors, and a 390px-wide layout showed no horizontal overflow. Physical microphone recording, file downloads, real mobile devices, and the live AI paths have not been verified.
+Endpoint: http://127.0.0.1:8766/mcp (Streamable HTTP, protocol 2025-11-25).
 
-## Sources used for implementation
+- check_answer_text and compare_answer_texts: deterministic; no key.
+- save_practice_result and get_practice_progress: opt-in local history; no key.
+- get_interview_brief: session context.
+- coach_latest_answer and compare_retry: Gemini analysis; exact transcript-quote filtering.
 
-- https://developers.openai.com/api/docs/guides/voice-webrtc
-- https://developers.openai.com/api/reference/resources/realtime/subresources/client_secrets/methods/create
-- https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create
+Web check/coaching endpoints call the real MCP server. Gemini research/audio/question endpoints are separate HTTP integrations, not additional MCP tools. The seven-tool set is unchanged. Model session context/transcripts are kept in server memory for up to two hours and cleared on Reset/server shutdown; this does not erase provider records.
 
-## Still required before hackathon submission
+The MCP Apps card ui://rehearsal/answer-check is served with text/html;profile=mcp-app and tested in the included /mcp-app-preview reference host. It has not been verified in a third-party host. agent_sim.py is a scripted tool loop, not an LLM or actual Alexa connection. This remains an Alexa-style simulation; no Alexa device integration is claimed.
 
-Public GitHub repository, demo video (script in `../DEMO.md`), and final review of `../SUBMISSION.md` by the author. Live voice/AI validation needs working API access; until then the submission presents the deterministic MCP tools, local practice, and the authored sample, and labels the live path as unverified. Learner impact is not validated.
+## Verification and remaining limits
 
-## Local practice (no API key)
+Authorized live tests succeeded earlier for synthetic audio and a fictional Gemini follow-up. During the Gemini-only migration, text returned HTTP 503 and company search HTTP 429; those live paths could not be confirmed. No repeated quota retries. Mocked responses are not evidence of model quality.
 
-Choose **Practice my own answer**. Pick one of ten original behavioral questions (ownership, tradeoffs, learning, collaboration, setbacks, debugging, explaining a project, feedback, deadlines, ambiguity), optionally hear it, then **Record my answer** (microphone) or **No microphone? Type an answer**. Recording shows an activity meter and timer and stops automatically at two minutes; up to four takes are kept in the tab.
+Python tests cover provider payloads/schema validation, grounding citations and UTF-8 offsets, resume subprocess parsing, session/history/rule behavior and real local MCP integration. JS tests mock browser/media APIs, including recording, transcription updates, stale results, question changes and retry grouping. Physical microphone, browser WAV decoding/rendering, latest mobile layout and search-suggestion frame still need browser testing.
 
-For each take, write or paste what you said and press **Check my words**. The text (not the audio) is sent to this app's local server, which runs the deterministic `check_answer_text` MCP tool and shows quoted findings and one priority. After a second take with text, **Compare first and latest take** runs `compare_answer_texts`. Download practice notes exports your text, focus, check results, and comparison as JSON; recordings download separately.
+For Python integration tests, run a separate local server with isolated history, then from interview run python -m unittest discover -p test_*.py. Set its port in the environment consistently; .env values override environment settings. Individual unit modules can run without a server. JS tests run from interview using node test_practice.cjs, test_audio_review.cjs, test_gemini_questions.cjs, test_research.cjs, test_resume.cjs, test_setup.cjs, test_timer.cjs and test_recovery.cjs.
 
-Optional: tick **Draft a transcript while I speak** before recording to have the browser's speech recognition fill the take's transcript (it keeps updating briefly after you stop, and never overwrites your own edits). In Chrome, this sends audio to Google's speech service, so it is off by default and disclosed next to the checkbox. It is hidden when the browser has no speech recognition. Real recognition results have not been verified by the agent (headless Chrome returned none); logic is covered by mocked tests.
+Manual checklist: ../docs/USER_TEST.md. Demo/submission drafts: ../DEMO.md and ../SUBMISSION.md. Publication and submission are still pending.
 
-Without captions or Gemini review, audio is not uploaded or transcribed automatically. Reset, switching modes, or closing the tab discards undownloaded takes. Microphone tracks are released on stop, reset, and leaving the page.
-
-Local recording logic tests: `node test_practice.cjs` (mocked browser APIs: capture/stop, cleanup, delayed permission, permission denial, typed takes, check gating, comparison arguments, stale results after reset, take limit). In headless Chrome with Chrome's fake microphone device, a real MediaRecorder take was recorded, played (duration fixed from Chrome's WebM `Infinity`), checked, compared, and reset. A physical microphone has not been tested by the agent.
-
-## Resume upload
-
-Open **Interview setup** or **Edit setup**, then choose a PDF, DOCX, or UTF-8 TXT resume (up to 5 MB). Extraction runs locally in memory with a 10-second worker timeout; original files are not stored. Review/edit the extracted text, click **Use this text in Your experience**, then **Save interview setup**. Apply replaces the draft experience field; selecting a file alone does not overwrite it. Closing the dialog discards an unapplied import.
-
-PDFs must contain selectable text and be unlocked (maximum 15 pages); scanned PDFs need OCR elsewhere first. Legacy `.doc` files are not supported. Imports are limited to 10,000 characters with a visible truncation notice. Complex columns/tables may extract in the wrong order, so review before saving. The authored sample and local rule checks do not personalize themselves from this resume; the saved brief is context for subsequent live/text AI sessions when API access is enabled. Those sessions send the brief to the configured provider as disclosed in the app.
-
-After updating an existing checkout, install updated dependencies and restart the server:
-
-```powershell
-.venv\Scripts\python -m pip install -r interview/requirements.txt
-.venv\Scripts\python interview/server.py
-```
-
-Tests: from `interview/`, run `..\.venv\Scripts\python -m unittest test_resume -v` and `node test_resume.cjs`. Seven Python tests exercise extraction and the real subprocess endpoint, including bad inputs; JS mocks check preview/apply/stale-request behavior. Browser file-picker testing is still pending.
-
-## Tailored simulated interviews
-
-In **Interview setup**, enter the company, target role and job description, then upload or paste your resume. **Build my tailored interview** requests cited public hiring research and a proposed simulation: format, question sequence, difficulty, and project deep dives. Follow-ups and listen-for criteria are grounded in exact excerpts from your resume and the JD. Official information, candidate anecdotes and inference are requested as separate sections. Sources and advice still require your review; citation and quote checks do not establish accuracy or guarantee the interview format.
-
-**Use this research for my interview** adds reviewed context to the draft brief; **Save interview setup** makes it available to subsequent live/text sessions. Maya uses the plan to choose questions and adapt follow-ups in subsequent AI text/voice interviews; coaching uses the plan?s listen-for criteria. The authored sample/local question bank remains fixed. Changing the company, role, experience or JD clears stale research notes.
-
-Research is disabled by default while API access is deferred. Once access is ready, set `INTERVIEW_RESEARCH_ENABLED=1` in `interview/.env` and restart. `INTERVIEW_RESEARCH_MODEL` defaults to `gpt-4.1-mini`. A click makes paid web-search and synthesis calls: only company/role enter the search stage; the resume and JD are sent to the model in the subsequent synthesis stage. The research request sets `store=false`; this does not promise zero provider retention. Reports are not saved to disk by this app.
-
-Verification: `python -m unittest test_research -v` (8 tests) and `node test_research.cjs` cover citation parsing, evidence filtering, the disabled gate, provider request shape, apply and stale-result behavior with mocks. No real provider research or new browser UI has been verified. Implementation reference: https://developers.openai.com/api/docs/guides/tools-web-search
-
-### Readable setup flow
-
-Interview setup groups inputs into **1. The job you want**, **2. Your experience**, and **3. Your interview plan**. Saved plan text is under **Review or edit saved plan**. Larger text, darker labels and responsive fields improve readability. This layout has structural checks and existing mocked interaction tests; visual browser/mobile verification is pending.
-
-### Skills to develop
-
-In **Interview setup**, use **Skills I want to improve** to enter one or two goals (up to 1,000 characters), such as clear explanations, English vocabulary, technical reasoning or leadership stories. Save setup to include them in subsequent AI interview and coaching context. Research synthesis also receives these goals; public web search still receives only company/role. Changing goals clears a stale interview plan. Leaving this blank keeps general practice. The authored demo and deterministic local checks are unchanged. Live AI behavior remains unverified; transcript-only feedback cannot judge pronunciation or spoken fluency.
-
-### Interview round and length
-
-Setup now offers recruiter screening, behavioral, technical, or hiring manager rounds, and 5/15/30 minutes (defaults: behavioral, 15 minutes). These choices reach the research plan and AI interview/coaching context. Changing either clears a stale research plan. Voice disconnects at the chosen limit; text shows one reminder and allows you to finish. The fixed sample is unaffected. Timer behavior is covered by `node test_timer.cjs` with mocked time, not a live voice test. Browser timer scheduling can be delayed in background tabs.
-
-### Manual testing
-See docs/USER_TEST.md at repository root for the no-API test pass. Personal setup survives demo start; full reload clears page-memory setup. The page shows saved round/duration. Run node test_setup.cjs from interview for the mocked regression.
-
-### Answer analysis and improvement
-Local Check my words now includes an Improve your next answer revision checklist from deterministic signals. It is not a semantic assessment or AI rewrite. For AI interviews, Review my answer returns evidence-based analysis plus a suggested clearer draft and missing-detail questions. The draft is labeled for review, uses placeholders where facts are missing, and never replaces the original transcript. Instructions constrain the rewrite to the submitted answer, but generated advice still requires fact checking. AI coaching needs working API access; no paid calls were made to validate this feature.
-Failed live setup now resets the question and screen consistently, closes the setup dialog, preserves personal setup and offers local practice. HTTP 429 explains quota/rate-limit possibilities.
-
-## Gemini: review a spoken answer without typing
-
-1. Set GEMINI_API_KEY in interview/.env and restart the server. Default model: gemini-3.5-flash; override with GEMINI_AUDIO_MODEL if needed.
-2. Choose Practice my own answer and a question; Hear the question lets Maya read it aloud.
-3. Enable Analyze after I stop recording (Gemini), then record and stop. Or leave it off and click Analyze my recording with Gemini on a saved take.
-4. Read the automatic transcript, analysis, delivery observations, retry focus and suggested answer. You can correct the transcript; your original recording is preserved. Record another take to retry; Compare first and latest take remains a deterministic comparison of wording signals.
-
-The browser converts recordings to mono 16 kHz WAV. Audio, the question and skill goals are sent through the local server to Google; no resume is included. The server does not save uploaded audio. Maximum 12 MB upload; browser recordings are limited to two minutes. Gemini free-tier data may be used for product improvement. Upload failures preserve the recording for retry. No automatic retry on quota errors.
-
-Feedback is AI-generated and can be wrong. Quote filtering checks the model transcript, not ground-truth audio. Delivery observations are qualitative estimates, not validated scores. Suggested rewrites need fact checking; the live test exposed an added inference, and the prompt was tightened. OpenAI live voice and research remain separate integrations.
-
-Verification: a synthetic spoken answer was actually sent to Gemini successfully, producing a matching transcript and feedback. Audio endpoint tests and browser/audio mocks pass; real browser capture/conversion/rendering still needs user testing. Run python -m unittest test_audio_review and node test_audio_review.cjs from interview/. Documentation used: https://ai.google.dev/gemini-api/docs/audio and https://ai.google.dev/gemini-api/docs/structured-output .
-
-## Tailored Gemini questions and follow-ups
-
-In recorded practice, **Ask a question from my setup** sends the saved brief to Gemini and generates a question matching the role, resume/JD, round and skill goals. This explicitly shares the resume if supplied. **Hear the question** reads it with browser speech. The generator uses supplied context, not live web search.
-
-After audio review, **Practice this answer again** restores that question and sets the suggested focus; **Ask me a follow-up** sends the selected transcript (including your corrections) plus setup and asks a related question. Recording and review stay turn-based. Comparisons group takes by identical question, preventing a follow-up from being compared against an unrelated answer. Reset discards pending question results and the four-take set.
-
-Verification: a fictional live follow-up returned HTTP 200 with a relevant question. Full Python regression: 47 passed on a temporary server with isolated history and real MCP calls; eight JS mock test files passed. New UI/microphone browser verification is pending. Tests: test_gemini_questions.py/.cjs, plus expanded same-question checks in test_practice.cjs.
+Implementation references: https://ai.google.dev/gemini-api/docs/audio , https://ai.google.dev/gemini-api/docs/google-search , https://ai.google.dev/api/generate-content .

@@ -22,6 +22,17 @@ class AudioTests(unittest.IsolatedAsyncioTestCase):
    out=await audio_review.review_audio(b'RIFF0000WAVE','Question','Clarity')
   self.assertEqual(len(out['evidence']),1)
   payload=client.post.call_args.kwargs['json'];self.assertIn('inlineData',payload['contents'][0]['parts'][1]);self.assertNotIn('resume',payload['contents'][0]['parts'][0]['text'])
+ async def test_text_uses_same_gemini_helper(self):
+  with patch.object(server,'gemini_json',new=AsyncMock(return_value={'reply':'Hello'})) as model:
+   result=await server.model_json('Return reply',{'role':'Intern'})
+  self.assertEqual(result['reply'],'Hello')
+  self.assertIsNone(model.call_args.args[0])
+  self.assertIn('Intern',model.call_args.args[2][0]['text'])
+ async def test_legacy_live_endpoint_disabled(self):
+  async with httpx.AsyncClient(transport=httpx.ASGITransport(app=server.app),base_url='http://127.0.0.1:8766') as c:
+   r=await c.post('/api/token',json={'session_id':'obsolete'})
+   self.assertEqual(r.status_code,410)
+
  async def test_quota_error(self):
   client=AsyncMock();client.post.return_value=MagicMock(is_success=False,status_code=429);manager=AsyncMock();manager.__aenter__.return_value=client
   with patch.dict('os.environ',{'GEMINI_API_KEY':'mock'}),patch.object(audio_review.httpx,'AsyncClient',return_value=manager):

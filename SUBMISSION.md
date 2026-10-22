@@ -10,7 +10,7 @@
 - **Mini challenges:** None claimed.
 - **Repository:** **[fill in GitHub URL]** (public, MIT license detectable in the About section)
 - **Demo video:** **[fill in YouTube/Vimeo URL]** (public, under 3 minutes)
-- **Built with:** Python, FastAPI, Model Context Protocol Python SDK (`mcp` 1.30.0, FastMCP, Streamable HTTP), vanilla JavaScript, Web Speech Synthesis API, MediaRecorder and Web Audio APIs, Gemini API (recorded audio and tailored questions), OpenAI Realtime and Chat Completions APIs (optional path, unverified)
+- **Built with:** Python, FastAPI, Model Context Protocol Python SDK (`mcp` 1.30.0, FastMCP, Streamable HTTP), vanilla JavaScript, Web Speech Synthesis API, MediaRecorder and Web Audio APIs, Gemini API (audio review, tailored questions, text coaching and Google Search-grounded company research)
 
 ## Image gallery
 
@@ -47,7 +47,7 @@ Behavioral interviews are hard for students applying to technical internships, e
 - **Practice history across sessions (opt-in).** *Save results to my progress* stores only signal labels and counts on your computer, never your words or audio. Next time, the app (or an assistant calling `get_practice_progress`) opens with your recurring priority, for example "your own role — moved toward the suggestion on 1 retry."
 - **MCP App card.** The check tools are linked to an MCP Apps view (`ui://rehearsal/answer-check`, SEP-1865). Hosts that support MCP Apps can render the quoted findings as an interactive card instead of raw JSON. A local reference host at `/mcp-app-preview` shows the full handshake.
 - No scores, no accent or personality judgments, no hiring predictions. Evidence quotes are matched to the submitted text or generated transcript; transcription and advice can still be wrong.
-- An optional live mode (OpenAI Realtime voice over WebRTC, with the same MCP tools bridged as function calls) is implemented. It is **not verified end to end** because the available API key had no quota. AI typed practice was exercised only against a local mock provider, which checks our UI and MCP plumbing but not real model output. The demo shows neither.
+- All active AI features use one Gemini key. Continuous voice is not implemented. Migrated text and grounded company research passed mocked tests, but live checks returned HTTP 503 and 429 respectively; end-to-end verification is pending.
 
 ### Gemini recorded practice update
 
@@ -122,12 +122,13 @@ Gemini can transcribe the recording, analyze content and delivery qualitatively,
 - **Onboarding:** **[fill in from your own experience with the developer portal, if any]**
 - **Would we build with it again?** Yes, if an Alexa+ test harness becomes available. Practice by voice is exactly the interaction this product needs.
 
-### OpenAI Realtime API and Chat Completions (optional live path)
+### Gemini API
 
-- **Used for:** optional live voice interviewer and AI coaching. Ephemeral client secrets keep the standard key on the server.
-- **What worked well:** the WebRTC flow and client-secret design fit a browser app with a local backend.
-- **What needs work:** we could not verify it. A minimal text request returned HTTP 429 `insufficient_quota`, and the Realtime client-secret request returned HTTP 500 `server_error` with the same key.
-- **Would we build with it again?** Undecided until it can be verified.
+- **Used for:** recorded-answer transcription/review, tailored questions/follow-ups, text coaching, and Google Search-grounded company preparation.
+- **What worked:** live synthetic audio review and a fictional follow-up succeeded; structured output and evidence filtering support the coaching UI.
+- **What needs work:** migration checks hit HTTP 503 for text and HTTP 429 for search; these paths remain unverified live. Physical microphone/browser QA is pending.
+- **Onboarding:** one server-side key; no key exposed in browser code.
+- **Would we build again?** Yes for turn-based practice, subject to quota and quality checks.
 
 ### Browser APIs (Chrome): MediaRecorder, Web Audio, Speech Synthesis
 

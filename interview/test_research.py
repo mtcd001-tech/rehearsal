@@ -6,7 +6,7 @@ import research
 import server
 
 def provider_result():
-    return {'status':'completed','output':[{'type':'web_search_call'},{'type':'message','content':[{'type':'output_text','text':'Official process [1]. Formats vary.','annotations':[{'type':'url_citation','start_index':17,'end_index':20,'url':'https://example.com/careers','title':'Careers'}]}]}]}
+    return {'candidates':[{'finishReason':'STOP','content':{'parts':[{'text':'Official process. Formats vary.'}]},'groundingMetadata':{'webSearchQueries':['Example hiring'],'groundingChunks':[{'web':{'uri':'https://example.com/careers','title':'Careers'}}],'groundingSupports':[{'segment':{'endIndex':17},'groundingChunkIndices':[0]}]}}]}
 
 class ResearchTests(unittest.TestCase):
     def test_round_and_duration_validation(self):
@@ -17,16 +17,24 @@ class ResearchTests(unittest.TestCase):
 
     def test_citations_preserve_text(self):
         r=research.parse_research(provider_result())
-        self.assertEqual(''.join(x['text'] for x in r['blocks'][0]['parts']),'Official process [1]. Formats vary.')
+        self.assertEqual(''.join(x['text'] for x in r['blocks'][0]['parts'] if 'url' not in x),'Official process. Formats vary.')
         self.assertEqual(r['sources'][0]['url'],'https://example.com/careers')
+    def test_utf8_and_part_offsets(self):
+        r = provider_result()
+        r['candidates'][0]['content']['parts'] = [{'text':'Intro. '}, {'text':'Caf\u00e9 hiring.'}]
+        r['candidates'][0]['groundingMetadata']['groundingSupports'][0]['segment'] = {'partIndex':1,'endIndex':len('Caf\u00e9 hiring.'.encode('utf-8'))}
+        result = research.parse_research(r)
+        self.assertEqual(result['blocks'][0]['parts'][0]['text'],'Intro. Caf\u00e9 hiring.')
+        self.assertIn('url',result['blocks'][0]['parts'][1])
+
     def test_unsafe_or_missing_citations_rejected(self):
         for url in ['javascript:alert(1)','https://user:password@example.com','']:
-            r=provider_result();r['output'][1]['content'][0]['annotations'][0]['url']=url
+            r=provider_result();r['candidates'][0]['groundingMetadata']['groundingChunks'][0]['web']['uri']=url
             with self.assertRaises(ValueError):research.parse_research(r)
     def test_no_search_or_partial_rejected(self):
-        r=provider_result();r['output']=r['output'][1:]
+        r=provider_result();r['candidates'][0]['groundingMetadata']['webSearchQueries']=[]
         with self.assertRaises(ValueError):research.parse_research(r)
-        r=provider_result();r['status']='incomplete'
+        r=provider_result();r['candidates'][0]['finishReason']='MAX_TOKENS'
         with self.assertRaises(ValueError):research.parse_research(r)
     def test_unsupported_resume_evidence_removed(self):
         plan={'summary':'Prepare ownership stories','questions':[], 'gaps':['Ask for a measurement'], 'experience_probes':[
@@ -75,10 +83,11 @@ class ResearchAsyncTests(unittest.IsolatedAsyncioTestCase):
     async def test_search_payload_no_resume(self):
         fake=AsyncMock();response=MagicMock();response.is_success=True;response.json.return_value=provider_result();fake.post.return_value=response
         manager=AsyncMock();manager.__aenter__.return_value=fake
-        with patch.dict(os.environ,{'OPENAI_API_KEY':'test-placeholder'}),patch.object(research.httpx,'AsyncClient',return_value=manager):
-            await research.search_company('Example','Intern','https://example.invalid/responses')
+        with patch.dict(os.environ,{'GEMINI_API_KEY':'test-placeholder'}),patch.object(research.httpx,'AsyncClient',return_value=manager):
+            await research.search_company('Example','Intern')
         payload=fake.post.call_args.kwargs['json']
-        self.assertFalse(payload['store']);self.assertEqual(payload['tool_choice'],'required')
-        self.assertNotIn('resume',payload['input']);self.assertNotIn('jd',payload['input'])
+        self.assertEqual(payload['tools'],[{'google_search':{}}])
+        context=payload['contents'][0]['parts'][0]['text']
+        self.assertNotIn('resume',context);self.assertNotIn('jd',context)
 
 if __name__=='__main__':unittest.main()

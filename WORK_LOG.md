@@ -243,3 +243,17 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - Regression: ALL 47 Python tests PASS on temporary owned loopback server with scratch history and real MCP calls (model calls mocked); all eight JS test files PASS. HTML nesting, unique IDs, script existence checked. Temp server stopped; user's server untouched.
 - Limits: real browser/mic/audio conversion/rendering still pending; Gemini is turn-based, company web search still OpenAI and deferred. Four-take limit; downloaded notes may contain personal transcripts, setup is page-memory only.
 - Next: user browser-check, then resolve any failures and remaining submission tasks. See updated DEMO route. All changes ready for checkpoint commit.
+
+### 2026-10-22 - IN PROGRESS: Gemini-only migration
+- User explicitly requested all active AI features use Gemini. Baseline 0a54a79 clean. Next: text/coaching provider migration, Google-grounded company research and citations, remove OpenAI live path from UI/runtime, update configuration/tests/docs and live fictional checks. Continuous Gemini Live remains out of scope, recorded turn-based flow stays explicit.
+
+### 2026-10-22 - Gemini-only implementation checkpoint
+- Active text/coaching/comparison now shared Gemini JSON helper. Research now Google Search grounding with UTF-8/part-aware linked citations and sandboxed Search suggestions; synthesis uses Gemini. Old OpenAI calls/control path removed; legacy token endpoint returns 410.
+- Research enabled in local ignored .env at user's migration request. No keys printed. Live checks: text 503, search 429; stopped retries. Mocked migration tests pass; full regression/docs next.
+
+### 2026-10-22 - COMPLETE: Gemini-only migration
+- Purpose: one Gemini key for every active AI feature.
+- Changes: shared JSON generation for text/coaching/retry; Google Search grounded research and citations/Search suggestions; removed legacy voice controls/provider calls; token endpoint 410; config and README/submission/demo/handoff updated.
+- Verification: 50 Python tests PASS (mocked providers, real temporary local MCP integration and isolated history); all eight JS mock suites PASS; all JS syntax PASS. Test harness temporary-directory cleanup hit a Windows server.log file lock after all assertions passed; child terminate/wait completed. User server untouched.
+- Live limits: text HTTP503, search HTTP429; no retries after these failures. Earlier audio/followup successes remain distinct. No secrets printed, no personal data sent, no OpenAI calls.
+- Next: restart user app and browser/microphone-check latest controls; verify research when quota permits. Continuous Gemini Live is not implemented. Publication/submission pending.
