@@ -100,6 +100,7 @@ The user is busy and expects the agent to do most of the work. Overnight on Oct 
   - Local practice: recording with the **fake** microphone device, playback duration, check, typed take, compare, reset.
   - 390px viewport: no horizontal overflow.
   - Screenshots reviewed.
+- **Final overnight regression** (early morning Oct 22), all passing: Python 24/24; JS mocked tests; headless sample, local practice, progress, MCP App, spoken tip, and 390px checks. The agent's test servers are stopped.
 - **Not verified:** physical microphone, real phone, file-download clicks, live AI paths, and new code on the user's 8766 server (it needs a restart).
 
 ## Next priorities

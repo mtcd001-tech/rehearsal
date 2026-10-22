@@ -108,3 +108,10 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - First attempt (canvas MediaRecorder WebM) failed: headless timer throttling produced a 12 s file after ~1 h; deleted.
 - Verification: parsed AVI (RIFF/avih/strh/strf, 1542 idx1 entries all point to JPEG SOI), extracted and viewed frames at 3 s/20 s/73 s/end — captions readable, end card states live AI unverified. **Not played in an actual video player** — user must play before uploading.
 - Docs: DEMO.md fallback section, SUBMIT_CHECKLIST mention.
+
+### 2026-10-22 (early morning) — Contrast, review, final regression; end of overnight session
+- Small-text contrast raised to WCAG AA (≥4.5:1, computed) for rule checks, privacy/caption disclosures, evidence notes, and the MCP App view; screenshots refreshed. server.py import tidy after a read-through review (no logic issues found; origin/host checks, size limits, error paths reviewed).
+- README/SUBMISSION wording tightened: Alexa+ "could" call the tools (not tested with Alexa+), recording verified with fake mic only, AI typed practice exercised only against a mock, OS voices may use online speech.
+- Final regression against final code (agent server 8767, then stopped): Python 24/24 OK; JS PASS; headless Chrome sample, local recording (fake mic) + check + typed take + compare + mobile 390px + reset, progress save/reload/clear, MCP App preview both tools, spoken tip — all pass, no console errors.
+- State: everything committed on `main`; no remote. User's own 8766 server (PID 29460) still running pre-overnight code — restart needed to see changes.
+- Next action (user): follow `docs/SUBMIT_CHECKLIST.md`.
