@@ -96,3 +96,9 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - Five more practice questions (debugging, explaining a project, feedback, deadlines, ambiguity); rule-check regions `aria-live="polite"`.
 - `interview/agent_sim.py`: scripted terminal agent (not an LLM, not Alexa) running the loop via real MCP calls per server instructions; `--demo`, `--save`; integration test runs it as a subprocess.
 - Verification: Python 24/24 OK (8767 server), JS PASS, `agent_sim.py --demo` output reviewed. Repo scanned for control characters after a shell escape turned `\a` into BEL in README (fixed).
+
+### 2026-10-22 (night) — AI text-practice UI exercised against a local mock provider; cache fix
+- Added `INTERVIEW_PROVIDER_BASE_URL` (default `https://api.openai.com/v1`) so the UI can be tested against a local mock without paid calls. Mock lives only in the agent scratchpad (`mock_provider.py`, every reply prefixed `[MOCK]`); servers for this used a fake key so the real inherited key was never sent.
+- Headless Chrome, AI text practice against the mock: start → answer → Review my answer (coach_latest_answer via MCP; the invented quote was filtered; rule checks rendered inside AI coaching) → retry → Compare my retry (compare_retry) and new deterministic "RULE CHECK · SAME TWO ANSWERS" panel. No console errors. This verifies UI/MCP glue only — **not** real AI quality or the provider.
+- Found stale-JS caching (Chrome reused an older app.js). Server now sends `Cache-Control: no-cache` for `/`, `/static/*`, `/mcp-app-preview` (ETag revalidation).
+- Tests: Python 24/24 OK; JS PASS. Live WebRTC voice path still untested (needs the real Realtime service).

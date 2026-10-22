@@ -26,6 +26,10 @@ from sample import SAMPLE
 ROOT = Path(__file__).parent
 load_dotenv(ROOT / '.env', override=True)
 PORT = int(os.getenv('INTERVIEW_PORT', '8766'))
+
+def provider_url(path):
+    # Override only for local testing against a mock provider; defaults to the real OpenAI API.
+    return os.getenv('INTERVIEW_PROVIDER_BASE_URL', 'https://api.openai.com/v1').rstrip('/') + path
 sessions = {}
 INSTRUCTIONS = ('Rehearsal coaches behavioral interview practice. Loop: ask one question, let the candidate answer fully, call check_answer_text '
                 'on their exact words, tell them the single priority with one quoted phrase, ask them to answer the same question again, then call '
@@ -98,7 +102,7 @@ async def model_json(system, payload):
     if not key:
         raise ValueError('Add a working OPENAI_API_KEY to interview/.env, then restart. Sample mode needs no key.')
     async with httpx.AsyncClient(timeout=50) as client:
-        response = await client.post('https://api.openai.com/v1/chat/completions', headers={'Authorization': f'Bearer {key}'}, json={
+        response = await client.post(provider_url('/chat/completions'), headers={'Authorization': f'Bearer {key}'}, json={
             'model': os.getenv('INTERVIEW_TEXT_MODEL', 'gpt-4.1-mini'),
             'messages': [{'role': 'system', 'content': system}, {'role': 'user', 'content': json.dumps(payload)}],
             'response_format': {'type': 'json_object'}, 'max_tokens': 1600,
@@ -225,6 +229,8 @@ async def local_access(request: Request, call_next):
     response = await call_next(request)
     if request.url.path.startswith('/api/'):
         response.headers['Cache-Control'] = 'no-store'
+    elif request.url.path == '/' or request.url.path.startswith('/static/') or request.url.path == '/mcp-app-preview':
+        response.headers['Cache-Control'] = 'no-cache'  # revalidate so an updated app is never served stale
     return response
 
 @app.exception_handler(ValueError)
@@ -351,7 +357,7 @@ async def token(body: SessionRef):
         ('coach_latest_answer', 'Get evidence-based coaching on the latest saved candidate answer.'),
         ('compare_retry', 'Compare the latest candidate answer with their coached baseline.')]]
     async with httpx.AsyncClient(timeout=30) as client:
-        r = await client.post('https://api.openai.com/v1/realtime/client_secrets', headers={'Authorization': f'Bearer {key}'}, json={
+        r = await client.post(provider_url('/realtime/client_secrets'), headers={'Authorization': f'Bearer {key}'}, json={
             'expires_after': {'anchor': 'created_at', 'seconds': 60},
             'session': {'type': 'realtime', 'model': os.getenv('INTERVIEW_VOICE_MODEL', 'gpt-realtime'), 'instructions': instructions,
                         'max_output_tokens': 700, 'tools': tools,
