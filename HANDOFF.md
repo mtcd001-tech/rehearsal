@@ -58,7 +58,7 @@ Known risks: qualitative model advice/transcripts can be wrong; English rule lis
 - `docs/SUBMIT_CHECKLIST.md` has the user's 5-minute mic test as step 1.
 - The gallery was renamed to `docs/screenshots/01–10`, with new real captures for home, setup, consent, room and mobile.
 
-**The single most important remaining verification:** the user's own 5-minute interview with a physical microphone. After that come publishing, the video and Devpost (user actions).
+**Real-mic interview VERIFIED by the user (Oct 22):** Maya spoke, heard them, followed up, transcript captured. The final review hit a Gemini 503 (now retried automatically). Research is still 429. The server is no longer a hidden process; the user runs it in their own terminal. After that come publishing, the video and Devpost (user actions).
 
 ## Current milestone: focused full interview room
 

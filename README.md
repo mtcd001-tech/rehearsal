@@ -23,7 +23,7 @@ The coaching engine is a self-hosted **MCP server** (spec **2025-11-25**, Stream
 | MCP server (7 tools) over Streamable HTTP, protocol 2025-11-25 | Works and is covered by integration tests. |
 | Terminal voice-assistant simulation (`interview/agent_sim.py`) driving the loop over MCP | Works; scripted, not an LLM. Covered by an integration test. |
 | MCP Apps view (`ui://rehearsal/answer-check`, SEP-1865) for the check tools | Works in the included local reference host at `/mcp-app-preview`. Not yet tried in a third-party MCP Apps host. |
-| Gemini Live timed interview | 5/15/30-minute hands-free voice mode with end-only debrief. A live session with synthetic speech succeeded, and the room UI was checked in real Chrome with a mocked transport. **A full session with a physical microphone (especially 30 minutes) is not yet verified.** |
+| Gemini Live timed interview | 5/15/30-minute hands-free voice mode with end-only debrief. **Works with a physical microphone** (Maya speaks, hears you, follows up; transcript captured). A full 30-minute run is not yet verified. The debrief depends on Gemini availability; transient 5xx errors are retried. |
 | Gemini recorded-answer review and tailored questions | Live synthetic-audio and fictional follow-up tests succeeded; text generation re-verified live on Oct 22. Physical-microphone recording through Gemini review not yet verified. |
 | Gemini text interview and coaching | Same Gemini key; text generation verified live (Oct 22, fictional brief). |
 | Company research (Google Search grounding) | Implemented; **not verified live** — returned HTTP 429 on this key. |

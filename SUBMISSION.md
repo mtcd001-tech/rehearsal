@@ -117,8 +117,8 @@ The most common problem in real answers is specific. People say "we worked on it
 | Part | Status |
 |---|---|
 | Deterministic MCP tools, MCP Apps view, authored demo | Verified in a real browser and by integration tests. |
-| Gemini Live interview | A live session with synthetic, fictional speech worked: Maya's audio, two model turns, the candidate transcript and a clean end. The room UI was checked in real Chrome with a mocked transport. **A full session with a physical microphone, especially a 30-minute run, has not been verified.** |
-| Post-interview debrief | Verified live once on a fictional transcript. |
+| Gemini Live interview | **Verified with a physical microphone** (author's run, Oct 22): Maya spoke, heard the answers, asked follow-ups on what was said, and the transcript was captured. Earlier synthetic-speech tests passed too. **A full 30-minute run has not been verified.** |
+| Post-interview debrief | Verified live once on a fictional transcript. On the author's real run it hit Gemini HTTP 503 (provider overload); transient errors are now retried automatically. |
 | Recorded-answer review, tailored questions and follow-ups | Verified live with synthetic and fictional input. Gemini text generation was re-verified on Oct 22 with a fictional brief. |
 | Company research (Google Search grounding) | **Not verified live.** It repeatedly returned HTTP 429 on this key, and we did not retry in a loop. |
 | Alexa+ itself | Not testable by entrants. This is a simulation plus a self-hosted MCP server. |

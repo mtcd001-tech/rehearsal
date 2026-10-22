@@ -331,3 +331,9 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - Changes: `audio_review.gemini_json` retries transient 500/502/503/504 and network errors up to 3 attempts (2 s, 5 s; Retry-After honored, capped 10 s); 429 never retried; clearer messages ("temporarily unavailable ... nothing was lost"). New `max_tokens` arg; post-interview review uses 12288 (was 4096) to avoid truncated debriefs on long interviews. Applies to all Gemini generateContent features.
 - Tests: 3 new unit tests (503→success, bounded give-up, network retry) + quota not retried; full regression on isolated no-key copy: 62 Python OK, 9 JS suites PASS.
 - User's 8766 server still runs pre-fix backend; restarting it clears in-memory interview sessions — user should download the transcript first (or press Try analysis again on the current server).
+
+### 2026-10-22 (evening) - User confirmed real-microphone interview works
+- User report: in the interview room Maya spoke, heard them, asked follow-ups; transcript captured. Only the final review failed (Gemini 503). First physical-mic verification of the Live path. 30-minute run still unverified.
+- User couldn't start the server: port 8766 held by the hidden server Codex had started (PID 28948, interview/server.py). Stopped it at user's request; port free. User restarts with the current code.
+- Research button returned 400 = our wrapper around Gemini Search-grounding HTTP 429 (quota), consistent with earlier checks.
+- SUBMISSION/README verification rows updated.
