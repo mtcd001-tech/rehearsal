@@ -15,6 +15,18 @@ Only show what works today: the authored sample, the live rule checks, local pra
 | 2:15–2:40 | Open `http://127.0.0.1:8766/mcp-app-preview` (footer link *MCP App preview*), click **Call check_answer_text**; point at the card and the JSON-RPC log (`ui/initialize` → `tool-result`). Optionally run `.venv\Scripts\python interview\agent_sim.py --demo` to show an assistant-style turn order with real tool calls. | "It's a self-hosted MCP server — spec 2025-11-25 over Streamable HTTP, with instructions and read-only annotations for agents. The web app is an MCP client of the same tools, so Alexa+ or any agent can run this loop by voice." |
 | 2:40–2:50 | Back to the app; README "What works today" table. | "Live AI voice is built but unverified, and we say so. Rehearsal: one change at a time, with proof." |
 
+## Fallback: silent captioned walkthrough
+
+If there is no time to record, use `demo-video/rehearsal-demo-captioned.avi`:
+
+- 1:43 long, 1280×720, 15 fps, Motion-JPEG, 126 MB, **no audio**.
+- A captioned capture of the real app following this flow, with an intro card and an honest end card.
+- Rendered in headless Chrome from screencast frames.
+- The file structure was validated, but the agent could not play it in a video player. **Play it once before uploading** (for example in VLC or Windows Media Player). YouTube accepts AVI.
+- It is git-ignored, so it is not in the repository.
+
+A narrated recording of your own is stronger. Judges respond to a real voice, and the browser speech is not audible in the capture.
+
 ## Recording checklist
 
 - [ ] Server started from a fresh terminal; page reloaded before recording.

@@ -102,3 +102,9 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - Headless Chrome, AI text practice against the mock: start → answer → Review my answer (coach_latest_answer via MCP; the invented quote was filtered; rule checks rendered inside AI coaching) → retry → Compare my retry (compare_retry) and new deterministic "RULE CHECK · SAME TWO ANSWERS" panel. No console errors. This verifies UI/MCP glue only — **not** real AI quality or the provider.
 - Found stale-JS caching (Chrome reused an older app.js). Server now sends `Cache-Control: no-cache` for `/`, `/static/*`, `/mcp-app-preview` (ETag revalidation).
 - Tests: Python 24/24 OK; JS PASS. Live WebRTC voice path still untested (needs the real Realtime service).
+
+### 2026-10-22 (night) — Silent captioned fallback demo video
+- Produced `demo-video/rehearsal-demo-captioned.avi` (git-ignored): 1:43, 1280×720, 15 fps MJPEG, 126 MB, no audio. Pipeline (agent scratchpad): CDP `Page.startScreencast` while driving the real app on 8767 (sample → live rule check → retry comparison → typed takes → check → compare → save progress → MCP App preview), then deterministic per-frame composition in Chrome canvas (captions + intro/outro cards) and a hand-written MJPEG AVI muxer in Node (no ffmpeg available).
+- First attempt (canvas MediaRecorder WebM) failed: headless timer throttling produced a 12 s file after ~1 h; deleted.
+- Verification: parsed AVI (RIFF/avih/strh/strf, 1542 idx1 entries all point to JPEG SOI), extracted and viewed frames at 3 s/20 s/73 s/end — captions readable, end card states live AI unverified. **Not played in an actual video player** — user must play before uploading.
+- Docs: DEMO.md fallback section, SUBMIT_CHECKLIST mention.

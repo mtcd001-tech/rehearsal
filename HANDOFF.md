@@ -117,6 +117,12 @@ The user-facing morning steps are in `docs/SUBMIT_CHECKLIST.md`. The GitHub CLI 
    - Try the MCP App in a real MCP Apps host if the user has one.
 4. Never claim live AI works until it is verified with a working key and the user allows paid calls.
 
+## Demo video fallback
+
+- `demo-video/rehearsal-demo-captioned.avi` is git-ignored: 1:43, silent, captioned, MJPEG at 126 MB.
+- Its structure has been validated, but it has never been played in a player.
+- To regenerate it, use the scripts in the agent scratchpad (`make_video.mjs` with CAPTURE_ONLY=1, then `render_avi.mjs`). Those are session-local and may be gone; the approach is described in WORK_LOG.
+
 ## Known risks
 
 - Rule checks use English word lists. They can misfire ("profiled" counts as verification) and will miss paraphrases. They are presented as prompts, not judgments.

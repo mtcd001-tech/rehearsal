@@ -47,7 +47,7 @@ Commits are authored by your git identity only (Minh Dau).
 
 ## 4. Record the demo (20–30 min)
 
-- Follow `DEMO.md`. Keep it **under 3:00**.
+- Follow `DEMO.md`. Keep it **under 3:00**. If short on time, a silent captioned fallback is in `demo-video/rehearsal-demo-captioned.avi` (play it first; narrated is better).
 - Upload to YouTube or Vimeo as **Public**.
 - Use no copyrighted music.
 
