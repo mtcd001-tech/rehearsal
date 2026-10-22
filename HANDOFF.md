@@ -104,6 +104,9 @@ The user is busy and expects the agent to do most of the work. Overnight on Oct 
 
 ## Next priorities
 
+The user-facing morning steps are in `docs/SUBMIT_CHECKLIST.md`. The GitHub CLI (`gh`) is not installed, so publishing goes through github.com plus `git push`.
+
+
 1. The user should restart their server, try the sample and Practice-my-own-answer with a real microphone, then review `README.md`, `SUBMISSION.md`, and `DEMO.md`.
 2. User actions needed:
    - Create a public GitHub repo and push. Ensure the MIT license shows in About.
