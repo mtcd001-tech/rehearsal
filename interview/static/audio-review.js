@@ -25,6 +25,9 @@ function attach(card,t,text,isCurrent,auto,skills){
  for(const [title,key] of [['What you said','transcript'],['Overall feedback','summary'],['What worked','strength'],['Structure','structure'],['Language clarity','language'],['Technical reasoning','knowledge'],['Delivery observations (AI estimate)','delivery'],['Your next improvement','retry_focus'],['Suggested answer - verify facts and fill brackets','improved_answer']]){box.append(el('h3',title),el('p',data[key]));}
  for(const e of data.evidence||[])box.append(el('blockquote',e.quote),el('p',e.observation+' '+e.suggestion));
  for(const q of data.missing_details||[])box.append(el('p','Detail to add: '+q));box.append(el('p',data.source));
+ const retry=el('button','Practice this answer again');retry.className='secondary';retry.onclick=()=>{if(window.localPractice?.chooseQuestion(t.question)){$('local-focus').value=data.retry_focus||'';speak(t.question);}};box.append(retry);
+ if(window.practiceQuestions){const next=el('button','Ask me a follow-up');next.className='secondary';next.onclick=()=>window.practiceQuestions.followup(t);box.append(next);}
+
  if(text.value===original&&!t.userEdited){text.value=data.transcript;text.oninput();}
  status.textContent='Review ready. Record another take to practice the improvement. Your original audio is unchanged.';
  }catch(e){if(isCurrent())status.textContent=e.message+' Your recording is still available.';}finally{if(isCurrent())button.disabled=false;}};

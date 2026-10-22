@@ -26,6 +26,7 @@ from sample import SAMPLE
 from resume_import import MAX_BYTES
 from research import search_company, validate_plan, PLAN_PROMPT
 from audio_review import review_audio, MAX_AUDIO_BYTES
+from gemini_questions import practice_question
 
 ROOT = Path(__file__).parent
 load_dotenv(ROOT / '.env', override=True)
@@ -63,6 +64,12 @@ class Brief(BaseModel):
     skills: str = Field(default='', max_length=1000)
     round: Literal['recruiter', 'behavioral', 'technical', 'hiring_manager'] = 'behavioral'
     duration: Literal['5', '15', '30'] = '15'
+
+class PracticeQuestionRequest(BaseModel):
+    brief: Brief
+    previous_question: str = Field(default='', max_length=1000)
+    previous_answer: str = Field(default='', max_length=12000)
+    asked: list[str] = Field(default_factory=list, max_length=20)
 
 class Turn(BaseModel):
     session_id: str
@@ -263,6 +270,13 @@ def home():
 @app.get('/api/sample')
 def sample():
     return SAMPLE
+
+@app.post('/api/practice-question')
+async def tailored_practice_question(body: PracticeQuestionRequest):
+    if any(len(q) > 1000 for q in body.asked):
+        raise ValueError('Previous questions must each be 1,000 characters or less.')
+    return await practice_question(body.brief.model_dump(), body.previous_question,
+                                   body.previous_answer, body.asked)
 
 @app.post('/api/audio-review')
 async def audio_review(request: Request, question: str = '', skills: str = ''):

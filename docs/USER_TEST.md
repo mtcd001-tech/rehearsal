@@ -12,3 +12,7 @@ Restart the existing server, then open http://127.0.0.1:8766 and refresh. No pai
 Report step number, clicked control, expected result, actual result and exact error. Screenshots help with layout; hide private details.
 
 Setup lives in page memory. Full reload clears it; close/reopen and mode changes should preserve it. Live AI quality and selected voice time limits need a later API-enabled test.
+
+## Gemini pass (API now configured)
+
+After restarting, save a fictional setup and open Practice my own answer. Click Ask a question from my setup, then Hear the question. Enable automatic Gemini analysis, record 20 seconds, stop and wait for transcript/feedback. Practice this answer again should restore that exact question; Ask me a follow-up should prepare a question based on your answer. A follow-up must not be compared as a retry of a different question. Confirm Reset clears takes and late results do not reappear. These actions send disclosed context/audio to Google.

@@ -10,7 +10,7 @@
 - **Mini challenges:** None claimed.
 - **Repository:** **[fill in GitHub URL]** (public, MIT license detectable in the About section)
 - **Demo video:** **[fill in YouTube/Vimeo URL]** (public, under 3 minutes)
-- **Built with:** Python, FastAPI, Model Context Protocol Python SDK (`mcp` 1.30.0, FastMCP, Streamable HTTP), vanilla JavaScript, Web Speech Synthesis API, MediaRecorder and Web Audio APIs, OpenAI Realtime and Chat Completions APIs (optional path, unverified)
+- **Built with:** Python, FastAPI, Model Context Protocol Python SDK (`mcp` 1.30.0, FastMCP, Streamable HTTP), vanilla JavaScript, Web Speech Synthesis API, MediaRecorder and Web Audio APIs, Gemini API (recorded audio and tailored questions), OpenAI Realtime and Chat Completions APIs (optional path, unverified)
 
 ## Image gallery
 
@@ -30,7 +30,7 @@ Behavioral interviews are hard for students applying to technical internships, e
 ## What it does
 
 - An illustrated virtual interviewer, Maya, asks a behavioral question and speaks it with the browser's speech synthesis. After a check, she can say the tip aloud, quoting your own words.
-- You answer. In the sample you hear a realistic first answer; in practice mode you record yourself (audio stays in the browser) or type your answer.
+- You answer. In the sample you hear a realistic first answer; in practice mode you record yourself (audio stays local unless you request Gemini analysis or browser captions) or type your answer.
 - **Check my words** runs the `check_answer_text` MCP tool. It quotes your exact phrases and flags:
   - whether your own role is clear ("I" versus "we"),
   - concrete "I + action" phrases,
@@ -46,8 +46,12 @@ Behavioral interviews are hard for students applying to technical internships, e
 - **Optional live captions.** You can opt in to letting the browser's speech recognition draft your transcript while you record, so a spoken answer can be checked without typing. In Chrome this uses Google's online speech service, and the checkbox says so.
 - **Practice history across sessions (opt-in).** *Save results to my progress* stores only signal labels and counts on your computer, never your words or audio. Next time, the app (or an assistant calling `get_practice_progress`) opens with your recurring priority, for example "your own role — moved toward the suggestion on 1 retry."
 - **MCP App card.** The check tools are linked to an MCP Apps view (`ui://rehearsal/answer-check`, SEP-1865). Hosts that support MCP Apps can render the quoted findings as an interactive card instead of raw JSON. A local reference host at `/mcp-app-preview` shows the full handshake.
-- No scores, no accent or personality judgments, no hiring predictions. Every quote is an exact substring of what you said, so evidence cannot be invented.
+- No scores, no accent or personality judgments, no hiring predictions. Evidence quotes are matched to the submitted text or generated transcript; transcription and advice can still be wrong.
 - An optional live mode (OpenAI Realtime voice over WebRTC, with the same MCP tools bridged as function calls) is implemented. It is **not verified end to end** because the available API key had no quota. AI typed practice was exercised only against a local mock provider, which checks our UI and MCP plumbing but not real model output. The demo shows neither.
+
+### Gemini recorded practice update
+
+Gemini can transcribe the recording, analyze content and delivery qualitatively, and suggest a revised draft with missing-detail prompts. Saved setup can guide questions; a reviewed answer can generate a follow-up. Uploads and setup sharing are disclosed and explicitly selected. This is turn-based practice, not a continuous live voice session. Separate live tests succeeded using synthetic speech and fictional context; physical microphone/browser integration remains to be verified. Generated rewrites require fact checking. The Gemini endpoints are separate from the deterministic MCP tools.
 
 ## How we built it
 
@@ -72,13 +76,13 @@ Behavioral interviews are hard for students applying to technical internships, e
   - Sessions live in memory with expiry.
   - Live mode asks for explicit consent before any audio is sent, and the API key stays on the server.
 - **Tests:**
-  - 24 Python tests: rule checks, practice history, quote filtering, session handling, and HTTP plus real MCP integration.
+  - 47 Python tests: rule checks, practice history, quote filtering, session handling, and HTTP plus real MCP integration.
   - Mocked browser-API tests for recording, typed takes, checks and reset.
   - Headless Chrome checks with Chrome's fake microphone device.
 
 ## Challenges
 
-- **No API access during the build.** A minimal request returned `429 insufficient_quota`. So the coaching loop needed to work without any model. Deterministic rules turned out to be a better default for trust anyway: they never invent evidence.
+- **OpenAI API access blocked during the initial build.** A minimal request returned `429 insufficient_quota`. So the coaching loop needed to work without any model. Deterministic rules turned out to be a better default for trust anyway: they never invent evidence.
 - **MCP errors became HTTP 500.** Errors raised inside the MCP client context reached our web endpoints as an `ExceptionGroup`, so every tool error showed up as "Internal Server Error." See the friction log.
 - **Honest labels.** Keeping the authored sample, the deterministic checks and the unverified AI path clearly separated in the UI took deliberate design.
 

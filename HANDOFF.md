@@ -1,6 +1,6 @@
 # Start here: Rehearsal agent handoff
 
-Last updated: **October 22, 2026, readability milestone** (user timezone: America/New_York).
+Last updated: **October 22, 2026, Gemini tailored-question milestone** (user timezone: America/New_York).
 
 ## Objective and user expectations
 
@@ -178,3 +178,13 @@ User authorized Gemini testing after saving key in gitignored interview/.env. Im
 Default GEMINI_AUDIO_MODEL=gemini-3.5-flash. Live synthetic speech test SUCCESS: matching transcript, feedback, 3 valid evidence snippets. Earlier listed models returned 404/503. Draft contained an inference about a missing index, so prompt tightened; generated draft must still be checked. No personal user recording/resume sent. Test WAV is gitignored in interview/data/gemini-test.wav. Key never printed.
 
 Tests: 4 audio Python tests plus 8 coach tests PASS (mocks), audio frontend mocks PASS (WAV/transcript/edit preservation/stale result), existing practice JS PASS, syntax PASS. Real browser microphone/conversion/rendering remains unverified. No user server restart. OpenAI live voice/text and company research still use OpenAI; Gemini recorded review is separate, not continuous Gemini Live conversation. Next: restart server and user tests Practice my own answer -> enable Gemini auto analysis -> Record -> Stop -> review -> retry. Continue adapting questions/company research to Gemini only as a subsequent task.
+
+## Latest completed milestone: Gemini question -> recording -> follow-up
+
+User said to keep working and will review later. Added shared gemini_json helper, gemini_questions.py, POST /api/practice-question and static/practice-questions.js. In recorded practice, Ask a question from my setup explicitly sends saved brief (including resume/JD if supplied). Generated question appears on stage; Hear the question reads it. Audio review includes Practice this answer again (restores question/focus) and Ask me a follow-up (uses corrected transcript if present). No web search is performed by Gemini question generation. OpenAI live button is now labeled OpenAI live voice.
+
+Retry comparisons and history group the latest eligible take with other takes answering exactly the same question. New question requests ignore stale results after Reset, and cannot change questions during recording. Four-take limit still applies.
+
+Verification: live fictional follow-up HTTP 200, grounded in benchmarking/index tradeoffs. FULL Python regression 47/47 PASS against an owned temporary loopback server with scratch history; real MCP calls included, providers mocked in regression. Temporary server stopped. Eight JS test files PASS; HTML balanced/unique IDs/scripts checked. Browser UI/real microphone/conversion remain unverified; prior live audio test was synthetic. No personal user data used in provider testing and no OpenAI calls.
+
+README, interview README, SUBMISSION and DEMO updated to distinguish the working Gemini backend from no-key MCP tools and unverified OpenAI voice. Demo now has a Gemini route with explicit browser preflight. Next: user browser test on restarted app, fix findings; optionally migrate company research to Gemini later. Do not claim the model generates verified company questions or guarantees factual rewrites.

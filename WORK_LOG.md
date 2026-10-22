@@ -229,3 +229,17 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - Tests: 12 Python audio/coach tests PASS (mocked); audio JS WAV/lifecycle tests PASS; existing practice mocks PASS and JS syntax PASS. No secret printed or personal data sent.
 - Limits: physical mic/browser decoding/rendering unverified; qualitative AI delivery feedback and rewrites may be incorrect. OpenAI flows unchanged/deferred. User server not restarted.
 - Next: user tests recording -> automatic Gemini review -> spoken retry after restarting server. Default model is configured in code/example, key stays in ignored .env.
+
+### 2026-10-22 - IN PROGRESS: tailored Gemini questions and follow-ups
+- User authorized continued development. Baseline c5c44f9 clean. Next: shared Gemini JSON call, tailored-question endpoint using saved setup, per-answer follow-up, retry same question, same-question comparison, lifecycle tests and synthetic live check. Only fictional context in provider tests.
+
+### 2026-10-22 - Question flow checkpoint
+- Added Gemini question/follow-up endpoint and explicit setup-data disclosure, per-recording follow-up and same-question retry actions. Comparisons now group takes by question.
+- Live fictional follow-up request HTTP 200; response probed benchmarking/index tradeoffs grounded in the answer. 6 Python questions/audio tests and question/audio/practice JS mocks passed. Next: full regression, docs and commit.
+
+### 2026-10-22 - COMPLETE: tailored Gemini question and follow-up loop
+- Changes: shared Gemini JSON helper, question schema/service/API, explicit setup-sharing question button, selected-answer follow-ups, same-question retry/focus action, comparison grouping. Updated eight UI/server/docs files plus question tests and demo/submission docs.
+- Live verification: fictional follow-up HTTP 200; model asked about benchmarking and index tradeoffs grounded in supplied answer. No personal data sent, no OpenAI calls.
+- Regression: ALL 47 Python tests PASS on temporary owned loopback server with scratch history and real MCP calls (model calls mocked); all eight JS test files PASS. HTML nesting, unique IDs, script existence checked. Temp server stopped; user's server untouched.
+- Limits: real browser/mic/audio conversion/rendering still pending; Gemini is turn-based, company web search still OpenAI and deferred. Four-take limit; downloaded notes may contain personal transcripts, setup is page-memory only.
+- Next: user browser-check, then resolve any failures and remaining submission tasks. See updated DEMO route. All changes ready for checkpoint commit.

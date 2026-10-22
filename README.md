@@ -14,13 +14,14 @@ The coaching engine is a self-hosted **MCP server** (spec **2025-11-25**, Stream
 |---|---|
 | Authored sample interview (animated interviewer, browser speech, coaching, retry, comparison) | Works. The sample answers and the main coaching card are **written by hand** and labelled as such. |
 | Rule checks on the sample answers | Works. Computed live by the MCP tools `check_answer_text` and `compare_answer_texts` every time the sample runs. |
-| Practice with your own answer: record audio locally, or type an answer | Works (recording verified with Chrome's fake microphone device; try your own mic). Audio stays in the browser tab unless you opt into captions. |
+| Practice with your own answer: record audio locally, or type an answer | Works (recording verified with Chrome's fake microphone device; try your own mic). Audio stays local unless you select Gemini review or browser captions. |
 | Optional browser captions while recording (opt-in) | Implemented and unit-tested with a mocked recognizer; real speech results not yet verified. |
 | Check my words / compare first and latest take | Works. Your typed text goes only to the local server; deterministic rules, no AI model, no scores. |
 | Opt-in practice history across sessions (signal labels and counts only, on this computer) | Works. An agent can open a session with last time's focus via `get_practice_progress`. |
 | MCP server (7 tools) over Streamable HTTP, protocol 2025-11-25 | Works and is covered by integration tests. |
 | Terminal voice-assistant simulation (`interview/agent_sim.py`) driving the loop over MCP | Works; scripted, not an LLM. Covered by an integration test. |
 | MCP Apps view (`ui://rehearsal/answer-check`, SEP-1865) for the check tools | Works in the included local reference host at `/mcp-app-preview`. Not yet tried in a third-party MCP Apps host. |
+| Gemini recorded-answer review and tailored questions | Live synthetic audio and fictional follow-up tests succeeded. Browser microphone/conversion/UI testing is still pending. |
 | AI typed practice (OpenAI Chat Completions) | UI and MCP flow exercised against a local **mock** provider; real model output **not verified** — the available API key had no quota. |
 | Live AI voice interview (OpenAI Realtime over WebRTC) | Implemented but **not verified end to end**. Treat as unverified. |
 
@@ -47,7 +48,7 @@ python3 -m venv .venv
 .venv/bin/python interview/server.py
 ```
 
-Open **http://127.0.0.1:8766**. No API key or account is needed.
+Open **http://127.0.0.1:8766**. The sample and rule checks need no key. Gemini recording review and tailored questions require GEMINI_API_KEY in interview/.env.
 
 1. **Experience the sample** → *Play sample answer* → *See the coaching*. Under the authored coaching card, a panel shows what the `check_answer_text` MCP tool found in the sample answer, with quotes.
 2. *Try that answer again* → *Play improved answer*. The comparison shows the authored before/after pairs and a panel computed by `compare_answer_texts`.
@@ -103,14 +104,14 @@ asyncio.run(main())
 
 ## Why the checks are rules, not a model
 
-Interview feedback is only useful if you can trust it. Every quote Rehearsal shows is sliced from your own words, so evidence cannot be invented. The rules never produce a score, never comment on accent or personality, and say "text only, not an audio fluency measurement" where that matters. When the AI coaching path is enabled, its quotes go through the same exact-substring filter.
+Interview feedback is only useful if you can trust it. Evidence quotes are checked against the submitted text or generated transcript. A model transcript can be mistaken, so this does not establish that the audio was transcribed accurately or the advice is correct. The rules never produce a score, never comment on accent or personality, and say "text only, not an audio fluency measurement" where that matters. When the AI coaching path is enabled, its quotes go through the same exact-substring filter.
 
 The rules are intentionally simple English word lists. They can miss things or misfire (for example, "profiled" counts as checking your work). They are prompts for a better retry, not a judgment of the answer.
 
 ## Privacy
 
 - Sample mode sends nothing anywhere except to the local server for the rule-check panels. (Some operating-system speech voices use an online service of their own.)
-- Local practice keeps audio in the browser tab. Only text you choose to check is sent, and only to `127.0.0.1`.
+- Recording is local until you request Gemini review. Review sends audio/question/skill goals to Google; tailored questions additionally send the saved brief, and follow-ups send the selected transcript. These actions are disclosed and opt-in. Free-tier data may be used to improve Google products. Rule checks send text only to the local server.
 - Exception you must opt into: *Draft a transcript while I speak* uses the browser's speech recognition. In Chrome that sends your audio to Google's speech service. It is off by default and labelled on screen.
 - The server binds to loopback, rejects other hosts and origins, and keeps session data in memory only.
 - Practice history is written only when you press *Save results to my progress*, to `interview/data/practice_history.json` (git-ignored), and contains signal labels and counts, not your words. *Clear my history* deletes the file.
@@ -126,7 +127,7 @@ cd interview
 node test_practice.cjs
 ```
 
-24 Python tests (rule checks, practice history, quote filtering, session handling, HTTP and real MCP integration) and mocked browser-API tests for recording, typed takes, checks, captions, progress, and reset. Model responses are mocked; no paid calls are made.
+47 Python tests passed against a temporary local server (including real MCP integration), plus eight JS mock test files. Automated regression uses mocked model responses. Separate authorized live tests verified Gemini on synthetic audio and a fictional follow-up; real browser capture/UI remains pending.
 
 ## Repository layout
 
@@ -148,3 +149,9 @@ Interview-roleplay tools already exist (for example [Yoodli](https://yoodli.ai/u
 MIT — see [LICENSE](LICENSE).
 
 Resume upload is available in **Your brief** (PDF/DOCX/TXT, local extraction with editable preview). See [setup and limitations](interview/README.md#resume-upload); update dependencies and restart existing servers.
+
+## Gemini spoken practice
+
+Save your role, resume/JD, goals and interview round in Interview setup. Choose Practice my own answer, then **Ask a question from my setup**. Use **Hear the question**, enable **Analyze after I stop recording (Gemini)**, record and stop. The result includes a transcript, evidence-based analysis, estimated delivery observations and a draft to verify. **Practice this answer again** restores the same question; **Ask me a follow-up** generates a question grounded in that answer. Retry comparisons only combine takes for the same question. Four takes per page session; download before Reset.
+
+This is turn-based recorded practice using Gemini, not a continuous Gemini Live connection. OpenAI live voice and company web research are separate integrations and remain unverified. Gemini question generation uses supplied context; it does not search the web. Details and verification limits: [interview README](interview/README.md).

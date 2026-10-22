@@ -2,6 +2,8 @@
 
 Record at 1440×900 or larger in Chrome. Start the server first (`.venv\Scripts\python interview\server.py`) and open `http://127.0.0.1:8766`. Turn system volume up so the browser speech is audible. Use no copyrighted music.
 
+The original no-key script below remains a fallback. See the Gemini route at the end before making a new recording.
+
 Only show what works today: the authored sample, the live rule checks, local practice, and the MCP server. **Do not show or imply a live AI conversation** — that path is unverified.
 
 | Time | On screen | Say (paraphrase in your own voice) |
@@ -46,3 +48,17 @@ Retry:
 > I owned the loading problem on our club dashboard. I profiled the page and found we fetched every event at once, so I added pagination and tested it on a slow connection. It loaded noticeably faster, but I did not measure it, so next time I would record load times before and after.
 
 These were used in automated browser QA; the comparison reports that all six tracked signals moved toward the suggestion.
+
+## Updated Gemini route (target under 3 minutes; browser-check before recording)
+
+Use fictional resume/JD and answers, never your key or personal contact details. Gemini audio and follow-up calls passed live synthetic/fictional tests, but rehearse the full browser flow first. If it fails, use the no-key script above and label the limitation.
+
+- 0:00-0:20: explain the problem; show setup with role, interview round and development goal.
+- 0:20-0:45: Practice my own answer -> Ask a question from my setup -> Hear the question. Explain that this is a simulated question, not company-confirmed research.
+- 0:45-1:15: enable Gemini analysis, record a short fictional answer and stop. Explain that audio is sent to Google only after opting in. Do not present synthetic or prerecorded speech as a live user response.
+- 1:15-1:50: show actual transcript, a quoted finding, one retry focus and the suggested draft. Mention that draft facts need review.
+- 1:50-2:15: Practice this answer again; record a clearer retry, then show deterministic same-question comparison if time permits.
+- 2:15-2:35: Ask me a follow-up; explain the distinction between Gemini contextual questions and MCP rule checks.
+- 2:35-2:55: show MCP App preview or terminal simulation and the real tool result. Close with the limitation: turn-based Gemini practice, no verified continuous voice or Alexa device integration.
+
+API wait times count toward the recording length; rehearse timing. If editing out waits, label the cut rather than claiming instantaneous processing.

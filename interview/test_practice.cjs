@@ -45,6 +45,13 @@ function fixture(options={}){
  capText.value='I profiled the slow query and added an index.';capText.oninput();said('extra words');assert.equal(capText.value,'I profiled the slow query and added an index.');
  f.ctx.window.localPractice.clear();said('after reset');assert.equal(f.$('takes').children.length,0);
  f=fixture({sr:true});await f.$('local-start').onclick();f.$('live-captions').checked=true;await f.$('record').onclick();f.ctx.window.localPractice.clear();assert.equal(f.recognitions[0].aborted,true);
+ // Comparisons must not mix different questions, including generated follow-ups.
+ f=fixture();await f.$('local-start').onclick();
+ f.$('type-take').onclick();let a=f.$('takes').children[0].children[2].children[0];a.value='I tested the original problem carefully.';a.oninput();
+ assert.equal(f.ctx.window.localPractice.chooseQuestion('A different follow-up question?'),true);
+ f.$('type-take').onclick();a=f.$('takes').children[1].children[2].children[0];a.value='I considered the cost and complexity.';a.oninput();assert.equal(f.$('compare-takes').disabled,true);
+ f.$('type-take').onclick();a=f.$('takes').children[2].children[2].children[0];a.value='I measured cost and discussed complexity.';a.oninput();assert.equal(f.$('compare-takes').disabled,false);await f.$('compare-takes').onclick();const comparisonCall=f.calls.find(x=>x[0]==='compare');assert.equal(comparisonCall[1],'I considered the cost and complexity.');
+ console.log('PASS: comparisons group retries by the same question.');
  console.log('PASS: captions are opt-in, fill the take, accept late results, and never overwrite user edits;');
  console.log('PASS: progress loads on entry, saves first+latest text once until edited;');
  console.log('PASS: record/stop saves a local take; reset clears; late permission releases microphone; permission denial recovers; typed takes check and compare text; stale checks ignored after reset; four-take limit.');

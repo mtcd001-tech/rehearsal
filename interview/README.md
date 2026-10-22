@@ -150,3 +150,11 @@ The browser converts recordings to mono 16 kHz WAV. Audio, the question and skil
 Feedback is AI-generated and can be wrong. Quote filtering checks the model transcript, not ground-truth audio. Delivery observations are qualitative estimates, not validated scores. Suggested rewrites need fact checking; the live test exposed an added inference, and the prompt was tightened. OpenAI live voice and research remain separate integrations.
 
 Verification: a synthetic spoken answer was actually sent to Gemini successfully, producing a matching transcript and feedback. Audio endpoint tests and browser/audio mocks pass; real browser capture/conversion/rendering still needs user testing. Run python -m unittest test_audio_review and node test_audio_review.cjs from interview/. Documentation used: https://ai.google.dev/gemini-api/docs/audio and https://ai.google.dev/gemini-api/docs/structured-output .
+
+## Tailored Gemini questions and follow-ups
+
+In recorded practice, **Ask a question from my setup** sends the saved brief to Gemini and generates a question matching the role, resume/JD, round and skill goals. This explicitly shares the resume if supplied. **Hear the question** reads it with browser speech. The generator uses supplied context, not live web search.
+
+After audio review, **Practice this answer again** restores that question and sets the suggested focus; **Ask me a follow-up** sends the selected transcript (including your corrections) plus setup and asks a related question. Recording and review stay turn-based. Comparisons group takes by identical question, preventing a follow-up from being compared against an unrelated answer. Reset discards pending question results and the four-take set.
+
+Verification: a fictional live follow-up returned HTTP 200 with a relevant question. Full Python regression: 47 passed on a temporary server with isolated history and real MCP calls; eight JS mock test files passed. New UI/microphone browser verification is pending. Tests: test_gemini_questions.py/.cjs, plus expanded same-question checks in test_practice.cjs.
