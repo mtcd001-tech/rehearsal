@@ -60,6 +60,12 @@ Known risks: qualitative model advice/transcripts can be wrong; English rule lis
 
 **Real-mic interview VERIFIED by the user (Oct 22):** Maya spoke, heard them, followed up, transcript captured. The final review hit a Gemini 503 (now retried automatically). Research is still 429. The server is no longer a hidden process; the user runs it in their own terminal. After that come publishing, the video and Devpost (user actions).
 
+**Self-view camera and livelier Maya (Oct 22, night).**
+- An opt-in self-view tile shows a separate, video-only stream. It is local only and never sent.
+- Maya's lip sync is driven by an `AnalyserNode` on her real output audio, and a listening nod and gaze come from microphone energy.
+- Covered by `test_camera.cjs`, and checked in Chrome with synthetic devices.
+- Not yet tried with the user's real webcam.
+
 ## Current milestone: focused full interview room
 
 User rejected cluttered per-answer coaching UI and explicitly requested 30 minutes of hands-free interviewing with analysis only at end. New primary Enter interview room CTA, 5/15/30-minute selector (room default30), consent, microphone worklet, continuous native audio, automatic turn detection, audio interruption handling, countdown and end button. Single-answer/demo moved into expandable section; feedback redesigned as summary/priority with expandable analysis/draft/transcript. Stage is moved into a focused overlay and restored afterward.

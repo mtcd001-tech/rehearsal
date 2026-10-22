@@ -337,3 +337,12 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - User couldn't start the server: port 8766 held by the hidden server Codex had started (PID 28948, interview/server.py). Stopped it at user's request; port free. User restarts with the current code.
 - Research button returned 400 = our wrapper around Gemini Search-grounding HTTP 429 (quota), consistent with earlier checks.
 - SUBMISSION/README verification rows updated.
+
+### 2026-10-22 (night) - IN PROGRESS: webcam self-view + livelier Maya (user request)
+- User asked for their webcam in the interview room and a more realistic Maya. Decision: opt-in local-only mirrored self-view tile (separate video stream, never sent/recorded), and behavior-based realism for Maya (audio-driven lip sync from actual Live output, head motion, listening reactions, blinking). Photoreal avatar rejected (paid video-avatar service, time, uncanny risk).
+- Files: interview/static/interview.js, index.html, style.css, test_live_interview.cjs. Next: inspect stage SVG/CSS animation hooks.
+
+### 2026-10-22 (night) - COMPLETE: webcam self-view + livelier Maya
+- Changes: index.html (consent checkbox "Show my camera" default on with local-only disclosure; self-view tile with Camera off/on; pupils group), style.css (tile, mirrored video, listening nod, gaze transition, mobile sizing), interview.js (separate video-only getUserMedia, attached to local <video> only; toggle; released in release(); denial -> audio-only note. Output AnalyserNode drives --voice lip sync from Maya's real audio; mic energy drives a listening state with attentive gaze/nod; random gaze shifts). New test_camera.cjs.
+- Verification: 10 JS suites PASS (mocks). Real Chrome on isolated no-key copy with synthetic mic/camera (oscillator, canvas) and fake WebSocket sending synthetic 24 kHz PCM: tile shows mirrored video; --voice tracked output (0.68/0.52 during speech, 0 after); listening class + centred gaze while "user" audio; toggle off/on; End releases camera track (ended), hides tile, resets Maya. UI-only; not Gemini.
+- Not verified: user's physical webcam; look on the user's real call. Next: user tries it in their next interview.

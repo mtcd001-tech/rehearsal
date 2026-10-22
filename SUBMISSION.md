@@ -39,6 +39,11 @@ The most common problem in real answers is specific. People say "we worked on it
 - Press *Enter interview room*, choose 5, 15 or 30 minutes, and consent.
 - Maya, the interviewer, asks questions out loud and follows up on what you actually said. Turn-taking is automatic: there are no Record or Next buttons, and you can interrupt her.
 - A countdown and the server both enforce the length. *End interview* is always available.
+- **It feels like a video call.** An optional self-view shows your own camera in the corner, mirrored. It stays on your screen only: video is never recorded, uploaded or sent to Google.
+- Maya feels present:
+  - her mouth moves with the audio she is actually speaking;
+  - her gaze shifts naturally;
+  - she looks at you and nods slightly while you talk.
 - No coaching appears during the interview, just like the real thing.
 
 **2. A debrief after the interview, not during it.**
@@ -87,6 +92,8 @@ The most common problem in real answers is specific. People say "we worked on it
   - The server validates the local origin, bounds audio packets and transcript size, enforces the deadline, and enables context compression and session resumption for long sessions.
   - It captures input and output transcriptions and refuses review requests until the session has ended.
   - No raw audio is stored.
+  - The optional self-view is a separate, video-only `getUserMedia` stream attached to a local `<video>` element. It never touches the WebSocket.
+  - Maya's lip movement comes from an `AnalyserNode` on her actual output audio, and the listening state comes from microphone energy.
 - **MCP server:**
   - FastMCP from the official Python SDK, mounted on FastAPI, with stateless Streamable HTTP. It negotiates protocol 2025-11-25.
   - It ships server instructions describing the practice loop for an agent, plus tool titles and annotations; the check tools are read-only and idempotent.
@@ -110,7 +117,7 @@ The most common problem in real answers is specific. People say "we worked on it
   - The resume is extracted locally in a time-limited subprocess, and the file is not kept.
 - **Tests:**
   - 59 Python tests, with providers mocked: schema validation, citations, resume parsing, the Live session lifecycle, review gating, the rule checks, history, and real local MCP integration.
-  - 9 JavaScript suites with mocked browser and media APIs: the AudioWorklet resampler, timed ending, microphone cleanup, late permission, stale results and recovery.
+  - 10 JavaScript suites with mocked browser and media APIs, including camera opt-in, release and denial: the AudioWorklet resampler, timed ending, microphone cleanup, late permission, stale results and recovery.
 
 ## Verification status (be precise in the video and on Devpost)
 

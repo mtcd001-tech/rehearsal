@@ -53,7 +53,7 @@ python3 -m venv .venv
 
 Open **http://127.0.0.1:8766**. The sample and rule checks need no key. All AI features (including the interview room) need a Gemini API key: copy `interview/.env.example` to `interview/.env` and set `GEMINI_API_KEY`. Never commit it.
 
-**Full interview:** *Interview setup* (role, company, job description, resume, round, length) → *Enter interview room* → *Allow microphone & begin*. Use headphones. Speak naturally; Maya handles turn-taking. *End interview* or the countdown ends it, then the debrief appears; download it before *Back to practice*.
+**Full interview:** *Interview setup* (role, company, job description, resume, round, length) → *Enter interview room* → (optional: *Show my camera* — a mirrored self-view that never leaves your screen) → *Allow microphone & begin*. Use headphones. Speak naturally; Maya handles turn-taking. *End interview* or the countdown ends it, then the debrief appears; download it before *Back to practice*.
 
 **No-key tour:**
 
