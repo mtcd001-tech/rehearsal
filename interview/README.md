@@ -93,3 +93,18 @@ Optional: tick **Draft a transcript while I speak** before recording to have the
 Without that option, audio is never uploaded and is not transcribed automatically. Reset, switching modes, or closing the tab discards undownloaded takes. Microphone tracks are released on stop, reset, and leaving the page.
 
 Local recording logic tests: `node test_practice.cjs` (mocked browser APIs: capture/stop, cleanup, delayed permission, permission denial, typed takes, check gating, comparison arguments, stale results after reset, take limit). In headless Chrome with Chrome's fake microphone device, a real MediaRecorder take was recorded, played (duration fixed from Chrome's WebM `Infinity`), checked, compared, and reset. A physical microphone has not been tested by the agent.
+
+## Resume upload
+
+Open **Your brief** or **Edit brief**, then choose a PDF, DOCX, or UTF-8 TXT resume (up to 5 MB). Extraction runs locally in memory with a 10-second worker timeout; original files are not stored. Review/edit the extracted text, click **Use this text in Your experience**, then **Save interview brief**. Apply replaces the draft experience field; selecting a file alone does not overwrite it. Closing the dialog discards an unapplied import.
+
+PDFs must contain selectable text and be unlocked (maximum 15 pages); scanned PDFs need OCR elsewhere first. Legacy `.doc` files are not supported. Imports are limited to 10,000 characters with a visible truncation notice. Complex columns/tables may extract in the wrong order, so review before saving. The authored sample and local rule checks do not personalize themselves from this resume; the saved brief is context for subsequent live/text AI sessions when API access is enabled. Those sessions send the brief to the configured provider as disclosed in the app.
+
+After updating an existing checkout, install updated dependencies and restart the server:
+
+```powershell
+.venv\Scripts\python -m pip install -r interview/requirements.txt
+.venv\Scripts\python interview/server.py
+```
+
+Tests: from `interview/`, run `..\.venv\Scripts\python -m unittest test_resume -v` and `node test_resume.cjs`. Seven Python tests exercise extraction and the real subprocess endpoint, including bad inputs; JS mocks check preview/apply/stale-request behavior. Browser file-picker testing is still pending.

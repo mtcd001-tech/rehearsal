@@ -146,3 +146,5 @@ Interview-roleplay tools already exist (for example [Yoodli](https://yoodli.ai/u
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+Resume upload is available in **Your brief** (PDF/DOCX/TXT, local extraction with editable preview). See [setup and limitations](interview/README.md#resume-upload); update dependencies and restart existing servers.

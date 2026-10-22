@@ -115,3 +115,21 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - Final regression against final code (agent server 8767, then stopped): Python 24/24 OK; JS PASS; headless Chrome sample, local recording (fake mic) + check + typed take + compare + mobile 390px + reset, progress save/reload/clear, MCP App preview both tools, spoken tip — all pass, no console errors.
 - State: everything committed on `main`; no remote. User's own 8766 server (PID 29460) still running pre-overnight code — restart needed to see changes.
 - Next action (user): follow `docs/SUBMIT_CHECKLIST.md`.
+
+### 2026-10-22 — IN PROGRESS: resume upload and interruption checkpoints
+- Request: inspect overnight changes; add resume upload; keep work resumable even if stopped suddenly.
+- Reviewed: full HANDOFF, project README, latest work log and clean git status at a00a655. Preserving deterministic checks, history, captions, MCP Apps, and submission assets.
+- Plan: local extraction for PDF/DOCX/TXT into editable brief, bounded file handling, no original-file storage or paid API calls; tests and docs afterwards.
+- Current checkpoint: implementation about to start. Next: add parser/endpoint, then file picker + preview/apply, then tests. This entry is not a completion claim.
+
+### 2026-10-22 — Resume upload checkpoint: implementation written, tests pending
+- Added `resume_import.py` (in-memory PDF/DOCX/TXT extraction), `/api/resume` with 5 MB bound and 10-second worker timeout; pinned pypdf; file picker, editable preview and explicit Apply in brief dialog.
+- Original files are not saved; no provider calls. Existing experience is replaced only on Apply, and saved brief changes only on Save.
+- Next action: run parser/endpoint tests and frontend syntax/lifecycle checks; document results. Browser QA not yet performed for this feature.
+
+
+### 2026-10-22 ? COMPLETE: resume upload and durable checkpoints
+- Changes: parser/endpoint, PDF/DOCX/TXT picker and editable preview, explicit Apply/Save, no original-file storage; pypdf pinned; READMEs/HANDOFF updated. AGENTS now requires pre-edit IN PROGRESS checkpoints and updates after small batches.
+- Verification: `python -m unittest discover -s interview -p test_resume.py -v` 7/7 passed (synthetic PDF/Word/text, encryption/blank/bad/oversize/XML rejection, actual extraction subprocess via ASGI endpoint); `node test_resume.cjs` PASS (mocked preview/apply/stale close); existing `node test_practice.cjs` PASS; new JS syntax check and git diff check passed.
+- No paid API calls. Original user server left alone. File picker/rendering unverified in browser this turn; prior overnight UI verification does not cover new controls.
+- Next action: update dependencies and restart server, try Your brief -> Upload -> review -> Apply -> Save; then remaining submission actions. Earlier IN PROGRESS entries are completed by this milestone. Commit this bounded change using existing user identity only.

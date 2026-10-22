@@ -11,6 +11,9 @@ These instructions apply throughout this repository. The user explicitly request
 
 ## During and after work
 
+- Before editing a feature, write an IN PROGRESS checkpoint in `WORK_LOG.md` naming the task, intended files, last verified state, and exact next action. Update it after each small implementation/test batch, not only at the end of a turn. A sudden usage stop may leave no chance for a final handoff.
+- On resuming, inspect unfinished checkpoints against actual files and diffs. Treat unlogged or partially written changes as unverified; do not blindly redo or discard them.
+
 - After each meaningful implementation or verification milestone, append a dated entry to `WORK_LOG.md`: purpose, files changed, checks actually run and their results, limitations, and next action.
 - Update `HANDOFF.md` whenever current state, decisions, blockers, launch instructions, or next steps change. Keep it a current snapshot, not a transcript.
 - Update the applicable README for user-visible behavior or setup changes.

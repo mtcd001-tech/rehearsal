@@ -1,6 +1,6 @@
 # Start here: Rehearsal agent handoff
 
-Last updated: **October 22, 2026, overnight** (user timezone: America/New_York).
+Last updated: **October 22, 2026, resume-upload milestone** (user timezone: America/New_York).
 
 ## Objective and user expectations
 
@@ -132,6 +132,17 @@ The user-facing morning steps are in `docs/SUBMIT_CHECKLIST.md`. The GitHub CLI 
 - Frontend scripts share global state (`mode`, `generation`, `phase`). Be careful with reset and in-flight async work; generation and requestVersion guards are used.
 - PowerShell may display UTF-8 as mojibake. Check the actual bytes before "fixing" the encoding.
 
+## Latest milestone: resume upload
+
+- User asked to inspect overnight work and add resume upload. Overnight additions were preserved; clean baseline was `a00a655`.
+- Added `interview/resume_import.py`, `static/resume.js`, `test_resume.py`, `test_resume.cjs`; updated brief dialog, server endpoint `/api/resume`, requirements (`pypdf==6.21.2`) and READMEs.
+- PDF/DOCX/TXT up to 5 MB, in-memory extraction in a 10-second subprocess; PDF up to 15 pages; max 10,000 extracted characters with truncation notice. Original file is never saved. No OCR, legacy DOC, or encrypted PDF support.
+- Editable preview; explicit Apply replaces draft experience; Save commits the brief. Existing experience is preserved on selection/errors; closing dialog cancels/ignores stale extraction.
+- Seven Python parser/ASGI endpoint tests passed with real subprocesses and synthetic fixtures; JS preview/apply/stale-result mocks passed; existing practice JS regression passed; JS syntax and git diff checks passed. No paid provider calls. New file-picker UI not browser-tested this turn.
+- Existing servers need updated dependencies and restart. User server was not terminated.
+- Continuity instruction strengthened: write IN PROGRESS checkpoint BEFORE editing, update after small batches, and reconcile incomplete entries against files on resume. No reliance on a final handoff message.
+- Authorship rule remains in force: commits use user's configured identity, no tool co-author credits.
+
 ## Current work state
 
-Everything described above is committed on `main` (see `git log`). There is no remote. If an agent resumes: read the latest `WORK_LOG.md` entries, run the tests, then continue with Next priorities item 3, or help the user with item 2.
+Resume upload is implemented and targeted tests passed; see latest WORK_LOG entry and git status/log for the checkpoint commit. No remote was created. Next: restart the local server with new dependencies and verify file-picker preview/apply in a browser, then continue submission priorities. Do not redo the overnight work or make paid API calls.

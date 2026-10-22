@@ -3,6 +3,7 @@ import json
 import os
 import re
 import secrets
+import sys
 import time
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -22,6 +23,7 @@ from pydantic import BaseModel, Field
 import history
 from checks import check_answer, compare_answers
 from sample import SAMPLE
+from resume_import import MAX_BYTES
 
 ROOT = Path(__file__).parent
 load_dotenv(ROOT / '.env', override=True)
@@ -249,6 +251,36 @@ def home():
 @app.get('/api/sample')
 def sample():
     return SAMPLE
+
+@app.post('/api/resume')
+async def import_resume(request: Request, filename: str):
+    if Path(filename).suffix.lower() not in ('.pdf', '.docx', '.txt'):
+        raise ValueError('Choose a PDF, DOCX, or TXT resume.')
+    chunks = bytearray()
+    async for chunk in request.stream():
+        chunks.extend(chunk)
+        if len(chunks) > MAX_BYTES:
+            raise HTTPException(413, 'Resume files must be 5 MB or smaller.')
+    process = await asyncio.create_subprocess_exec(
+        sys.executable, str(ROOT / 'resume_import.py'), Path(filename).name,
+        stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+    try:
+        output, _ = await asyncio.wait_for(process.communicate(bytes(chunks)), timeout=10)
+    except asyncio.TimeoutError:
+        process.kill()
+        await process.communicate()
+        raise ValueError('Extraction took too long. Try a simpler PDF, DOCX, or TXT file.') from None
+    except BaseException:
+        if process.returncode is None:
+            process.kill()
+            await process.communicate()
+        raise
+    if process.returncode:
+        raise ValueError('Could not extract this file. Try another format.')
+    result = json.loads(output)
+    if 'error' in result:
+        raise ValueError(result['error'])
+    return result
 
 @app.get('/api/status')
 def status():
