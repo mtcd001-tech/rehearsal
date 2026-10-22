@@ -1,10 +1,12 @@
 # Rehearsal — interview practice that shows you exactly what to change
 
-Rehearsal is an interview-practice room for technical-internship candidates, including non-native English speakers. An illustrated interviewer asks a behavioral question, you answer out loud or in writing, and you get feedback tied to the **exact words you used**, one priority to fix, and a side-by-side check of whether your retry actually changed.
+Rehearsal is an interview-practice room for technical-internship candidates, including non-native English speakers. Its main mode is a **timed, hands-free mock interview** (5/15/30 minutes): Maya, a voice interviewer powered by the Gemini Live API, asks questions and follows up on what you actually said, with no coaching until the end. Then a debrief quotes **your exact words**, names the priorities, and suggests a clearer version to fact-check. Single-answer practice adds a retry loop that shows whether your next take actually changed.
 
 The coaching engine is a self-hosted **MCP server** (spec **2025-11-25**, Streamable HTTP). Its core tools are deterministic and need **no API key**, so any MCP client — or a voice assistant such as Alexa+ — could call them. (Alexa+ itself was not available to entrants for testing.) The browser app is a simulated Alexa+-style practice experience built on those same tools.
 
-![Rehearsal: authored coaching above, live check_answer_text MCP results below](docs/screenshots/2-coaching.png)
+![Rehearsal home: the timed interview is the main action](docs/screenshots/01-home.jpg)
+
+![The focused interview room](docs/screenshots/04-interview-room.jpg)
 
 > Hackathon track: **Alexa+** — self-hosted MCP server, plus a simulated Alexa+ experience in a web app.
 
@@ -21,9 +23,10 @@ The coaching engine is a self-hosted **MCP server** (spec **2025-11-25**, Stream
 | MCP server (7 tools) over Streamable HTTP, protocol 2025-11-25 | Works and is covered by integration tests. |
 | Terminal voice-assistant simulation (`interview/agent_sim.py`) driving the loop over MCP | Works; scripted, not an LLM. Covered by an integration test. |
 | MCP Apps view (`ui://rehearsal/answer-check`, SEP-1865) for the check tools | Works in the included local reference host at `/mcp-app-preview`. Not yet tried in a third-party MCP Apps host. |
-| Gemini Live timed interview | New focused 5/15/30-minute voice mode with end-only review. Live synthetic spoken turn succeeded; real microphone and full 30-minute run remain unverified. |
-| Gemini recorded-answer review and tailored questions | Live synthetic audio and fictional follow-up tests succeeded. Browser microphone/conversion/UI testing is still pending. |
-| Gemini text interview, coaching and company research | Implemented with the same Gemini key. Mocked regression passed; live migration checks returned text HTTP 503 and search HTTP 429. |
+| Gemini Live timed interview | 5/15/30-minute hands-free voice mode with end-only debrief. A live session with synthetic speech succeeded, and the room UI was checked in real Chrome with a mocked transport. **A full session with a physical microphone (especially 30 minutes) is not yet verified.** |
+| Gemini recorded-answer review and tailored questions | Live synthetic-audio and fictional follow-up tests succeeded; text generation re-verified live on Oct 22. Physical-microphone recording through Gemini review not yet verified. |
+| Gemini text interview and coaching | Same Gemini key; text generation verified live (Oct 22, fictional brief). |
+| Company research (Google Search grounding) | Implemented; **not verified live** — returned HTTP 429 on this key. |
 
 ## Run it (about 2 minutes)
 
@@ -48,7 +51,11 @@ python3 -m venv .venv
 .venv/bin/python interview/server.py
 ```
 
-Open **http://127.0.0.1:8766**. The sample and rule checks need no key. All active AI features require GEMINI_API_KEY in interview/.env.
+Open **http://127.0.0.1:8766**. The sample and rule checks need no key. All AI features (including the interview room) need a Gemini API key: copy `interview/.env.example` to `interview/.env` and set `GEMINI_API_KEY`. Never commit it.
+
+**Full interview:** *Interview setup* (role, company, job description, resume, round, length) → *Enter interview room* → *Allow microphone & begin*. Use headphones. Speak naturally; Maya handles turn-taking. *End interview* or the countdown ends it, then the debrief appears; download it before *Back to practice*.
+
+**No-key tour:**
 
 1. **Experience the sample** → *Play sample answer* → *See the coaching*. Under the authored coaching card, a panel shows what the `check_answer_text` MCP tool found in the sample answer, with quotes.
 2. *Try that answer again* → *Play improved answer*. The comparison shows the authored before/after pairs and a panel computed by `compare_answer_texts`.

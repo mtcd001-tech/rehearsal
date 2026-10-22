@@ -37,6 +37,29 @@ server.py routes/MCP/sessions; audio_review.py shared Gemini JSON/audio; gemini_
 
 Known risks: qualitative model advice/transcripts can be wrong; English rule lists misclassify; generated drafts need factual review. Browser speech may use OS online services. Setup resets on reload. Async generation/requestVersion guards protect resets; preserve those. PowerShell may display UTF-8 mojibake; inspect bytes before changing encoding.
 
+
+## Update: Oct 22, evening ET (Claude session)
+
+**Browser QA.** Done in real Chrome via the Claude-in-Chrome extension, against an isolated no-key copy on port 8767. It covered home, setup, consent, the room (desktop and 390 px), the debrief, the sample and the practice panel. The full room → End → debrief → Back flow was exercised with a mocked transport and synthetic oscillator microphone (all mock text prefixed [MOCK]; UI only).
+
+**Fixed (commit fa7f7d2):**
+- glyph corruption (`?` in place of ·, →, ×, …);
+- the room ignored the saved setup length;
+- the stage clock showed inside the room;
+- the mobile room overflowed horizontally;
+- Maya's caption was not restored after an interview.
+
+**Live check.** Gemini text generation succeeded with a fictional brief. Company research is still HTTP 429; do not loop.
+
+**Docs.**
+- `SUBMISSION.md` rewritten around the interview room, with a verification-status table, Gemini Live product feedback, the 7 friction entries, and test counts of 59 Python tests and 9 JS suites.
+- README lead, status table and quickstart updated.
+- `DEMO.md` is now a single primary script (excerpt labelling rules, plus a no-key fallback). The old AVI is marked outdated.
+- `docs/SUBMIT_CHECKLIST.md` has the user's 5-minute mic test as step 1.
+- The gallery was renamed to `docs/screenshots/01–10`, with new real captures for home, setup, consent, room and mobile.
+
+**The single most important remaining verification:** the user's own 5-minute interview with a physical microphone. After that come publishing, the video and Devpost (user actions).
+
 ## Current milestone: focused full interview room
 
 User rejected cluttered per-answer coaching UI and explicitly requested 30 minutes of hands-free interviewing with analysis only at end. New primary Enter interview room CTA, 5/15/30-minute selector (room default30), consent, microphone worklet, continuous native audio, automatic turn detection, audio interruption handling, countdown and end button. Single-answer/demo moved into expandable section; feedback redesigned as summary/priority with expandable analysis/draft/transcript. Stage is moved into a focused overlay and restored afterward.

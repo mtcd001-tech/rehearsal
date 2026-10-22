@@ -2,25 +2,28 @@
 
 Everything below needs you: publishing, recording, and submitting are your actions. The rest is done and committed on `main`.
 
-## 1. Look at the latest version (10 min)
+## 1. Test the latest version yourself (15 min)
 
-The server you started earlier is still running old code. Restart it:
+Restart the server so it runs the latest code. Press Ctrl+C in its terminal, then:
 
 ```powershell
-# in the terminal running the old server: Ctrl+C, then
 cd D:\hackamazon
 .venv\Scripts\python interview\server.py
 ```
 
-Open http://127.0.0.1:8766 and try the following:
+Open http://127.0.0.1:8766, refresh, and put on headphones.
 
-1. **Experience the sample**, all the way to the comparison.
-2. **Practice my own answer**:
-   - Record a real take with your microphone (this has not been tested with a physical mic yet).
-   - Write what you said, then press **Check my words**.
-   - Make a second take, then press **Compare first and latest take**.
-3. Optionally tick **Draft a transcript while I speak** to see whether Chrome's captions work for you. In Chrome this sends audio to Google, and the app says so.
-4. Footer → **MCP App preview** → **Call check_answer_text**.
+1. **The most important test.** *Enter interview room* → choose **5 minutes** → *Allow microphone & begin*. Answer two or three questions out loud, then press *End interview*. Check the following:
+   - Maya speaks.
+   - She hears you and follows up.
+   - The debrief appears.
+   - *Download transcript & review* works.
+
+   This is the one thing nobody has tested with a physical microphone yet. If it fails, note the message shown and use the no-key path in `DEMO.md`.
+2. Optional: under *Practice a single answer or explore the demo*:
+   - Run **Experience the sample** through to the comparison.
+   - In **Practice my own answer**, record one take and analyze it with Gemini.
+3. Footer → **MCP App preview** → **Call check_answer_text**.
 
 ## 2. Review the text (15 min)
 
@@ -47,7 +50,7 @@ Commits are authored by your git identity only (Minh Dau).
 
 ## 4. Record the demo (20–30 min)
 
-- Follow `DEMO.md`. Keep it **under 3:00**. If short on time, a silent captioned fallback is in `demo-video/rehearsal-demo-captioned.avi` (play it first; narrated is better).
+- Follow `DEMO.md`. Keep it **under 3:00**. Label the interview clip as an excerpt. (The old silent AVI in `demo-video/` predates the redesign; don't use it.)
 - Upload to YouTube or Vimeo as **Public**.
 - Use no copyrighted music.
 
@@ -56,7 +59,7 @@ Commits are authored by your git identity only (Minh Dau).
 - **Track:** Alexa+.
 - **Repo URL:** your new repository.
 - **Video URL:** your upload.
-- **Gallery:** upload images from `docs/screenshots/`.
+- **Gallery:** upload the images listed in `SUBMISSION.md` from `docs/screenshots/`.
 - **Text:** paste the sections from `SUBMISSION.md`, including product feedback and the friction log (the friction log can earn up to a 10% bonus).
 
 Submit before **12:00 p.m. PT**. Leave a buffer.

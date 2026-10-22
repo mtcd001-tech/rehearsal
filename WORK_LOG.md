@@ -311,3 +311,13 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - Text path (`gemini_questions.practice_question`, fictional brief): SUCCESS in 4.6 s, returned a tailored question. Earlier 503 appears transient.
 - Company research (`research.search_company('Amazon','Software Development Engineer Intern')`): HTTP 429 again. Not retried. Likely Search-grounding quota on this key; research stays unverified live.
 - No personal data sent; key not printed.
+
+### 2026-10-22 (17:35 ET) - IN PROGRESS: refresh screenshots + coherent submission docs
+- Plan: real (non-mock) screenshots of redesigned UI via Chrome extension into docs/screenshots (replace outdated 1-practice-room, 7-mobile; add setup, consent, room); rewrite SUBMISSION.md around the interview room with accurate verification status; update README lead/status/quickstart; restructure DEMO.md. Never screenshot [MOCK] debrief as real.
+- Next action: capture screenshots from isolated 8767 server.
+
+### 2026-10-22 (18:10 ET) - COMPLETE: screenshots + coherent submission docs
+- Gallery: new real captures via Chrome extension (01-home, 02-setup, 03-consent, 04-interview-room connecting state, 08-mobile); kept still-accurate sample/MCP captures renamed 05-07, 09, 10; removed old-UI 1-practice-room/7-mobile. No mock data in any image.
+- SUBMISSION.md rewritten (interview room first, verification-status table, Gemini Live feedback, friction log intact). README lead/images/status/quickstart, DEMO.md single script with honesty rules + no-key fallback, SUBMIT_CHECKLIST step 1 = user's 5-minute real-mic interview. HANDOFF updated.
+- Checks: control-char scan clean; .env.example key empty; .env/data untracked.
+- Next: commit; then remaining improvements only if low-risk. User must do real-mic test, publish, record, submit.
