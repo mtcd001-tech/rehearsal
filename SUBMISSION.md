@@ -12,13 +12,24 @@
 - **Demo video:** **[fill in YouTube/Vimeo URL]** (public, under 3 minutes)
 - **Built with:** Python, FastAPI, Model Context Protocol Python SDK (`mcp` 1.30.0, FastMCP, Streamable HTTP), vanilla JavaScript, Web Speech Synthesis API, MediaRecorder and Web Audio APIs, OpenAI Realtime and Chat Completions APIs (optional path, unverified)
 
+## Image gallery
+
+Upload these from `docs/screenshots/` (real captures; captions are in that folder's README):
+
+1. `1-practice-room.png`
+2. `3-live-rule-check.png`
+3. `4-retry-comparison.png`
+4. `5-your-own-answer-compared.png`
+5. `6-mcp-app-card.png`
+6. `7-mobile.png`
+
 ## Inspiration
 
 Behavioral interviews are hard for students applying to technical internships, especially when English is not their first language. The usual feedback is either a generic tip ("use STAR") or a single score that gives no clue about what to say differently. The most common problem in real answers is very specific: people say "we worked on it" and "it worked well," so the interviewer never hears what *they* did or how they knew it worked.
 
 ## What it does
 
-- An illustrated interviewer, Maya, asks a behavioral question and speaks it with the browser's speech synthesis.
+- An illustrated virtual interviewer, Maya, asks a behavioral question and speaks it with the browser's speech synthesis. After a check, she can say the tip aloud, quoting your own words.
 - You answer. In the sample you hear a realistic first answer; in practice mode you record yourself (audio stays in the browser) or type your answer.
 - **Check my words** runs the `check_answer_text` MCP tool. It quotes your exact phrases and flags:
   - whether your own role is clear ("I" versus "we"),

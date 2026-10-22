@@ -84,3 +84,9 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - Changes: `static/practice.js` (SpeechRecognition opt-in, en-US, continuous/interim, restart on end while recording, final results fill the take until the user edits, abort on reset, graceful errors), checkbox + disclosure in `index.html` (hidden when unsupported), styles, docs.
 - Verification: `node test_practice.cjs` PASS with new mocked-recognizer tests (opt-in only, hidden without API, fill/late results/user edits win, restart on end, abort on reset). Headless Chrome: API present, recording with captions enabled still produces a take; no console errors; recognizer returned no text in headless (expected) — real recognition unverified.
 - Next action: commit; final consistency pass of docs; keep handoff current.
+
+### 2026-10-22 (night) — Clone check, gallery, spoken tips, honest badge
+- Fresh `git clone` of HEAD into scratchpad, run on port 8768 with existing venv python: Python 22/22 OK, JS PASS, `/mcp-app-preview` 200 — repo contains everything needed (pip install itself not re-run; packages already match pins).
+- `docs/screenshots/` — 7 real headless-Chrome captures + captions README; SUBMISSION lists gallery order.
+- Badge under Maya changed from "AI interviewer" to "Virtual interviewer" (sample/local modes use no AI). aria-label updated.
+- Local practice: "Hear Maya say the tip" / "Hear Maya sum it up" buttons speak the priority with the user's own quoted phrase (verified in Chrome by intercepting speechSynthesis.speak).
