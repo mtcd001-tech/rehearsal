@@ -31,3 +31,4 @@
 .caption-opt span{color:#6f7563}
 .speak-tip{margin-top:12px}
 .resume-import{border:1px dashed #cbbda9;background:#f4f0e6;border-radius:8px;padding:15px;margin:15px 0}.resume-import>label{margin-top:0}.resume-import input[type=file]{background:#fffef8;font-size:11px}.resume-import #resume-status{font-size:11px;color:#6c553d;line-height:1.7}.resume-import textarea{background:#fffef9}.resume-import .privacy{color:#676d5c}
+.company-research{border-top:1px solid var(--line);margin-top:20px;padding-top:12px}.company-research h3{font-size:16px;font-weight:500}.company-research h4{font-size:12px;color:#655d48;margin-top:24px}.company-research p{font-size:11px;line-height:1.8;color:#646c59}.company-research strong{font-size:12px}.company-research a{color:#985331;text-decoration:underline}.research-block{white-space:pre-wrap}.research-edit{padding:10px 14px;background:#f0eddf;border-left:2px solid #b88861;border-radius:4px;margin:12px 0}#research-status{color:#795a37}

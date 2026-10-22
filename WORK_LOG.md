@@ -133,3 +133,20 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - Verification: `python -m unittest discover -s interview -p test_resume.py -v` 7/7 passed (synthetic PDF/Word/text, encryption/blank/bad/oversize/XML rejection, actual extraction subprocess via ASGI endpoint); `node test_resume.cjs` PASS (mocked preview/apply/stale close); existing `node test_practice.cjs` PASS; new JS syntax check and git diff check passed.
 - No paid API calls. Original user server left alone. File picker/rendering unverified in browser this turn; prior overnight UI verification does not cover new controls.
 - Next action: update dependencies and restart server, try Your brief -> Upload -> review -> Apply -> Save; then remaining submission actions. Earlier IN PROGRESS entries are completed by this milestone. Commit this bounded change using existing user identity only.
+
+### 2026-10-22 — IN PROGRESS: company/JD research and resume alignment
+- User request: paste company and JD, search public information about interviews, tailor preparation and resume.
+- Plan: cited web research (company/role only in search), separate synthesis against JD/resume, faithful evidence-backed suggestions, optional apply to interview context. Keep public facts separate from anecdotes/inferences.
+- Paid API deferral remains: implement gated provider integration, mock tests only. Next: research module + endpoint, brief UI, validation/tests/docs. No live research claim.
+
+### 2026-10-22 — Research checkpoint: implementation written, validation pending
+- Added Responses web-search integration and evidence-checked synthesis. Search stage receives company/role only; JD/resume used only in subsequent model synthesis. API feature is off unless INTERVIEW_RESEARCH_ENABLED=1.
+- Brief UI shows inline linked citations, inferred questions, exact resume/JD evidence pairs, gaps, and explicit apply-to-interview-notes. No automatic resume rewrite.
+- Next: mocked parser/provider/endpoint tests, existing frontend regression, docs, commit. No paid calls or live verification performed.
+
+### 2026-10-22 ? COMPLETE: company research and resume alignment
+- Purpose: tailor interview preparation and suggest truthful resume improvements from company, JD and experience.
+- Changes: `interview/research.py`, `/api/research`, brief schema/UI/research.js, resume Apply input notification, styles, tests, `.env.example`, README and HANDOFF. Search gets company/role only; synthesis gets resume/JD. Inline sources, inferred questions and paired exact quotes; explicit apply to context, no automatic resume rewrite. Default-off feature gate preserves API deferral.
+- Verification: 7 research Python tests PASS (mocked provider/search); 22 checks/history/resume Python tests PASS (real resume extraction subprocess); `node test_research.cjs`, `node test_resume.cjs`, `node test_practice.cjs` PASS (browser mocks); JS syntax checks passed. No paid calls.
+- Open issues / unverified: actual browser controls/rendering and live research/provider quality; exact quotes and citations do not prove advice is correct. Existing server not restarted; full running-server MCP suite not rerun this milestone.
+- Next action: restart server and browser-check new controls; live research only after user resolves API access and lifts deferral. Finish submission actions. Earlier research IN PROGRESS checkpoints are now complete.

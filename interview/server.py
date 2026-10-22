@@ -24,6 +24,7 @@ import history
 from checks import check_answer, compare_answers
 from sample import SAMPLE
 from resume_import import MAX_BYTES
+from research import search_company, validate_plan, PLAN_PROMPT
 
 ROOT = Path(__file__).parent
 load_dotenv(ROOT / '.env', override=True)
@@ -57,6 +58,7 @@ class Brief(BaseModel):
     company: str = Field(default='', max_length=200)
     resume: str = Field(default='', max_length=10000)
     job: str = Field(default='', max_length=10000)
+    research: str = Field(default='', max_length=20000)
 
 class Turn(BaseModel):
     session_id: str
@@ -284,7 +286,20 @@ async def import_resume(request: Request, filename: str):
 
 @app.get('/api/status')
 def status():
-    return {'key_configured': bool(os.getenv('OPENAI_API_KEY')), 'live_verified': False, 'mode': 'sample-first'}
+    return {'key_configured': bool(os.getenv('OPENAI_API_KEY')), 'live_verified': False, 'mode': 'sample-first',
+            'research_enabled': os.getenv('INTERVIEW_RESEARCH_ENABLED') == '1'}
+
+@app.post('/api/research')
+async def research_brief(brief: Brief):
+    if os.getenv('INTERVIEW_RESEARCH_ENABLED') != '1':
+        raise ValueError('Company research is waiting for API setup. Configure a working key and set INTERVIEW_RESEARCH_ENABLED=1, then restart. No web or AI request was made.')
+    if not brief.company.strip() or not brief.job.strip():
+        raise ValueError('Enter the company name and paste the job description first.')
+    public = await search_company(brief.company, brief.role, provider_url('/responses'))
+    plan = await model_json(PLAN_PROMPT, {'company': brief.company, 'role': brief.role,
+                            'research': public, 'resume': brief.resume, 'jd': brief.job})
+    return {'research': public, 'plan': validate_plan(plan, brief.resume, brief.job),
+            'notice': 'AI research and suggestions, not a guaranteed interview process. Verify sources and every resume change.'}
 
 @app.post('/api/session')
 def create_session(brief: Brief):

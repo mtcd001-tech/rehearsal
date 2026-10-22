@@ -1,6 +1,6 @@
 # Start here: Rehearsal agent handoff
 
-Last updated: **October 22, 2026, resume-upload milestone** (user timezone: America/New_York).
+Last updated: **October 22, 2026, company-research milestone** (user timezone: America/New_York).
 
 ## Objective and user expectations
 
@@ -145,4 +145,10 @@ The user-facing morning steps are in `docs/SUBMIT_CHECKLIST.md`. The GitHub CLI 
 
 ## Current work state
 
-Resume upload is implemented and targeted tests passed; see latest WORK_LOG entry and git status/log for the checkpoint commit. No remote was created. Next: restart the local server with new dependencies and verify file-picker preview/apply in a browser, then continue submission priorities. Do not redo the overnight work or make paid API calls.
+Company/JD research and resume alignment are implemented after resume upload (baseline commit `394321f`). New files: `interview/research.py`, `static/research.js`, `test_research.py`, `test_research.cjs`. Server `/api/research` is gated OFF unless `INTERVIEW_RESEARCH_ENABLED=1`; `.env.example` documents the gate and model. Do not enable or make paid calls while API deferral remains.
+
+The UI requests cited public research using company/role only, then synthesizes the JD/resume separately. Resume suggestions require exact evidence snippets from both inputs. This filters invented quotes, not all possible false advice. Explicit Apply adds research to interview context without rewriting the resume; input changes invalidate stale notes. Saved context is for subsequent live/text sessions, not the authored sample or local question bank.
+
+Verification this milestone: 7 research Python tests with mocked providers, 22 checks/history/resume Python tests (resume uses real extraction subprocesses), JS research/resume/practice mocks all pass. New UI and actual provider search/quality are unverified. No server restarted, no paid calls, no remote created. Existing overnight integration/browser results do not cover these new controls.
+
+Next: restart the local server, verify resume preview/apply and research controls in a browser (disabled state first); once the user resolves API access and lifts deferral, verify real cited research and synthesis. Continue submission priorities above. Do not redo overnight work.
