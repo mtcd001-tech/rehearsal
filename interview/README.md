@@ -88,6 +88,8 @@ Choose **Practice my own answer**. Pick one of five original behavioral question
 
 For each take, write or paste what you said and press **Check my words**. The text (not the audio) is sent to this app's local server, which runs the deterministic `check_answer_text` MCP tool and shows quoted findings and one priority. After a second take with text, **Compare first and latest take** runs `compare_answer_texts`. Download practice notes exports your text, focus, check results, and comparison as JSON; recordings download separately.
 
-Audio is never uploaded and is not transcribed automatically. Reset, switching modes, or closing the tab discards undownloaded takes. Microphone tracks are released on stop, reset, and leaving the page.
+Optional: tick **Draft a transcript while I speak** before recording to have the browser's speech recognition fill the take's transcript (it keeps updating briefly after you stop, and never overwrites your own edits). In Chrome, this sends audio to Google's speech service, so it is off by default and disclosed next to the checkbox. It is hidden when the browser has no speech recognition. Real recognition results have not been verified by the agent (headless Chrome returned none); logic is covered by mocked tests.
+
+Without that option, audio is never uploaded and is not transcribed automatically. Reset, switching modes, or closing the tab discards undownloaded takes. Microphone tracks are released on stop, reset, and leaving the page.
 
 Local recording logic tests: `node test_practice.cjs` (mocked browser APIs: capture/stop, cleanup, delayed permission, permission denial, typed takes, check gating, comparison arguments, stale results after reset, take limit). In headless Chrome with Chrome's fake microphone device, a real MediaRecorder take was recorded, played (duration fixed from Chrome's WebM `Infinity`), checked, compared, and reset. A physical microphone has not been tested by the agent.

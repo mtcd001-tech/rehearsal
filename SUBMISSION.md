@@ -32,6 +32,7 @@ Behavioral interviews are hard for students applying to technical internships, e
   
   It picks one priority for the next try.
 - You answer the same question again. **Compare first and latest take** runs `compare_answer_texts`, which shows which signals moved in the suggested direction, with before and after quotes. It says so plainly when nothing changed.
+- **Optional live captions.** You can opt in to letting the browser's speech recognition draft your transcript while you record, so a spoken answer can be checked without typing. In Chrome this uses Google's online speech service, and the checkbox says so.
 - **Practice history across sessions (opt-in).** *Save results to my progress* stores only signal labels and counts on your computer, never your words or audio. Next time, the app (or an assistant calling `get_practice_progress`) opens with your recurring priority, for example "your own role — moved toward the suggestion on 1 retry."
 - **MCP App card.** The check tools are linked to an MCP Apps view (`ui://rehearsal/answer-check`, SEP-1865). Hosts that support MCP Apps can render the quoted findings as an interactive card instead of raw JSON. A local reference host at `/mcp-app-preview` shows the full handshake.
 - No scores, no accent or personality judgments, no hiring predictions. Every quote is an exact substring of what you said, so evidence cannot be invented.

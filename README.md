@@ -13,6 +13,7 @@ The coaching engine is a self-hosted **MCP server** (spec **2025-11-25**, Stream
 | Authored sample interview (animated interviewer, browser speech, coaching, retry, comparison) | Works. The sample answers and the main coaching card are **written by hand** and labelled as such. |
 | Rule checks on the sample answers | Works. Computed live by the MCP tools `check_answer_text` and `compare_answer_texts` every time the sample runs. |
 | Practice with your own answer: record audio locally, or type an answer | Works. Audio never leaves the browser tab. |
+| Optional browser captions while recording (opt-in) | Implemented and unit-tested with a mocked recognizer; real speech results not yet verified. |
 | Check my words / compare first and latest take | Works. Your typed text goes only to the local server; deterministic rules, no AI model, no scores. |
 | Opt-in practice history across sessions (signal labels and counts only, on this computer) | Works. An agent can open a session with last time's focus via `get_practice_progress`. |
 | MCP server (7 tools) over Streamable HTTP, protocol 2025-11-25 | Works and is covered by integration tests. |
@@ -97,6 +98,7 @@ The rules are intentionally simple English word lists. They can miss things or m
 
 - Sample mode sends nothing anywhere except to the local server for the rule-check panels.
 - Local practice keeps audio in the browser tab. Only text you choose to check is sent, and only to `127.0.0.1`.
+- Exception you must opt into: *Draft a transcript while I speak* uses the browser's speech recognition. In Chrome that sends your audio to Google's speech service. It is off by default and labelled on screen.
 - The server binds to loopback, rejects other hosts and origins, and keeps session data in memory only.
 - Practice history is written only when you press *Save results to my progress*, to `interview/data/practice_history.json` (git-ignored), and contains signal labels and counts, not your words. *Clear my history* deletes the file.
 - The optional live AI path sends audio and transcript to OpenAI and asks for consent first. It is off unless you configure a key (`interview/.env`, see `interview/.env.example`).

@@ -78,3 +78,9 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - Verification: Python 22/22 OK (asserts tool→resource linkage, resource mimeType/content, structuredContent, 422 for non-linked tool). Headless Chrome: preview host completed handshake for both tools, card rendered (screenshots reviewed), iframe resized from size-changed; sample + local QA re-run clean.
 - Open: not tested in a third-party MCP Apps host (none available). Host advertises `hostCapabilities: {}`; view does not call tools back.
 - Next action: commit; then optional speech captions or polish; keep docs in sync.
+
+### 2026-10-22 (night) — Opt-in browser captions for recorded takes
+- Purpose: let a spoken answer become checkable text without typing (voice-first loop).
+- Changes: `static/practice.js` (SpeechRecognition opt-in, en-US, continuous/interim, restart on end while recording, final results fill the take until the user edits, abort on reset, graceful errors), checkbox + disclosure in `index.html` (hidden when unsupported), styles, docs.
+- Verification: `node test_practice.cjs` PASS with new mocked-recognizer tests (opt-in only, hidden without API, fill/late results/user edits win, restart on end, abort on reset). Headless Chrome: API present, recording with captions enabled still produces a take; no console errors; recognizer returned no text in headless (expected) — real recognition unverified.
+- Next action: commit; final consistency pass of docs; keep handoff current.
