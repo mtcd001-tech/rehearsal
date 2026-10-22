@@ -257,3 +257,13 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - Verification: 50 Python tests PASS (mocked providers, real temporary local MCP integration and isolated history); all eight JS mock suites PASS; all JS syntax PASS. Test harness temporary-directory cleanup hit a Windows server.log file lock after all assertions passed; child terminate/wait completed. User server untouched.
 - Live limits: text HTTP503, search HTTP429; no retries after these failures. Earlier audio/followup successes remain distinct. No secrets printed, no personal data sent, no OpenAI calls.
 - Next: restart user app and browser/microphone-check latest controls; verify research when quota permits. Continuous Gemini Live is not implemented. Publication/submission pending.
+
+### 2026-10-22 - IN PROGRESS: stale research configuration
+- User reported disabled research. Verified local key present/flag1 without exposing key; running port8766 status is old sample-first/research false. Identified Python interview/server.py PID24520. Next: restart this app and verify status without provider calls.
+
+### 2026-10-22 - COMPLETE: restarted stale backend
+- Purpose: resolve research-disabled message despite correct .env.
+- Changes: restarted identified interview/server.py on8766 with workspace venv, hidden window; updated HANDOFF. No credentials/config changed.
+- Verification: GET /api/status now gemini-recorded/provider gemini/key_configured true/research_enabled true. No AI requests or quota retries.
+- Limits: actual research availability still subject to prior429; restarting cleared server sessions. Browser page-memory data remains until refresh.
+- Next: user can retry research from current page; preserve setup/recordings before refreshing.

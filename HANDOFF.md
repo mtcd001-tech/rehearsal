@@ -20,7 +20,7 @@ Authored sample remains no-key. Deterministic checks use English word lists and 
 
 ## Launch and verification
 
-Windows D:/hackamazon; .venv Python3.11. Run .venv/Scripts/python interview/server.py; http://127.0.0.1:8766. Restart existing server and refresh browser for latest code. User's server was not restarted. .env overrides inherited settings; never overwrite it from example. Local single-user loopback app, not public-hosting ready.
+Windows D:/hackamazon; .venv Python3.11. Run .venv/Scripts/python interview/server.py; http://127.0.0.1:8766. Restart existing server and refresh browser for latest code. User reported disabled research after migration. Identified stale server on8766 and restarted it on Oct22; /api/status now confirms provider gemini, key configured and research enabled. No provider call used for this check. .env overrides inherited settings; never overwrite it from example. Local single-user loopback app, not public-hosting ready.
 
 Current regression: 50 Python tests passed, including real local MCP integration, with provider calls mocked and scratch history on an owned temporary server. Eight JS mock suites and all JS syntax passed. Test runner cleanup hit Windows file-lock on temporary server.log after successful tests; owned child termination was issued/waited. No user server killed. This is a harness cleanup issue, not failed assertions.
 
