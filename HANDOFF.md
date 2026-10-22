@@ -85,7 +85,7 @@ The user is busy and expects the agent to do most of the work. Overnight on Oct 
 
 ## Verification status
 
-- **Python:** 22/22 OK against the agent's 8767 server (run with `INTERVIEW_HISTORY_FILE` pointing to a scratch file).
+- **Python:** 23/23 OK against the agent's 8767 server (run with `INTERVIEW_HISTORY_FILE` pointing to a scratch file).
 - **JS:** mocked tests PASS. `node --check` passes on all scripts.
 - **Real Chrome (extension, earlier on Oct 22), desktop:** sample flow, speech/skip, reset/restart; no console errors.
 - **Headless Chrome (overnight):**

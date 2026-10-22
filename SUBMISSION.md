@@ -71,7 +71,7 @@ Behavioral interviews are hard for students applying to technical internships, e
   - Sessions live in memory with expiry.
   - Live mode asks for explicit consent before any audio is sent, and the API key stays on the server.
 - **Tests:**
-  - 22 Python tests: rule checks, practice history, quote filtering, session handling, and HTTP plus real MCP integration.
+  - 23 Python tests: rule checks, practice history, quote filtering, session handling, and HTTP plus real MCP integration.
   - Mocked browser-API tests for recording, typed takes, checks and reset.
   - Headless Chrome checks with Chrome's fake microphone device.
 

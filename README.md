@@ -115,7 +115,7 @@ cd interview
 node test_practice.cjs
 ```
 
-22 Python tests (rule checks, practice history, quote filtering, session handling, HTTP and real MCP integration) and mocked browser-API tests for recording, typed takes, checks, and reset. Model responses are mocked; no paid calls are made.
+23 Python tests (rule checks, practice history, quote filtering, session handling, HTTP and real MCP integration) and mocked browser-API tests for recording, typed takes, checks, and reset. Model responses are mocked; no paid calls are made.
 
 ## Repository layout
 
