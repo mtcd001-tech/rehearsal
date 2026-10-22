@@ -150,3 +150,18 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - Verification: 7 research Python tests PASS (mocked provider/search); 22 checks/history/resume Python tests PASS (real resume extraction subprocess); `node test_research.cjs`, `node test_resume.cjs`, `node test_practice.cjs` PASS (browser mocks); JS syntax checks passed. No paid calls.
 - Open issues / unverified: actual browser controls/rendering and live research/provider quality; exact quotes and citations do not prove advice is correct. Existing server not restarted; full running-server MCP suite not rerun this milestone.
 - Next action: restart server and browser-check new controls; live research only after user resolves API access and lifts deferral. Finish submission actions. Earlier research IN PROGRESS checkpoints are now complete.
+
+### 2026-10-22 - IN PROGRESS: tailor the simulated interview
+- User clarified the goal is interview personalization, not resume editing. Previous resume-edit plan is superseded.
+- Baseline a7ca06f clean. Next: replace edit suggestions with evidence-grounded interview probes, apply full plan to context, align interviewer prompts, test and update docs. Paid API deferral remains.
+
+### 2026-10-22 - Interview tailoring checkpoint
+- Replaced resume edits with evidence-grounded follow-ups/listen-for criteria; Apply now includes the full simulation plan and deep dives. Text/voice/coach prompts use the plan. Tests being updated; no paid calls.
+- Next: run targeted tests and update current documentation.
+
+### 2026-10-22 - COMPLETE: personalize the simulated interview
+- Purpose: implement user's clarification; supersedes resume-edit suggestions from a7ca06f.
+- Changes: research plan now supplies format/sequence/difficulty, questions and evidence-grounded experience probes with follow-ups/listen-for criteria. UI applies the entire plan. Text/voice/coach prompts use it. README and HANDOFF updated.
+- Verification: 8 research Python tests PASS with mocked providers, including saved plan propagation to text interviewer; research/resume JS mocks PASS; research JS syntax and git diff checks PASS.
+- Limitations: no paid calls, live model quality/voice and new browser rendering unverified. Fixed sample/local question bank unchanged.
+- Next: browser-check after restart; verify personalized AI interviews only when user resolves API access and lifts deferral.

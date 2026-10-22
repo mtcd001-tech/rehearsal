@@ -1,6 +1,6 @@
 # Start here: Rehearsal agent handoff
 
-Last updated: **October 22, 2026, company-research milestone** (user timezone: America/New_York).
+Last updated: **October 22, 2026, tailored-interview clarification** (user timezone: America/New_York).
 
 ## Objective and user expectations
 
@@ -145,10 +145,10 @@ The user-facing morning steps are in `docs/SUBMIT_CHECKLIST.md`. The GitHub CLI 
 
 ## Current work state
 
-Company/JD research and resume alignment are implemented after resume upload (baseline commit `394321f`). New files: `interview/research.py`, `static/research.js`, `test_research.py`, `test_research.cjs`. Server `/api/research` is gated OFF unless `INTERVIEW_RESEARCH_ENABLED=1`; `.env.example` documents the gate and model. Do not enable or make paid calls while API deferral remains.
+User clarified that company/JD/resume research should tailor the simulated interview, NOT suggest resume edits. Earlier resume-edit suggestions were replaced with `experience_probes`: exact resume/JD evidence, follow-up questions and listen-for criteria. The plan includes proposed format, sequence, difficulty and core questions. UI: **Build my tailored interview**. Apply saves the full plan (including deep dives) to draft research context; Save passes it to subsequent AI sessions. Text, voice and coaching prompts explicitly use this context and adapt to actual answers. The authored demo and local question bank remain fixed.
 
-The UI requests cited public research using company/role only, then synthesizes the JD/resume separately. Resume suggestions require exact evidence snippets from both inputs. This filters invented quotes, not all possible false advice. Explicit Apply adds research to interview context without rewriting the resume; input changes invalidate stale notes. Saved context is for subsequent live/text sessions, not the authored sample or local question bank.
+Files: `interview/research.py`, `static/research.js`, `server.py`, research tests and brief UI. `/api/research` remains OFF unless `INTERVIEW_RESEARCH_ENABLED=1`; do not enable or make paid calls while deferral remains. Company/role only go into web search; resume/JD enter subsequent synthesis. Exact quotes filter fabricated evidence, not all bad advice. Sources and inferred interview formats need review.
 
-Verification this milestone: 7 research Python tests with mocked providers, 22 checks/history/resume Python tests (resume uses real extraction subprocesses), JS research/resume/practice mocks all pass. New UI and actual provider search/quality are unverified. No server restarted, no paid calls, no remote created. Existing overnight integration/browser results do not cover these new controls.
+Verification for clarification: 8 research Python tests with mocked providers (including plan propagation to text interviewer), JS research/resume mocks and research JS syntax pass. Prior milestone: 22 checks/history/resume Python tests and practice JS mocks passed. New UI and actual provider search/quality are unverified. No server restarted, no paid calls, no remote created. Existing overnight integration/browser results do not cover these new controls.
 
 Next: restart the local server, verify resume preview/apply and research controls in a browser (disabled state first); once the user resolves API access and lifts deferral, verify real cited research and synthesis. Continue submission priorities above. Do not redo overnight work.
