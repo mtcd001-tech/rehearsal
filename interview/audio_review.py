@@ -1,4 +1,5 @@
 """Gemini review of recorded interview answers. Audio is never written to disk."""
+import asyncio
 import base64
 import json
 import os
@@ -58,7 +59,17 @@ async def review_audio(audio: bytes, question: str, skills: str):
     return result
 
 
-async def gemini_json(schema, prompt, parts):
+# Bounded retry for transient server-side failures only. 429 (quota) is never retried.
+TRANSIENT_STATUS = {500, 502, 503, 504}
+RETRY_DELAYS = (2, 5)
+
+def _retry_delay(response, default):
+    try:
+        return min(10, max(default, float(response.headers.get('retry-after', default))))
+    except (TypeError, ValueError):
+        return default
+
+async def gemini_json(schema, prompt, parts, max_tokens=4096):
     key = os.getenv('GEMINI_API_KEY', '')
     if not key:
         raise ValueError('Add GEMINI_API_KEY to interview/.env and restart the server.')
@@ -68,15 +79,30 @@ async def gemini_json(schema, prompt, parts):
     payload = {'systemInstruction': {'parts': [{'text': prompt}]},
                'contents': [{'role': 'user', 'parts': parts}],
                'generationConfig': {'responseMimeType': 'application/json',
-                                    'maxOutputTokens': 4096}}
+                                    'maxOutputTokens': max_tokens}}
     if schema is not None:
         payload['generationConfig']['responseJsonSchema'] = schema.model_json_schema()
-    async with httpx.AsyncClient(timeout=90) as client:
-        r = await client.post(f'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent',
-                              headers={'x-goog-api-key': key}, json=payload)
+    url = f'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent'
+    attempts = len(RETRY_DELAYS) + 1
+    for attempt in range(attempts):
+        last = attempt == attempts - 1
+        try:
+            async with httpx.AsyncClient(timeout=90) as client:
+                r = await client.post(url, headers={'x-goog-api-key': key}, json=payload)
+        except httpx.TransportError:
+            if last:
+                raise ValueError(f'Gemini could not be reached after {attempts} attempts. Check your connection and try again.') from None
+            await asyncio.sleep(RETRY_DELAYS[attempt])
+            continue
+        if r.status_code in TRANSIENT_STATUS and not last:
+            await asyncio.sleep(_retry_delay(r, RETRY_DELAYS[attempt]))
+            continue
+        break
     if not r.is_success:
         if r.status_code == 429:
             raise ValueError('Gemini quota or rate limit reached. Try later or check API limits.')
+        if r.status_code in TRANSIENT_STATUS:
+            raise ValueError(f'Gemini is temporarily unavailable (HTTP {r.status_code}) after {attempts} attempts. Nothing was lost; try again in a minute.')
         raise ValueError(f'Gemini request failed (HTTP {r.status_code}). Check API access and model configuration.')
     candidates = r.json().get('candidates') or []
     if not candidates or candidates[0].get('finishReason') != 'STOP':

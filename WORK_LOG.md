@@ -321,3 +321,13 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - SUBMISSION.md rewritten (interview room first, verification-status table, Gemini Live feedback, friction log intact). README lead/images/status/quickstart, DEMO.md single script with honesty rules + no-key fallback, SUBMIT_CHECKLIST step 1 = user's 5-minute real-mic interview. HANDOFF updated.
 - Checks: control-char scan clean; .env.example key empty; .env/data untracked.
 - Next: commit; then remaining improvements only if low-risk. User must do real-mic test, publish, record, submit.
+
+### 2026-10-22 (evening) - IN PROGRESS: post-interview review returned HTTP 503
+- User ran a real interview room session (first physical-mic run). Session ended and results page shown; final review failed: "Gemini request failed (HTTP 503)". Transcript section present (contents not yet confirmed).
+- Plan: inspect gemini_json + /api/interview/review; add bounded retry for transient 503/500 only (never 429), optionally a fallback model; keep transcript safe; tests. Next: read code.
+
+### 2026-10-22 (evening) - COMPLETE: resilient Gemini calls after user's review 503
+- User's first real interview-room run reached the results page; final review failed with Gemini HTTP 503 (provider overload). Whether Maya spoke/heard the user and transcript contents: not yet confirmed by user.
+- Changes: `audio_review.gemini_json` retries transient 500/502/503/504 and network errors up to 3 attempts (2 s, 5 s; Retry-After honored, capped 10 s); 429 never retried; clearer messages ("temporarily unavailable ... nothing was lost"). New `max_tokens` arg; post-interview review uses 12288 (was 4096) to avoid truncated debriefs on long interviews. Applies to all Gemini generateContent features.
+- Tests: 3 new unit tests (503→success, bounded give-up, network retry) + quota not retried; full regression on isolated no-key copy: 62 Python OK, 9 JS suites PASS.
+- User's 8766 server still runs pre-fix backend; restarting it clears in-memory interview sessions — user should download the transcript first (or press Try analysis again on the current server).

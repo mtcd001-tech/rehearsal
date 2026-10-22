@@ -37,5 +37,30 @@ class AudioTests(unittest.IsolatedAsyncioTestCase):
   client=AsyncMock();client.post.return_value=MagicMock(is_success=False,status_code=429);manager=AsyncMock();manager.__aenter__.return_value=client
   with patch.dict('os.environ',{'GEMINI_API_KEY':'mock'}),patch.object(audio_review.httpx,'AsyncClient',return_value=manager):
    with self.assertRaisesRegex(ValueError,'quota'):await audio_review.review_audio(b'RIFF0000WAVE','q','')
+  self.assertEqual(client.post.call_count,1)  # quota errors are never retried
+
+ def gemini_client(self,*responses):
+  client=AsyncMock();client.post.side_effect=list(responses);manager=AsyncMock();manager.__aenter__.return_value=client
+  return client,manager
+
+ async def test_transient_503_retried_then_succeeds(self):
+  ok=MagicMock(is_success=True,status_code=200);ok.json.return_value={'candidates':[{'finishReason':'STOP','content':{'parts':[{'text':'{"reply":"Hi"}'}]}}]}
+  client,manager=self.gemini_client(MagicMock(is_success=False,status_code=503),ok)
+  with patch.dict('os.environ',{'GEMINI_API_KEY':'mock'}),patch.object(audio_review.httpx,'AsyncClient',return_value=manager),patch.object(audio_review.asyncio,'sleep',new=AsyncMock()) as sleep:
+   out=await audio_review.gemini_json(None,'p',[{'text':'x'}],max_tokens=12288)
+  self.assertEqual(out,{'reply':'Hi'});self.assertEqual(client.post.call_count,2);sleep.assert_awaited_once()
+  self.assertEqual(client.post.call_args.kwargs['json']['generationConfig']['maxOutputTokens'],12288)
+
+ async def test_transient_503_gives_up_after_bounded_attempts(self):
+  client,manager=self.gemini_client(*[MagicMock(is_success=False,status_code=503) for _ in range(3)])
+  with patch.dict('os.environ',{'GEMINI_API_KEY':'mock'}),patch.object(audio_review.httpx,'AsyncClient',return_value=manager),patch.object(audio_review.asyncio,'sleep',new=AsyncMock()):
+   with self.assertRaisesRegex(ValueError,'temporarily unavailable \\(HTTP 503\\) after 3 attempts'):await audio_review.gemini_json(None,'p',[{'text':'x'}])
+  self.assertEqual(client.post.call_count,3)
+
+ async def test_network_error_retried(self):
+  ok=MagicMock(is_success=True,status_code=200);ok.json.return_value={'candidates':[{'finishReason':'STOP','content':{'parts':[{'text':'{"a":1}'}]}}]}
+  client,manager=self.gemini_client(httpx.ConnectTimeout('slow'),ok)
+  with patch.dict('os.environ',{'GEMINI_API_KEY':'mock'}),patch.object(audio_review.httpx,'AsyncClient',return_value=manager),patch.object(audio_review.asyncio,'sleep',new=AsyncMock()):
+   self.assertEqual(await audio_review.gemini_json(None,'p',[{'text':'x'}]),{'a':1})
 
 if __name__=='__main__':unittest.main()

@@ -176,7 +176,7 @@ async def final_review(state):
 Assess relevance, structure, language clarity and technical reasoning. Identify flawed reasoning explicitly with a careful explanation; do not praise technically incorrect claims as sound.
 Return at most three strengths and three prioritized improvements. Review up to five actual question/answer pairs with an exact candidate quote, specific observation, improvement and a clearer suggested answer.
 Preserve only facts actually stated; missing details use [add your actual detail]. Do not invent results or validate unsupported claims.
-No scores, hiring verdicts, personality judgments, or pronunciation/fluency claims from text. Transcripts may contain mistakes. Keep each field concise.''', [{'text': json.dumps({'brief': state['brief'], 'elapsed_seconds': state.get('interview_seconds',0), 'transcript': turns})}])
+No scores, hiring verdicts, personality judgments, or pronunciation/fluency claims from text. Transcripts may contain mistakes. Keep each field concise.''', [{'text': json.dumps({'brief': state['brief'], 'elapsed_seconds': state.get('interview_seconds',0), 'transcript': turns})}], max_tokens=12288)
     result['answers'] = [a for a in result['answers'] if a['quote'].strip() and a['quote'] in actual]
     result['source'] = 'Gemini review of the live transcript. Check transcription and suggested facts; delivery is not assessed from text.'
     state['interview_review'] = result
