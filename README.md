@@ -8,6 +8,8 @@ The coaching engine is a self-hosted **MCP server** (spec **2025-11-25**, Stream
 
 ![The focused interview room](docs/screenshots/04-interview-room.jpg)
 
+**Demo video:** https://youtu.be/jYg5wq5HX_E
+
 > Hackathon track: **Alexa+** — self-hosted MCP server, plus a simulated Alexa+ experience in a web app.
 
 ## What works today, and what does not

@@ -9,7 +9,7 @@
 - **Primary track:** Alexa+ (self-hosted MCP server, spec 2025-11-25 over Streamable HTTP, plus a simulated Alexa+-style voice experience in a web app)
 - **Mini challenges:** Open Source (see the Open Source section below).
 - **Repository:** https://github.com/mtcd001-tech/rehearsal (public, MIT license)
-- **Demo video:** **[fill in YouTube/Vimeo URL]** (public, under 3 minutes)
+- **Demo video:** https://youtu.be/jYg5wq5HX_E (public)
 - **Built with:** Python, FastAPI, Model Context Protocol Python SDK (`mcp` 1.30.0, FastMCP, Streamable HTTP), Gemini API (Live API for the voice interview; `generateContent` for review, questions, coaching and Google Search–grounded research), `websockets`, vanilla JavaScript, Web Audio (AudioWorklet), MediaRecorder, Web Speech Synthesis
 
 ## Image gallery

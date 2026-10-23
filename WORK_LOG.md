@@ -435,3 +435,6 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 
 ### 2026-10-23 - Open Source mini challenge added
 - User supplied 4 PRs; verified via GitHub API: all by mtcd001-tech, created Sep 17-23 and merged Sep 22-Oct 6 2026 (inside window Aug 31-Oct 23): pytest#15058, sedona#3397, sedona#3384, pydantic-settings#981. SUBMISSION.md gains a ready-to-paste Open Source section; mini challenges now Open Source.
+
+### 2026-10-23 - Demo video published
+- https://youtu.be/jYg5wq5HX_E : public (not unlisted/private) per YouTube page data; length 181 s (3:01), slightly over the "less than three minutes" guidance; user advised to trim and re-upload if time allows. Link added to SUBMISSION.md and README.
