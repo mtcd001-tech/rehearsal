@@ -1,12 +1,12 @@
 # Rehearsal handoff
 
-Updated October22,2026: Pressure Replay implemented and verified with synthetic live speech. Read AGENTS.md, interview/README.md and latest WORK_LOG.md before editing. This is the current snapshot; the log preserves history.
+Updated October22,2026: Feature scope frozen; preparing submission. Pressure Replay implemented and verified with synthetic live speech. Read AGENTS.md, interview/README.md and latest WORK_LOG.md before editing. This is the current snapshot; the log preserves history.
 
 ## Objective, scope and authorization
 
 Active project is Rehearsal in interview/, Amazon Alexa+ hackathon entry. Trace in trace/ is paused. User wants most work done autonomously and frequent resumable checkpoints. Never add AI/tool authorship credits. Commits use user's identity. No delegation authorization. No remote publication/submission authorization; publishing/video/Devpost remain pending.
 
-User confirmed the FIVE-MINUTE interview and physical webcam work well. They explicitly said full30-minute perfection is unnecessary for this short demo. Do not require or repeatedly ask for those tests again. Longer-session stability is unverified and must not be claimed. The latest approved feature is Pressure Replay, now implemented; planning-only status is superseded.
+User confirmed the FIVE-MINUTE interview and physical webcam work well. They explicitly said full30-minute perfection is unnecessary for this short demo. Do not require or repeatedly ask for those tests again. Longer-session stability is unverified and must not be claimed. The latest approved feature is Pressure Replay, now implemented; planning-only status is superseded. Latest user direction: ask before adding ANY new feature. Focus on existing-flow fixes and submission preparation; do not expand scope.
 
 Gemini key is in ignored interview/.env. User authorized Gemini development/live testing; never print keys. OpenAI calls remain deferred and have been removed from runtime. Company Google Search research returned429 repeatedly; do not loop retries. Research is optional and not needed for replay or interviews based on supplied setup.
 
@@ -45,7 +45,7 @@ Files: pressure_replay.py for anchors/state/comparison; live_interview.py for Li
 
 ## Submission and known limits
 
-README.md overview, interview/README.md detailed behavior, DEMO.md short script plus replay option, SUBMISSION.md draft, docs/SUBMIT_CHECKLIST.md remaining actions. Screenshots01-10 predate Pressure Replay; do not claim they show the new card. Old silent AVI is outdated.
+README.md overview, interview/README.md detailed behavior, DEMO.md primary replay script plus fallback, SUBMISSION.md draft, docs/SUBMIT_CHECKLIST.md remaining actions. Screenshots01-10 predate Pressure Replay; do not claim they show the new card. Old silent AVI is outdated.
 
 Earlier official-rules check recorded deadline Oct23,2026 noon PT/3pm ET, Alexa+ simulation or self-hosted MCP track, repo/license, text, public video under3min and product feedback; optional friction log. Source https://amazonappdev2026.devpost.com/rules . Recheck rules if changing submission assumptions. No remote/publication created by this milestone.
 

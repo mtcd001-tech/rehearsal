@@ -1,8 +1,14 @@
 # Submission checklist (deadline: Fri Oct 23, 12:00 p.m. PT / 3:00 p.m. ET)
 
-Everything below needs you: publishing, recording, and submitting are your actions. The rest is done and committed on `main`.
+Feature scope is frozen. Ask before adding a new feature. Submission materials are prepared; final replay browser verification, author review, publishing, recording and submission remain. Nothing has been published.
 
-## 1. Test the latest version yourself (15 min)
+## Remaining author inputs
+
+- Public repository URL (no remote configured yet).
+- Public demo video URL.
+- Your actual Alexa developer portal onboarding experience, if any; do not invent one.
+
+## 1. Test the latest version yourself (10?15 min)
 
 Restart the server so it runs the latest code. Press Ctrl+C in its terminal, then:
 

@@ -383,3 +383,28 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 ### 2026-10-22 - COMPLETE: Pressure Replay
 - Finished implementation and updated README/submission/demo/checklist plus consolidated HANDOFF snapshot. Preserved earlier uncommitted continuity edits. Final HTML nesting/unique IDs/script paths/all interview element references pass; replay JS lifecycle test and syntax pass after wording cleanup; git diff check clean.
 - Ready for checkpoint commit. User owns server; no restart performed. Next: preserve current notes, restart in user's terminal, refresh, and test the new replay card. Five-minute interview/webcam remain confirmed;30-minute hardening not required.
+
+### 2026-10-22 — Submission focus (IN PROGRESS)
+- Purpose: Freeze feature scope and prepare the existing demo for submission; ask the user before adding any new feature.
+- Changes (paths): Planned DEMO.md, SUBMISSION.md, docs/SUBMIT_CHECKLIST.md and HANDOFF.md alignment.
+- Verification: Read current handoff and submission drafts; working tree clean at start.
+- Open issues / unverified: Pressure Replay browser flow pending; public repository and video URLs missing.
+- Next action: Tighten one primary demo script and reconcile verification claims without publishing.
+
+### 2026-10-22 — COMPLETE: submission focus
+- Purpose: Prepare the existing product for a short demo; no new features added.
+- Changes (paths): DEMO.md now has one primary 2:45 replay narrative and honest failure fallbacks. SUBMISSION.md removes unsupported competitor claims, corrects eleven JS suites and adds replay/webcam verification status. docs/SUBMIT_CHECKLIST.md lists missing author inputs. HANDOFF.md records feature freeze and ask-first requirement.
+- Verification: git diff --check passed (line-ending warning only). Documentation-only changes; no application tests or paid API calls repeated, no server restart or publication.
+- Open issues / unverified: New replay browser flow still pending. Repository/video URLs and actual portal onboarding experience remain author inputs. Existing screenshots predate replay.
+- Next action: User checks new replay once, then record the primary demo (fallback if needed), review submission text, and authorize publication when ready. Full30-minute stability is not a blocker.
+
+### 2026-10-22 (late) - IN PROGRESS: replay browser check + submission readiness
+- Resumed at 8edaf17 with Codex doc edits uncommitted (DEMO, SUBMISSION, SUBMIT_CHECKLIST, HANDOFF, WORK_LOG); preserving them. Feature freeze respected: fixes only.
+- Plan: fix glyph corruption (DEMO timings show ?, log headings show replacement chars), scan app files, isolated regression, mocked browser check of Pressure Replay UI, commit, then ask user before any publication.
+- Next action: corruption scan.
+
+### 2026-10-22 (late) - COMPLETE: replay browser check + glyph fixes
+- Fixed corrupted glyphs introduced with replay: interview.js (`·` separators x4 incl. "Moment N · …", ellipses in "Checking your microphone…" and "Collecting your words…"), DEMO.md timing dashes (6), WORK_LOG headings. Replay start status now says "Your replay is starting".
+- Regression on isolated no-key copy: 73 Python OK, 11 JS suites PASS.
+- Real Chrome (extension) mocked Pressure Replay flow — fake WebSocket, mocked transcript/review/replay endpoints with [MOCK] text, synthetic mic/camera; wording panel used the real local MCP tool: debrief → replay card (moment selector, question, quote, focus) → real click Start 90-second replay → replay room (chip, 01:30 countdown, End replay) → comparison (verdict, before/retry pair, remaining gap, follow-up, next step, MCP wording panel) → original debrief unchanged → export contains original + replay. No console errors. UI-only; the live replay path was verified earlier by synthetic Gemini test only.
+- Committed Codex's pending doc edits alongside. Next: user approval to publish (GitHub repo + push), then video.

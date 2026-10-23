@@ -27,9 +27,9 @@ Upload from `docs/screenshots/`, in this order. All are real captures; captions 
 
 ## Inspiration
 
-Behavioral interviews are hard for students applying to technical internships, especially when English is not their first language. Most practice tools give you a list of questions, a generic tip ("use STAR") or a score. None of those tells you what to say differently. And practicing alone never recreates the hard part: an interviewer who follows up on what you just said.
+Behavioral interviews are hard for students applying to technical internships, especially when English is not their first language. A list of questions or a generic tip such as "use STAR" can leave a candidate unsure what to change in their own answer. We wanted to practice the harder part: responding when an interviewer follows up on what you just said.
 
-The most common problem in real answers is specific. People say "we worked on it" and "it worked well," so the interviewer never hears what *they* did or how they knew it worked.
+One problem we designed for is vague ownership and evidence. People say "we worked on it" and "it worked well," so the interviewer never hears what *they* did or how they knew it worked.
 
 ## What it does
 
@@ -123,7 +123,7 @@ Synthetic live verification passed for the original question, two spoken answers
   - The resume is extracted locally in a time-limited subprocess, and the file is not kept.
 - **Tests:**
   - 73 Python tests, with providers mocked: schema validation, citations, resume parsing, the Live session lifecycle, review gating, the rule checks, history, and real local MCP integration.
-  - 10 JavaScript suites with mocked browser and media APIs, including camera opt-in, release and denial: the AudioWorklet resampler, timed ending, microphone cleanup, late permission, stale results and recovery.
+  - 11 JavaScript suites with mocked browser and media APIs, including camera opt-in, release and denial: the AudioWorklet resampler, timed ending, microphone cleanup, late permission, stale results and recovery.
 
 ## Verification status (be precise in the video and on Devpost)
 
@@ -131,6 +131,8 @@ Synthetic live verification passed for the original question, two spoken answers
 |---|---|
 | Deterministic MCP tools, MCP Apps view, authored demo | Verified in a real browser and by integration tests. |
 | Gemini Live interview | **Verified with a physical microphone** (author's run, Oct 22): Maya spoke, heard the answers, asked follow-ups on what was said, and the transcript was captured. Earlier synthetic-speech tests passed too. **A full 30-minute run has not been verified.** |
+| Pressure Replay | Actual Gemini Live run with synthetic speech and evidence comparison passed; new browser and physical-microphone replay flow pending. |
+| Webcam self-view | Author confirmed it works in the five-minute interview; video stays local. |
 | Post-interview debrief | Verified live once on a fictional transcript. On the author's real run it hit Gemini HTTP 503 (provider overload); transient errors are now retried automatically. |
 | Recorded-answer review, tailored questions and follow-ups | Verified live with synthetic and fictional input. Gemini text generation was re-verified on Oct 22 with a fictional brief. |
 | Company research (Google Search grounding) | **Not verified live.** It repeatedly returned HTTP 429 on this key, and we did not retry in a loop. |
