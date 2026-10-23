@@ -408,3 +408,15 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - Regression on isolated no-key copy: 73 Python OK, 11 JS suites PASS.
 - Real Chrome (extension) mocked Pressure Replay flow — fake WebSocket, mocked transcript/review/replay endpoints with [MOCK] text, synthetic mic/camera; wording panel used the real local MCP tool: debrief → replay card (moment selector, question, quote, focus) → real click Start 90-second replay → replay room (chip, 01:30 countdown, End replay) → comparison (verdict, before/retry pair, remaining gap, follow-up, next step, MCP wording panel) → original debrief unchanged → export contains original + replay. No console errors. UI-only; the live replay path was verified earlier by synthetic Gemini test only.
 - Committed Codex's pending doc edits alongside. Next: user approval to publish (GitHub repo + push), then video.
+
+### 2026-10-23 - IN PROGRESS: "Why I asked that" + frontend polish (user approved)
+- User approved: post-interview "Why I asked that" (reconstructed from transcript, exact-quote filtered, labelled practice explanation; no change to live audio path) + replay "Resolved?" line; then visual polish; then wrap up for submission.
+- Files: live_interview.py (review schema/filter), pressure_replay.py (resolved/still_worth_asking), static/interview.js + style.css, tests. Next: read schemas.
+
+### 2026-10-23 - COMPLETE: "Why Maya asked that" + frontend polish
+- Backend: `live_interview.py` InterviewReview gains optional `follow_ups` (trigger_quote, unclear, follow_up) with `verified_follow_ups` keeping only notes whose quotes appear verbatim in an adjacent user→assistant pair; prompt labels it a practice explanation. `pressure_replay.py` ReplayReview gains `resolved` (yes/partly/no/unclear, default unclear) and `still_worth_asking`; forced verdicts set resolved (unchanged→no, insufficient/partial→unclear). No change to the live audio path.
+- Frontend: debrief "Why Maya asked that" dark card (You said / Still unclear / So Maya asked, honesty label); replay "Did your retry resolve the open question?" line. Polish: home "How it works" 3-step strip; results page dark header band, shadowed report card, serif headings, tinted keep/work-on columns, +/– detail toggles, warmer Pressure Replay card, colour-coded before/retry cards, mobile rules.
+- Tests: 3 new Python tests (adjacent exact pairs only, final_review filtering, replay resolved/override). Fresh isolated regression: 76 Python OK, 11 JS suites PASS, all static JS syntax OK.
+- Visual QA: headless Chrome `--screenshot` (no DevTools protocol) on a scratch-only harness page that loads the real app with mocked endpoints ([MOCK] text) — desktop home, debrief, replay comparison; true 390 px iframe measurements for home and debrief show scrollWidth = clientWidth (no overflow). Harness lives only in scratchpad copy, not in repo.
+- Not verified: the new review fields with real Gemini output; user's own run will be the first.
+- Next: user does one real interview + replay, records demo, approves publication.

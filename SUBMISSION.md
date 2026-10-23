@@ -53,13 +53,14 @@ One problem we designed for is vague ownership and evidence. People say "we work
   - what to keep doing, and the top priorities;
   - structure, clarity and technical reasoning;
   - each answer, with a quoted line from your own transcript, how to improve it, and a clearer version to fact-check.
+- **Why Maya asked that.** For each follow-up, the debrief shows three things: **You said** (your exact words), **Still unclear** (what that answer left open, such as your own contribution or how you measured it), and **So Maya asked** (her actual follow-up). It teaches *why* a polished-sounding answer still draws a follow-up. Both quotes must appear verbatim in adjacent turns of the transcript, or the note is dropped. It is labelled as a practice explanation reconstructed from the transcript, not a real recruiter's reasoning.
 - Quotes are filtered so only exact text from your transcript survives.
 - There are no scores and no pronunciation, accent, personality or hiring judgments. With no transcript, no assessment is shown.
 - You can download the transcript and review.
 
 **Pressure Replay: put the feedback into practice.**
 
-After the interview, choose a moment backed by a quote from one actual answer. In a short voice replay, Maya repeats the original question and then changes one condition in a follow-up. The app compares exact before/retry evidence and evaluates the follow-up separately. It can report no demonstrated improvement; there are no invented percentage scores. The original debrief is preserved. An expandable wording comparison uses the existing MCP tool.
+After the interview, choose a moment backed by a quote from one actual answer. In a short voice replay, Maya repeats the original question and then changes one condition in a follow-up. The app compares exact before/retry evidence and evaluates the follow-up separately. It can report no demonstrated improvement; there are no invented percentage scores. The original debrief is preserved. The comparison also says whether the retry **resolved** what the original answer left unclear (yes, partly, no, or unclear) and names one question still worth asking. An expandable wording comparison uses the existing MCP tool.
 
 Synthetic live verification passed for the original question, two spoken answers, changed-condition follow-up, automatic end and Gemini comparison. New replay UI and physical-microphone flow still need user verification; do not describe the synthetic test as a real user demo.
 

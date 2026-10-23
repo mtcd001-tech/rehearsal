@@ -100,4 +100,30 @@ class ReplayTests(unittest.IsolatedAsyncioTestCase):
   finally:
    server.sessions.pop(sid,None);server.sessions.pop(child,None)
 
+class WhyIAskedThatTests(unittest.IsolatedAsyncioTestCase):
+ TURNS=[{'role':'assistant','text':QUESTION},{'role':'user','text':BEFORE},{'role':'assistant','text':FOLLOWUP},{'role':'user','text':CHALLENGE}]
+ def test_only_adjacent_exact_pairs_survive(self):
+  items=[{'trigger_quote':'It worked well.','unclear':'How you checked it.','follow_up':'ten times more records'},
+         {'trigger_quote':'Invented claim','unclear':'x','follow_up':'ten times more records'},
+         {'trigger_quote':'measure query time','unclear':'x','follow_up':'ten times more records'},
+         {'trigger_quote':'It worked well.','unclear':'x','follow_up':'personally change'},
+         {'trigger_quote':'It worked well.','unclear':'','follow_up':'ten times more records'}]
+  kept=live.verified_follow_ups(items,self.TURNS)
+  self.assertEqual(len(kept),1);self.assertEqual(kept[0]['unclear'],'How you checked it.')
+ async def test_final_review_filters_follow_ups(self):
+  state={'brief':{'role':'Intern'},'interview_ended':True,'interview_turns':self.TURNS}
+  out={'summary':'s','strengths':[],'priorities':[],'structure':'s','language':'l','knowledge':'k','answers':[],
+       'follow_ups':[{'trigger_quote':'It worked well.','unclear':'How you checked it.','follow_up':'ten times more records'},{'trigger_quote':'nope','unclear':'x','follow_up':'nope'}]}
+  with patch.object(live,'gemini_json',new=AsyncMock(return_value=out)):
+   result=await live.final_review(state)
+  self.assertEqual([f['trigger_quote'] for f in result['follow_ups']],['It worked well.'])
+ async def test_replay_resolution_defaults_and_overrides(self):
+  s=ready()
+  with patch.object(replay,'gemini_json',new=AsyncMock(return_value={**report(),'resolved':'partly','still_worth_asking':'How did you handle stale data?'})):
+   result=await replay.compare_replay(s)
+  self.assertEqual((result['resolved'],result['still_worth_asking']),('partly','How did you handle stale data?'))
+  s=ready();s['replay_answers'][0].update(answer=BEFORE)
+  with patch.object(replay,'gemini_json',new=AsyncMock(return_value={**report(),'resolved':'yes'})):
+   self.assertEqual((await replay.compare_replay(s))['resolved'],'no')
+
 if __name__=='__main__':unittest.main()

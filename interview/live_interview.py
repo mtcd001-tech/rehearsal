@@ -174,6 +174,26 @@ class InterviewReview(BaseModel):
     language: str
     knowledge: str
     answers: list[AnswerReview] = Field(max_length=5)
+    follow_ups: list['FollowUpReason'] = Field(default_factory=list, max_length=4)
+
+class FollowUpReason(BaseModel):
+    trigger_quote: str
+    unclear: str
+    follow_up: str
+
+InterviewReview.model_rebuild()
+
+def verified_follow_ups(items, turns):
+    """Keep a 'why I asked that' note only when both quotes appear verbatim in an adjacent answer -> follow-up pair."""
+    kept = []
+    for item in items:
+        trigger, asked = item.get('trigger_quote', '').strip(), item.get('follow_up', '').strip()
+        if not trigger or not asked or not item.get('unclear', '').strip():
+            continue
+        if any(turns[i-1]['role'] == 'user' and turns[i]['role'] == 'assistant' and trigger in turns[i-1]['text'] and asked in turns[i]['text']
+               for i in range(1, len(turns))):
+            kept.append(item)
+    return kept[:4]
 
 async def final_review(state):
     if not state.get('interview_ended') or state.get('interview_active'):
@@ -188,8 +208,10 @@ async def final_review(state):
 Assess relevance, structure, language clarity and technical reasoning. Identify flawed reasoning explicitly with a careful explanation; do not praise technically incorrect claims as sound.
 Return at most three strengths and three prioritized improvements. Review up to five actual question/answer pairs with an exact candidate quote, specific observation, improvement and a clearer suggested answer.
 Preserve only facts actually stated; missing details use [add your actual detail]. Do not invent results or validate unsupported claims.
-No scores, hiring verdicts, personality judgments, or pronunciation/fluency claims from text. Transcripts may contain mistakes. Keep each field concise.''', [{'text': json.dumps({'brief': state['brief'], 'elapsed_seconds': state.get('interview_seconds',0), 'transcript': turns})}], max_tokens=12288)
+No scores, hiring verdicts, personality judgments, or pronunciation/fluency claims from text. Transcripts may contain mistakes. Keep each field concise.
+follow_ups: for up to four interviewer questions that followed up on the answer just before them, explain as a practice explanation why that follow-up was a natural next question. trigger_quote = exact words from that preceding candidate answer; unclear = one short sentence on what the answer left open (e.g. own contribution, how it was measured, a tradeoff); follow_up = exact words from that interviewer turn. Omit questions that did not build on the previous answer. Do not claim to know a real recruiter's intent.''', [{'text': json.dumps({'brief': state['brief'], 'elapsed_seconds': state.get('interview_seconds',0), 'transcript': turns})}], max_tokens=12288)
     result['answers'] = [a for a in result['answers'] if a['quote'].strip() and a['quote'] in actual]
+    result['follow_ups'] = verified_follow_ups(result.get('follow_ups', []), turns)
     result['source'] = 'Gemini review of the live transcript. Check transcription and suggested facts; delivery is not assessed from text.'
     state['interview_review'] = result
     return result

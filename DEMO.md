@@ -20,7 +20,7 @@ Record the real flow first, then edit excerpts to these timings. Do not speed up
 |---|---|---|
 | 0:00–0:15 | Setup: role, experience and skill focus | "Rehearsal helps me practice the difficult part of an interview: explaining my own contribution, then answering a follow-up." |
 | 0:15–0:55 | Live room: one answer and follow-up; show End interview | "Maya uses my interview brief. I speak naturally, without clicking between answers. Coaching waits until the end. This is an excerpt." |
-| 0:55–1:15 | Debrief: exact quoted line, improvement focus, Pressure Replay selector | "The feedback points to my words. Instead of just reading advice, I can retry this specific moment." |
+| 0:55–1:15 | Debrief: **Why Maya asked that** (You said → Still unclear → So Maya asked), then the Pressure Replay selector | "Here's why Maya followed up: my answer said 'we', so it was unclear what I did myself. The debrief shows that link with my exact words. Now I can retry that exact moment." |
 | 1:15–2:10 | Replay: original question, spoken retry, changed-condition follow-up, reply and ending | "Maya repeats the question, then changes one condition. That gives me a chance to apply the feedback and explain my reasoning under pressure." |
 | 2:10–2:35 | Actual before/retry quotes, separate follow-up feedback; expand Wording comparison | "The comparison shows evidence of what changed, including remaining gaps. The wording panel calls our self-hosted MCP tool. It can also report no improvement." |
 | 2:35–2:45 | Comparison card or home page | "Interview, reflect, then retry the hard moment. This is a web simulation backed by MCP tools; it has not been connected to Alexa+ itself." |

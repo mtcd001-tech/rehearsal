@@ -87,6 +87,8 @@ class ReplayReview(BaseModel):
     follow_up_quote: str
     follow_up_feedback: str
     next_step: str
+    resolved: Literal['yes', 'partly', 'no', 'unclear'] = 'unclear'
+    still_worth_asking: str = ''
 
 async def compare_replay(state):
     if not state.get('replay_moment'):
@@ -108,16 +110,17 @@ Quote up to three exact before/after excerpts supporting concrete observations. 
 If a partial answer or transcription uncertainty prevents a conclusion, choose insufficient_evidence.
 Do not invent facts, metrics, numeric scores, a hiring verdict, or claims about accent/personality/fluency.
 For the challenge quote exact words from its answer and assess whether the changed condition was addressed.
-With no challenge answer, leave follow_up_quote and follow_up_feedback empty. Keep fields concise.''',
+With no challenge answer, leave follow_up_quote and follow_up_feedback empty. Keep fields concise.
+resolved: did the retry resolve what the original answer left unclear (the stated focus)? yes, partly, no, or unclear if evidence is insufficient. still_worth_asking: one natural next follow-up an interviewer could still ask after the retry.''',
         [{'text':json.dumps({'moment':moment,'retry':answers[0],'challenge':challenge})}])
     result['changes']=[c for c in result['changes'] if c['before_quote'].strip() and c['after_quote'].strip()
                        and c['before_quote'] in before and c['after_quote'] in after]
     if before.strip()==after.strip():
-        result.update(verdict='not_yet',summary='The retry transcript is unchanged. There is no new evidence of improvement.')
+        result.update(verdict='not_yet',resolved='no',summary='The retry transcript is unchanged. There is no new evidence of improvement.')
     elif not result['changes']:
-        result.update(verdict='insufficient_evidence',summary='There was not enough verified before-and-after evidence to assess a change.')
+        result.update(verdict='insufficient_evidence',resolved='unclear',summary='There was not enough verified before-and-after evidence to assess a change.')
     if answers[0].get('partial'):
-        result.update(verdict='insufficient_evidence',summary='The retry ended before the exchange completed. Treat this comparison as partial.')
+        result.update(verdict='insufficient_evidence',resolved='unclear',summary='The retry ended before the exchange completed. Treat this comparison as partial.')
     if not challenge or not result['follow_up_quote'].strip() or result['follow_up_quote'] not in challenge['answer']:
         result['follow_up_quote']=''
         result['follow_up_feedback']='No verified follow-up evidence was available.'
