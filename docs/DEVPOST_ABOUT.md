@@ -101,7 +101,7 @@ Synthetic live verification passed for the original question, two spoken answers
   - 76 Python tests, with providers mocked: schema validation, citations, resume parsing, the Live session lifecycle, review gating, the rule checks, history, and real local MCP integration.
   - 11 JavaScript suites with mocked browser and media APIs, including camera opt-in, release and denial: the AudioWorklet resampler, timed ending, microphone cleanup, late permission, stale results and recovery.
 
-## Verification status (be precise in the video and on Devpost)
+## Verification status
 
 | Part | Status |
 |---|---|
