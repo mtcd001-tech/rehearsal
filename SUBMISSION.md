@@ -203,7 +203,7 @@ Synthetic live verification passed for the original question, two spoken answers
 - **Used for:** the target platform. We built the self-hosted MCP server path and a simulated Alexa+-style voice experience.
 - **What worked well:** the rules allow a self-hosted MCP server or a simulation, so we could build without hardware.
 - **What needs work:** entrants cannot connect a local MCP server to Alexa+ itself, so we could not test real Alexa voice turns with our tools (entry 4).
-- **Onboarding:** Alexa+ preview access isn't available to entrants, so we started from the track's pointer to the MCP getting-started docs and built the self-hosted MCP server path directly. Going from zero to a working local MCP tool call took under an hour. The missing piece was any way to hear our tools inside an actual Alexa+ conversation. *(Author: confirm or replace with your own portal experience.)*
+- **Onboarding:** Alexa+ preview access isn't available to entrants, so we started from the track's pointer to the MCP getting-started docs and built the self-hosted MCP server path directly. Getting a working local MCP tool call with the official Python SDK was straightforward. The missing piece was any way to hear our tools inside an actual Alexa+ conversation. *(Author: confirm or replace with your own portal experience.)*
 - **Would we build with it again?** Yes, if an Alexa+ test harness becomes available. Practice by voice is exactly the interaction this product needs.
 
 ### Browser APIs (Chrome): AudioWorklet, MediaRecorder, Web Audio, Speech Synthesis
