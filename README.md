@@ -135,7 +135,7 @@ cd interview
 node test_practice.cjs
 ```
 
-73 Python tests passed against a temporary local server (including real MCP integration), plus eleven JS mock test files. Automated regression uses mocked model responses. Separate authorized live tests verified Gemini on synthetic audio and a fictional follow-up; the base five-minute interview/webcam are user-confirmed; new replay browser UI testing remains pending.
+76 Python tests passed against a temporary local server (including real MCP integration), plus eleven JS mock test files. Automated regression uses mocked model responses. Separate authorized live tests verified Gemini on synthetic audio and a fictional follow-up; the base five-minute interview/webcam are user-confirmed; new replay browser UI testing remains pending.
 
 ## Repository layout
 

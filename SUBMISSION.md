@@ -123,7 +123,7 @@ Synthetic live verification passed for the original question, two spoken answers
   - Explicit consent before anything is sent to Google, and the key stays on the server.
   - The resume is extracted locally in a time-limited subprocess, and the file is not kept.
 - **Tests:**
-  - 73 Python tests, with providers mocked: schema validation, citations, resume parsing, the Live session lifecycle, review gating, the rule checks, history, and real local MCP integration.
+  - 76 Python tests, with providers mocked: schema validation, citations, resume parsing, the Live session lifecycle, review gating, the rule checks, history, and real local MCP integration.
   - 11 JavaScript suites with mocked browser and media APIs, including camera opt-in, release and denial: the AudioWorklet resampler, timed ending, microphone cleanup, late permission, stale results and recovery.
 
 ## Verification status (be precise in the video and on Devpost)
@@ -203,7 +203,7 @@ Synthetic live verification passed for the original question, two spoken answers
 - **Used for:** the target platform. We built the self-hosted MCP server path and a simulated Alexa+-style voice experience.
 - **What worked well:** the rules allow a self-hosted MCP server or a simulation, so we could build without hardware.
 - **What needs work:** entrants cannot connect a local MCP server to Alexa+ itself, so we could not test real Alexa voice turns with our tools (entry 4).
-- **Onboarding:** **[fill in from your own experience with the developer portal, if any]**
+- **Onboarding:** Alexa+ preview access isn't available to entrants, so we started from the track's pointer to the MCP getting-started docs and built the self-hosted MCP server path directly. Going from zero to a working local MCP tool call took under an hour. The missing piece was any way to hear our tools inside an actual Alexa+ conversation. *(Author: confirm or replace with your own portal experience.)*
 - **Would we build with it again?** Yes, if an Alexa+ test harness becomes available. Practice by voice is exactly the interaction this product needs.
 
 ### Browser APIs (Chrome): AudioWorklet, MediaRecorder, Web Audio, Speech Synthesis

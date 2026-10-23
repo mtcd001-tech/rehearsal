@@ -29,7 +29,7 @@ The five-minute interview and webcam already work according to your test. A full
 ## 2. Review the text (15 min)
 
 - `README.md`: the judge-facing overview.
-- `SUBMISSION.md`: paste into Devpost. Fill in every **[fill in]**.
+- `SUBMISSION.md`: paste into Devpost. Fill in the repository and video URLs, and confirm the drafted Alexa+ onboarding sentence (marked *Author: confirm*).
 - `DEMO.md`: the video script.
 
 Change anything that doesn't sound like you.
