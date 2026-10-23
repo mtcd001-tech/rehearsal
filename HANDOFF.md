@@ -50,3 +50,12 @@ README.md overview, interview/README.md detailed behavior, DEMO.md primary repla
 Earlier official-rules check recorded deadline Oct23,2026 noon PT/3pm ET, Alexa+ simulation or self-hosted MCP track, repo/license, text, public video under3min and product feedback; optional friction log. Source https://amazonappdev2026.devpost.com/rules . Recheck rules if changing submission assumptions. No remote/publication created by this milestone.
 
 Risks: model transcripts/advice/drafts may be wrong; exact quote checks are not factual validation. Word-list MCP checks can misclassify. Async revision/generation guards protect reset and late results; preserve them. PowerShell can display UTF-8 mojibake; inspect actual bytes before fixing encoding.
+
+## Update: Oct 23 — final features frozen
+
+- **Why Maya asked that:** the debrief's `follow_ups`, filtered to verbatim adjacent turn pairs.
+- **Replay:** the comparison now reports `resolved` and `still_worth_asking`.
+- **Polish:** home how-it-works strip; restyled debrief and replay.
+- **Verification:** 76 Python tests and 11 JS suites pass. Visual QA used a scratch-only mocked harness. The new fields have not yet been seen with real Gemini output.
+- **Remaining work is user-side:** one real interview and replay, the video, approving repo publication, and Devpost before Oct 23, 12:00 p.m. PT.
+- **No new features** without asking the user.
