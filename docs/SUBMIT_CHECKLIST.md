@@ -13,17 +13,12 @@ cd D:\hackamazon
 
 Open http://127.0.0.1:8766, refresh, and put on headphones.
 
-1. **The most important test.** *Enter interview room* → choose **5 minutes** → *Allow microphone & begin*. Answer two or three questions out loud, then press *End interview*. Check the following:
-   - Maya speaks.
-   - She hears you and follows up.
-   - The debrief appears.
-   - *Download transcript & review* works.
+The five-minute interview and webcam already work according to your test. A full30-minute run is not required for this short demo.
 
-   This is the one thing nobody has tested with a physical microphone yet. If it fails, note the message shown and use the no-key path in `DEMO.md`.
-2. Optional: under *Practice a single answer or explore the demo*:
-   - Run **Experience the sample** through to the comparison.
-   - In **Practice my own answer**, record one take and analyze it with Gemini.
-3. Footer → **MCP App preview** → **Call check_answer_text**.
+1. **Test the new Pressure Replay flow:** after an interview debrief, choose one moment and start the90-second replay. Answer the original question and changed-condition follow-up. Check that it ends, shows before/after quotes, and preserves the original debrief.
+2. Download transcript & review; confirm the file contains the original interview and replay. If comparison fails, keep the page open and use Try replay comparison again.
+3. During your demo rehearsal, check microphone/voice and provider availability once. No need to repeatedly retest the confirmed webcam flow.
+4. Footer -> MCP App preview -> Call check_answer_text, or show the replay's Wording comparison panel.
 
 ## 2. Review the text (15 min)
 
@@ -66,5 +61,5 @@ Submit before **12:00 p.m. PT**. Leave a buffer.
 
 ## Do not
 
-- Claim the live AI voice interview works. It has not been verified (the API key had no quota).
+- Claim a full30-minute run is verified; it is outside the short-demo scope. Five-minute interview and physical webcam were confirmed by the user; new Pressure Replay browser testing is pending and company research remains quota-blocked.
 - Change the submitted code, video or materials after the deadline. The organizers ask entrants to freeze them until winners are announced.

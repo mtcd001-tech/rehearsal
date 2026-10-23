@@ -30,7 +30,7 @@ Research uses Gemini Google Search grounding with company/role only. Resume/JD/g
 
 ## Full mock interview
 
-Enter interview room is now the primary mode. Choose 5, 15 or 30 minutes (room defaults to 30), allow the microphone once, and speak naturally. Gemini Live asks spoken questions and follow-ups using saved setup. There are no per-answer Record/Next buttons and no coaching panels during the interview. Use headphones. Automatic speech detection handles turns; interruptions stop queued interviewer audio. End interview is always available, and the countdown ends the session automatically.
+Enter interview room is now the primary mode. Choose 5, 15 or 30 minutes (room preselects your saved setup length), allow the microphone once, and speak naturally. Gemini Live asks spoken questions and follow-ups using saved setup. There are no per-answer Record/Next buttons and no coaching panels during the interview. Use headphones. Automatic speech detection handles turns; interruptions stop queued interviewer audio. End interview is always available, and the countdown ends the session automatically.
 
 The focused room shows Maya, connection/microphone state and a countdown. The server separately enforces duration. Context compression and session resumption are enabled for longer sessions. A connection rollover may briefly pause the audio; the UI asks you to hold your thought. Network/access failures end the session honestly, retaining received transcripts for review. The app does not silently retry quota failures or pretend to complete the requested duration.
 
@@ -41,6 +41,18 @@ GEMINI_LIVE_MODEL defaults to gemini-3.8-live and is independent of GEMINI_MODEL
 The single-answer practice/demo now live in an expandable section. Recording feedback uses a concise summary and next-step card, with analysis, draft and transcript in expandable sections instead of a long wall of text.
 
 Live setup, native interviewer audio, synthetic candidate answer/follow-up and a separate fictional final review verified; the complete 30-minute physical-microphone experience and current visual layout still require browser testing. Automated tests use mocked audio/transport, including timer, reconnect, cancellation, review gating and PCM conversion. Official protocol references: https://ai.google.dev/api/live and https://ai.google.dev/gemini-api/docs/live-api/session-management .
+
+## Pressure Replay
+
+After a completed interview has a debrief, Pressure Replay offers moments linked to one exact candidate answer. Choose a moment, review the original question, quoted words and one improvement focus, then select Start 90-second replay. Ambiguous quotes, missing questions and original answers over6000 characters are excluded; no eligible evidence means no invented replay choice.
+
+The microphone starts again. Maya repeats the actual original question, listens to your retry, then asks one follow-up that changes a condition. The session ends after two completed answer exchanges or at90 seconds; End replay is always available. The normal interview and its debrief are preserved in a separate parent session. Camera follows the existing interview setting and stays local. New audio, saved setup and selected moment go to Gemini, with no company web search required.
+
+The result compares before/retry quotes separately from the follow-up. It can say clearer, mixed, not yet, or insufficient evidence; no percentage score or guaranteed improvement. Quotes must occur in the correct original/retry/challenge answer. Identical or incomplete retries cannot be labeled improved. The wording details call the existing compare_answer_texts MCP tool independently; these counts do not assess correctness. Gemini reasoning/transcripts can still be mistaken even when quotes match.
+
+The original debrief remains available if microphone permission, Live connection or comparison fails. Try replay comparison again retries only analysis, not the interview. Download transcript & review now includes the original and latest replay. Back to practice clears the parent and child sessions. Up to three replay sessions per parent are retained in server memory; no raw audio is stored. The new routes are /api/interview/replay and /api/interview/replay-review; the existing Live WebSocket is reused, and the seven MCP tools are unchanged.
+
+Verification: actual synthetic spoken replay succeeded in about55 seconds: original question, retry, changed-condition follow-up, second answer and automatic ending. A real Gemini comparison returned one valid before/after pair and follow-up evidence. All73 Python tests and eleven JS suites passed (regression providers/media mocked; real local MCP integration included). New replay UI/physical microphone testing remains pending because no browser surface is available to this agent. The user already confirmed the base five-minute interview and webcam work; a full30-minute run is not a demo blocker.
 
 ## Recorded interview - no typing required
 
@@ -94,3 +106,5 @@ For Python integration tests, run a separate local server with isolated history,
 Manual checklist: ../docs/USER_TEST.md. Demo/submission drafts: ../DEMO.md and ../SUBMISSION.md. Publication and submission are still pending.
 
 Implementation references: https://ai.google.dev/gemini-api/docs/audio , https://ai.google.dev/gemini-api/docs/google-search , https://ai.google.dev/api/generate-content .
+
+Latest verification update: the user confirmed a real-microphone conversation (Maya spoke, heard answers and followed up; transcript captured). The final review failed with503 on that run; bounded retries for transient500/502/503/504/network failures are now implemented (up to3 attempts; never429). A successful real-user final debrief still needs rechecking. Browser layout/flow was checked with synthetic media and mocked transport; the user subsequently confirmed the five-minute interview and physical webcam work. Full30-minute stability is not required for the short demo. The optional self-view camera uses a separate local video-only stream and is never uploaded. Maya's mouth animation follows model audio. Current targeted regression:10 JS suites and18 Python audio/live tests pass with mocks.

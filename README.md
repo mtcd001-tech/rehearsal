@@ -1,6 +1,6 @@
 # Rehearsal — interview practice that shows you exactly what to change
 
-Rehearsal is an interview-practice room for technical-internship candidates, including non-native English speakers. Its main mode is a **timed, hands-free mock interview** (5/15/30 minutes): Maya, a voice interviewer powered by the Gemini Live API, asks questions and follows up on what you actually said, with no coaching until the end. Then a debrief quotes **your exact words**, names the priorities, and suggests a clearer version to fact-check. Single-answer practice adds a retry loop that shows whether your next take actually changed.
+Rehearsal is an interview-practice room for technical-internship candidates, including non-native English speakers. Its main mode is a **timed, hands-free mock interview** (5/15/30 minutes): Maya, a voice interviewer powered by the Gemini Live API, asks questions and follows up on what you actually said, with no coaching until the end. Then a debrief quotes **your exact words**, names the priorities, and suggests a clearer version to fact-check. **Pressure Replay** lets you revisit one exact answer, face a changed-condition follow-up, and compare what actually changed. Single-answer practice is also available.
 
 The coaching engine is a self-hosted **MCP server** (spec **2025-11-25**, Streamable HTTP). Its core tools are deterministic and need **no API key**, so any MCP client — or a voice assistant such as Alexa+ — could call them. (Alexa+ itself was not available to entrants for testing.) The browser app is a simulated Alexa+-style practice experience built on those same tools.
 
@@ -24,6 +24,7 @@ The coaching engine is a self-hosted **MCP server** (spec **2025-11-25**, Stream
 | Terminal voice-assistant simulation (`interview/agent_sim.py`) driving the loop over MCP | Works; scripted, not an LLM. Covered by an integration test. |
 | MCP Apps view (`ui://rehearsal/answer-check`, SEP-1865) for the check tools | Works in the included local reference host at `/mcp-app-preview`. Not yet tried in a third-party MCP Apps host. |
 | Gemini Live timed interview | 5/15/30-minute hands-free voice mode with end-only debrief. **Works with a physical microphone** (Maya speaks, hears you, follows up; transcript captured). A full 30-minute run is not yet verified. The debrief depends on Gemini availability; transient 5xx errors are retried. |
+| Pressure Replay |90-second spoken retry plus one changed-condition follow-up, with evidence-based comparison. Synthetic live exchange/comparison passed; new browser/microphone flow awaits user testing. |
 | Gemini recorded-answer review and tailored questions | Live synthetic-audio and fictional follow-up tests succeeded; text generation re-verified live on Oct 22. Physical-microphone recording through Gemini review not yet verified. |
 | Gemini text interview and coaching | Same Gemini key; text generation verified live (Oct 22, fictional brief). |
 | Company research (Google Search grounding) | Implemented; **not verified live** — returned HTTP 429 on this key. |
@@ -134,7 +135,7 @@ cd interview
 node test_practice.cjs
 ```
 
-59 Python tests passed against a temporary local server (including real MCP integration), plus nine JS mock test files. Automated regression uses mocked model responses. Separate authorized live tests verified Gemini on synthetic audio and a fictional follow-up; real browser capture/UI remains pending.
+73 Python tests passed against a temporary local server (including real MCP integration), plus eleven JS mock test files. Automated regression uses mocked model responses. Separate authorized live tests verified Gemini on synthetic audio and a fictional follow-up; the base five-minute interview/webcam are user-confirmed; new replay browser UI testing remains pending.
 
 ## Repository layout
 
@@ -167,4 +168,8 @@ Single-answer practice remains turn-based. The new **Enter interview room** mode
 
 Choose **Enter interview room**, set 5/15/30 minutes, and allow the microphone. Speak naturally: Maya asks questions and follow-ups without per-answer buttons. No coaching during the interview; the final review unlocks when time expires or you end the session. Use headphones. The same Gemini key streams audio and setup to Google. Raw audio is not saved. Install updated requirements and restart first.
 
-The quieter UI keeps single-answer practice/demo in an expandable section and presents feedback as a summary, priority and expandable details. Final interview review is based on the received transcript, not a validated vocal assessment. Gemini Live setup, interviewer audio and a synthetic candidate turn were verified separately; browser visuals, real microphone behavior and a full 30-minute connection remain to be tested. See interview/README.md.
+The quieter UI keeps single-answer practice/demo in an expandable section and presents feedback as a summary, priority and expandable details. Final interview review is based on the received transcript, not a validated vocal assessment. Gemini Live setup, interviewer audio and a synthetic candidate turn were verified separately; the base five-minute interview/webcam are user-confirmed. The new replay UI awaits testing; full30-minute stability is outside the short-demo scope. See interview/README.md.
+
+### Try Pressure Replay
+
+Complete a short interview, then choose a moment in the debrief and click **Start 90-second replay**. Maya repeats the question, asks one follow-up with a changed condition, and the app compares the original and retry with exact quotes. No coaching during the replay, and no invented improvement scores. The original debrief stays available on failure. Download includes both attempts. Full details and verification limits: [interview README](interview/README.md#pressure-replay).

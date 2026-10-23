@@ -28,6 +28,7 @@ from research import search_company, validate_plan, PLAN_PROMPT
 from audio_review import review_audio, MAX_AUDIO_BYTES, gemini_json
 from gemini_questions import practice_question
 from live_interview import run_interview, final_review
+from pressure_replay import replay_options, make_replay, compare_replay
 
 ROOT = Path(__file__).parent
 load_dotenv(ROOT / '.env', override=True)
@@ -76,6 +77,9 @@ class Turn(BaseModel):
 
 class SessionRef(BaseModel):
     session_id: str
+
+class ReplayRequest(SessionRef):
+    answer_index: int = Field(ge=0, le=4, strict=True)
 
 class TypedAnswer(SessionRef):
     text: str = Field(min_length=1, max_length=6000)
@@ -427,12 +431,43 @@ async def interview_live(ws: WebSocket, session_id: str):
 
 @app.post('/api/interview/review')
 async def interview_review(body: SessionRef):
-    return await final_review(get_session(body.session_id))
+    state = get_session(body.session_id)
+    report = await final_review(state)
+    return {**report, 'replay_options': replay_options(state)}
 
 @app.post('/api/interview/transcript')
 def interview_transcript(body: SessionRef):
     state = get_session(body.session_id)
     return {'turns': state.get('interview_turns', []), 'ended': state.get('interview_ended', False)}
+
+@app.post('/api/interview/replay')
+def create_replay(body: ReplayRequest):
+    parent = get_session(body.session_id)
+    children = [sid for sid, state in sessions.items() if state.get('replay_parent') == body.session_id]
+    if any(sessions[sid].get('interview_active') for sid in children):
+        raise ValueError('Finish the current replay before starting another.')
+    replay = make_replay(parent, body.answer_index)
+    # Bound saved attempts without evicting the original interview.
+    if len(children) >= 3:
+        sessions.pop(children[0], None)
+    if len(sessions) >= 30:
+        raise ValueError('Session capacity reached. Keep your debrief and try again later.')
+    sid = secrets.token_urlsafe(24)
+    sessions[sid] = {**replay, 'created': time.time(), 'turns': [], 'replay_parent': body.session_id}
+    return {'session_id': sid, 'moment': replay['replay_moment'], 'duration_seconds': replay['duration_seconds']}
+
+@app.post('/api/interview/replay-review')
+async def replay_review(body: SessionRef):
+    state = get_session(body.session_id)
+    result = await compare_replay(state)
+    # MCP remains an independent, deterministic view of wording, not a correctness score.
+    if 'wording' not in result:
+        try:
+            result['wording'] = await via_mcp('compare_answer_texts', arguments={
+                'before': result['moment']['before'], 'after': result['retry']['answer']})
+        except Exception:
+            result['wording'] = None
+    return result
 
 @app.post('/api/token')
 async def token(body: SessionRef):
@@ -440,7 +475,9 @@ async def token(body: SessionRef):
 
 @app.post('/api/clear')
 def clear(body: SessionRef):
-    sessions.pop(body.session_id, None)
+    for sid in list(sessions):
+        if sid == body.session_id or sessions[sid].get('replay_parent') == body.session_id:
+            sessions.pop(sid, None)
     return {'cleared': True}
 
 app.mount('/static', StaticFiles(directory=ROOT / 'static'), name='static')

@@ -1,77 +1,52 @@
 # Rehearsal handoff
 
-Updated October 22, 2026: Gemini-only migration completed. Read AGENTS.md and interview/README.md, then latest WORK_LOG.md before editing. Historical decisions/tests remain in WORK_LOG.md; this snapshot supersedes earlier provider plans.
+Updated October22,2026: Pressure Replay implemented and verified with synthetic live speech. Read AGENTS.md, interview/README.md and latest WORK_LOG.md before editing. This is the current snapshot; the log preserves history.
 
-## Objective and authorization
+## Objective, scope and authorization
 
-Active project: Rehearsal in interview/, Amazon Alexa+ hackathon mock interview app. Trace in trace/ is paused. User expects autonomous development, resumable checkpoints after small milestones, and commits using only their git identity (no AI credits). No remote publication/submission authorization; no remote configured at last check. User supplied Gemini key in ignored interview/.env and authorized Gemini testing. OpenAI paid calls remain deferred and are now removed from runtime. Never print secrets. Do not delegate merely because this is a handoff protocol.
+Active project is Rehearsal in interview/, Amazon Alexa+ hackathon entry. Trace in trace/ is paused. User wants most work done autonomously and frequent resumable checkpoints. Never add AI/tool authorship credits. Commits use user's identity. No delegation authorization. No remote publication/submission authorization; publishing/video/Devpost remain pending.
 
-## Current behavior
+User confirmed the FIVE-MINUTE interview and physical webcam work well. They explicitly said full30-minute perfection is unnecessary for this short demo. Do not require or repeatedly ask for those tests again. Longer-session stability is unverified and must not be claimed. The latest approved feature is Pressure Replay, now implemented; planning-only status is superseded.
 
-All active AI features use the same GEMINI_API_KEY: audio transcript/review/draft, tailored question/follow-up, text interview, MCP coaching/retry comparison, company research and plan synthesis. Shared generateContent helper in audio_review.py; model GEMINI_MODEL (legacy GEMINI_AUDIO_MODEL fallback), default gemini-3.5-flash. Research may override GEMINI_RESEARCH_MODEL. NEW: continuous Gemini Live interview implemented in live_interview.py + static/interview.js/interview-pcm.js. Defaults to gemini-3.8-live (separate GEMINI_LIVE_MODEL), same key. User changed objective to full uninterrupted timed interview, no coaching until end. Removed old OpenAI voice UI/runtime; legacy /api/token returns 410 without a provider call.
+Gemini key is in ignored interview/.env. User authorized Gemini development/live testing; never print keys. OpenAI calls remain deferred and have been removed from runtime. Company Google Search research returned429 repeatedly; do not loop retries. Research is optional and not needed for replay or interviews based on supplied setup.
 
-Interview setup accepts company, role, JD, resume upload/paste, skills goals, round and 5/15/30-minute target. Upload PDF/DOCX/TXT <=5 MB; local subprocess extraction <=10 seconds, PDF <=15 pages, preview/apply <=10k characters, no OCR. Setup is page-memory only. Authored demo preserves personal setup.
+## Launch and server ownership
 
-Company research is enabled by default; ignored local .env flag changed to 1 at user request. Button: Research this company & build my plan. Search sends company/role only to Gemini Google Search grounding. Synthesis receives resume/JD/goals to tailor the simulated interview (not resume editing). research.py rejects incomplete/uncited grounding; citations use UTF-8 segment offsets and original part indexes; Google's rendered search suggestions appear in a sandboxed iframe. User reviews/applies/saves plan. Changing inputs invalidates it. Not verified company questions.
+Windows D:/hackamazon, Python3.11 .venv, Node22. Run .venv/Scripts/python interview/server.py (or interview/start.ps1), then http://127.0.0.1:8766. Install interview/requirements.txt when needed. .env overrides inherited environment values. App is single-user/loopback only, not ready for public hosting.
 
-Recorded practice: built-in or Gemini question -> browser Hear the question -> Record -> Stop -> explicit Gemini analysis or opt-in automatic analysis. Browser converts to mono 16kHz WAV, server caps at12 MB in memory. Audio request includes question/skills, not resume. Feedback includes transcript, quotes, estimated delivery, retry focus, suggested draft and missing details. Corrected transcript informs follow-up; retry restores same question. Two-minute takes, four takes per page. Comparisons/history group only matching questions. No validated fluency/pronunciation/hiring scores; drafts can infer unsupported facts.
+The user runs the server in their own terminal. Do not restart it as a hidden process or kill it for routine testing. It has NOT been restarted for Pressure Replay: user must preserve any current transcript, Ctrl+C/relaunch, and refresh. Backend changes require restart; refreshing alone is insufficient. Tests use an owned ephemeral loopback server with scratch history and terminate its process tree afterward.
 
-Authored sample remains no-key. Deterministic checks use English word lists and exact text evidence, no scores. Seven real MCP tools (Streamable HTTP2025-11-25): check_answer_text, compare_answer_texts, save_practice_result, get_practice_progress, get_interview_brief, coach_latest_answer, compare_retry. Last two use Gemini. Audio/research/question endpoints are separate HTTP integrations. MCP App at /mcp-app-preview is a reference host, not tested third-party. agent_sim.py is a scripted tool loop, not actual Alexa. History stores derived counts only in ignored interview/data; audio is page-local unless selected for analysis/captions.
+## Implemented core
 
-## Launch and verification
+- Setup: company/role/JD, local resume PDF/DOCX/TXT extraction (5MB,10sec, PDF15pages, max10k text), review/apply, learning goals, round and5/15/30-minute length. Setup is page-memory only. Research sends company/role to Google Search, then resume/JD to synthesis; unavailable research must not be fabricated.
+- Gemini Live room: automatic spoken turns, timed ending, no coaching during interview, compression/resumption, transcript capture. Native audio via local websocket; mono16kHz microphone worklet,24kHz playback. Explicit stream disclosure, no raw audio saved. End stops mic. Optional video-only self-view stays local; output analyser animates Maya's mouth and mic energy drives listening behavior. User confirmed short session/webcam.
+- Final debrief: transcript-based Gemini review, exact quote filtering, no scores/pronunciation/hiring verdicts. Suggested drafts need fact-checking. Transient500/502/503/504/network errors retry up to3 attempts with bounded delay, never429. Final debrief max12288 tokens. Old503 occurred on user run before retries; fictional final-review calls subsequently succeeded.
+- Single-answer practice: max2min/four takes, optional Gemini audio analysis/transcription, goals/setup-generated questions and selected-answer followups; same-question retry grouping. Browser captions separate opt-in; audio stays local unless analysis/captions selected.
+- Authored demo and deterministic MCP wording checks remain no-key. Seven MCP tools: check_answer_text, compare_answer_texts, save_practice_result, get_practice_progress, get_interview_brief, coach_latest_answer, compare_retry. MCP2025-11-25 Streamable HTTP. History stores only derived counts, not text/audio. MCP App reference host at /mcp-app-preview; no third-party host verification. agent_sim.py is scripted, not Alexa. No actual Alexa device integration claimed.
 
-Windows D:/hackamazon; .venv Python3.11. Run .venv/Scripts/python interview/server.py; http://127.0.0.1:8766. Restart existing server and refresh browser for latest code. User reported disabled research after migration. Identified stale server on8766 and restarted it on Oct22; /api/status now confirms provider gemini, key configured and research enabled. No provider call used for this check. .env overrides inherited settings; never overwrite it from example. Local single-user loopback app, not public-hosting ready.
+## Pressure Replay (new)
 
-Previous migration regression: 50 Python tests passed, including real local MCP integration, with provider calls mocked and scratch history on an owned temporary server. Eight JS mock suites and all JS syntax passed. Test runner cleanup hit Windows file-lock on temporary server.log after successful tests; owned child termination was issued/waited. No user server killed. This is a harness cleanup issue, not failed assertions.
+After the full debrief, choose one evidence-backed moment. Options require a quote unique to one candidate turn and its immediately preceding interviewer turn; the actual original question is used, not the review's paraphrase. Long original answers (>6000 chars), ambiguous or missing anchors are excluded. No eligible evidence means no replay card.
 
-Separate live checks: earlier synthetic audio review and fictional follow-up succeeded. THIS migration: Gemini text HTTP503 and company search HTTP429. Stopped live retries; no personal data sent. Newly migrated text/research not verified end to end. No OpenAI calls. Physical microphone/browser WAV conversion, current UI/mobile layout and Search iframe still need browser QA. Earlier overnight fake-mic/headless and sample UI tests predate latest changes; do not imply coverage.
+Start90-second replay reuses the room/audio/camera. It creates a separate child session containing a copy of the original answer/context. Maya repeats the original question, then asks ONE changed-condition followup. Exchange tracker collects transcription fragments, handles interruption boundaries and closes after two completed answer exchanges; a90-second deadline also applies. Early/manual end retains partial answers.
 
-## Files and next steps
+Comparison only after end: exact before/retry quote pairs, qualitative verdict, remaining gap, and separate followup evidence. Followup words cannot be used as proof of an improved retry. Identical/partial/unsupported retries cannot receive an improvement verdict. AI reasoning is still fallible. Existing compare_answer_texts is called through real MCP as an optional expandable wording panel; failure of that panel does not discard the AI comparison. Seven-tool set unchanged.
 
-server.py routes/MCP/sessions; audio_review.py shared Gemini JSON/audio; gemini_questions.py questions; research.py grounding/synthesis; resume_import.py extraction; static/app.js sample/text, practice.js recording, audio-review.js analysis, practice-questions.js followups, research.js plan UI. Tests: test_*.py and eight test_*.cjs. README.md overview, interview/README.md details, DEMO.md and SUBMISSION.md drafts, docs/USER_TEST.md manual checks.
+Original debrief/transcript stays intact on permission, connection and comparison failures. Try replay comparison again retries analysis only. Download includes original and latest replay. Back to practice clears parent and children; up to3 saved child sessions per parent in memory. No disk persistence/audio recording added.
 
-1. Restart and browser-test: save fictional company/JD/experience/goals, question -> real mic recording -> analysis -> retry/followup. Check plan loading/error/source frame. Gemini quota may block; avoid repeated paid retries.
-2. Fix user findings, checkpoint log/handoff after each milestone. Browser APIs must be tested with approved computer-use tooling; no direct CDP fallback.
-3. Review submission/demo claims against actual behavior. Publishing repo, uploading demo and Devpost submission remain pending. Deadline from earlier official-rule verification: Oct23,2026 noon PT /3pm ET. Alexa+ track accepts simulation or self-hosted MCP; required repo/license, description, public video <3min, product feedback, track; optional friction log up to10% bonus. Recheck official rules if needed: https://amazonappdev2026.devpost.com/rules .
-4. docs/SUBMIT_CHECKLIST.md has publication steps; gh unavailable at last check. Existing ignored demo-video/rehearsal-demo-captioned.avi is old silent1:43 fallback, structurally checked but not played; it predates migration and needs review before use. Source capture scripts were session-local, may be unavailable.
+Files: pressure_replay.py for anchors/state/comparison; live_interview.py for Live setup/turn tracking; server.py routes /api/interview/replay and /api/interview/replay-review plus existing /api/interview/live; static/interview.js for UI/state restoration; index.html/style.css for card. Tests: test_pressure_replay.py and .cjs.
 
-Known risks: qualitative model advice/transcripts can be wrong; English rule lists misclassify; generated drafts need factual review. Browser speech may use OS online services. Setup resets on reload. Async generation/requestVersion guards protect resets; preserve those. PowerShell may display UTF-8 mojibake; inspect bytes before changing encoding.
+## Verification and exact next action
 
+- Full regression:73 Python tests PASS (provider mocks, real local MCP integration, isolated history). Eleven JS mock suites PASS; all JS syntax PASS. New tests cover ambiguous anchoring, parent preservation, two-answer ending, interruption/partial handling, review gating/evidence filtering, original/replay export and permission/provider failure recovery.
+- Actual live synthetic replay: exact original question, spoken retry, changed requirement to empirical evidence, second spoken answer, automatic ending after54.5sec, no errors. Actual Gemini comparison succeeded with one verified before/retry pair and followup quote. Only fictional/generated speech sent. Fixtures in ignored interview/data/replay-*.wav.
+- Earlier browser QA by another session used synthetic media/mocked transport for full room/mobile flows. User confirmed base five-minute session and physical webcam. CURRENT replay UI and physical-mic replay are not browser-verified: current computer-use inventory has no surfaces. Do not imply mocked tests are browser/live model quality tests.
+- Next: user restarts their own server and tests only new Pressure Replay from a fresh short interview/debrief, then downloads original+replay. Fix actual findings, rehearse the concise demo and freeze features. Do not make30-minute stability a blocker.
 
-## Update: Oct 22, evening ET
+## Submission and known limits
 
-**Browser QA.** Done in real Chrome via the Claude-in-Chrome extension, against an isolated no-key copy on port 8767. It covered home, setup, consent, the room (desktop and 390 px), the debrief, the sample and the practice panel. The full room → End → debrief → Back flow was exercised with a mocked transport and synthetic oscillator microphone (all mock text prefixed [MOCK]; UI only).
+README.md overview, interview/README.md detailed behavior, DEMO.md short script plus replay option, SUBMISSION.md draft, docs/SUBMIT_CHECKLIST.md remaining actions. Screenshots01-10 predate Pressure Replay; do not claim they show the new card. Old silent AVI is outdated.
 
-**Fixed (commit fa7f7d2):**
-- glyph corruption (`?` in place of ·, →, ×, …);
-- the room ignored the saved setup length;
-- the stage clock showed inside the room;
-- the mobile room overflowed horizontally;
-- Maya's caption was not restored after an interview.
+Earlier official-rules check recorded deadline Oct23,2026 noon PT/3pm ET, Alexa+ simulation or self-hosted MCP track, repo/license, text, public video under3min and product feedback; optional friction log. Source https://amazonappdev2026.devpost.com/rules . Recheck rules if changing submission assumptions. No remote/publication created by this milestone.
 
-**Live check.** Gemini text generation succeeded with a fictional brief. Company research is still HTTP 429; do not loop.
-
-**Docs.**
-- `SUBMISSION.md` rewritten around the interview room, with a verification-status table, Gemini Live product feedback, the 7 friction entries, and test counts of 59 Python tests and 9 JS suites.
-- README lead, status table and quickstart updated.
-- `DEMO.md` is now a single primary script (excerpt labelling rules, plus a no-key fallback). The old AVI is marked outdated.
-- `docs/SUBMIT_CHECKLIST.md` has the user's 5-minute mic test as step 1.
-- The gallery was renamed to `docs/screenshots/01–10`, with new real captures for home, setup, consent, room and mobile.
-
-**Real-mic interview VERIFIED by the user (Oct 22):** Maya spoke, heard them, followed up, transcript captured. The final review hit a Gemini 503 (now retried automatically). Research is still 429. The server is no longer a hidden process; the user runs it in their own terminal. After that come publishing, the video and Devpost (user actions).
-
-**Self-view camera and livelier Maya (Oct 22, night).**
-- An opt-in self-view tile shows a separate, video-only stream. It is local only and never sent.
-- Maya's lip sync is driven by an `AnalyserNode` on her real output audio, and a listening nod and gaze come from microphone energy.
-- Covered by `test_camera.cjs`, and checked in Chrome with synthetic devices.
-- Not yet tried with the user's real webcam.
-
-## Current milestone: focused full interview room
-
-User rejected cluttered per-answer coaching UI and explicitly requested 30 minutes of hands-free interviewing with analysis only at end. New primary Enter interview room CTA, 5/15/30-minute selector (room default30), consent, microphone worklet, continuous native audio, automatic turn detection, audio interruption handling, countdown and end button. Single-answer/demo moved into expandable section; feedback redesigned as summary/priority with expandable analysis/draft/transcript. Stage is moved into a focused overlay and restored afterward.
-
-Backend live_interview.py proxies Gemini WebSocket, validates local origin, bounds audio packets/transcript, enforces deadline and end-only review, captures transcripts, enables compression and resumption. GoAway waits for resumable handle; no quota retry loops. Final review is transcript-based, exact candidate-quote filtering, no scores or pronunciation claims. Empty transcript produces no assessment. Requires newly installed websockets15.0.1. New session is separate from existing sample/text state; no raw audio saved.
-
-Verification checkpoint: 59 Python tests PASS on isolated temporary server (provider mocks, real MCP); nine JS suites PASS including worklet resampling, timed ending, mic cleanup, late permission, and no review before ending. HTML nesting/IDs/scripts pass. Live setup accepted and spoken model audio received. First synthetic turn test timed out because the fixture was22050Hz while the harness required16000Hz. Corrected conversion test SUCCESS: actual model audio, two completed model turns, synthetic candidate transcript received, clean end, no errors. No browser surface available, so visual QA and real mic/full 30-minute verification pending. Do not call this end-to-end verified yet. Next: user refresh/test5-minute session first, then full 30-minute stability/interruptions. Earlier text/search503/429 still limits final analysis/research independently of Live access.
-
-Final review live check SUCCESS on fictional completed transcript: one answer review/two priorities. Earlier generic-text503 is historical; company search429 remains unresolved. Physical mic/visual/full30-minute QA remains pending. Server8766 restarted with new websocket implementation after checks.
+Risks: model transcripts/advice/drafts may be wrong; exact quote checks are not factual validation. Word-list MCP checks can misclassify. Async revision/generation guards protect reset and late results; preserve them. PowerShell can display UTF-8 mojibake; inspect actual bytes before fixing encoding.

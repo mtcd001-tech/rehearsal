@@ -346,3 +346,40 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - Changes: index.html (consent checkbox "Show my camera" default on with local-only disclosure; self-view tile with Camera off/on; pupils group), style.css (tile, mirrored video, listening nod, gaze transition, mobile sizing), interview.js (separate video-only getUserMedia, attached to local <video> only; toggle; released in release(); denial -> audio-only note. Output AnalyserNode drives --voice lip sync from Maya's real audio; mic energy drives a listening state with attentive gaze/nod; random gaze shifts). New test_camera.cjs.
 - Verification: 10 JS suites PASS (mocks). Real Chrome on isolated no-key copy with synthetic mic/camera (oscillator, canvas) and fake WebSocket sending synthetic 24 kHz PCM: tile shows mirrored video; --voice tracked output (0.68/0.52 during speech, 0 after); listening class + centred gaze while "user" audio; toggle off/on; End releases camera track (ended), hides tile, resets Maya. UI-only; not Gemini.
 - Not verified: user's physical webcam; look on the user's real call. Next: user tries it in their next interview.
+
+### 2026-10-22 - IN PROGRESS: review latest changes and reconcile test plan
+- Purpose: user requested review of latest work and what they need to test. Clean baseline4457f0c. Inspected commits sincec50688d, retry/live/camera code, handoff and checklist.
+- Verification: all10 JS suites PASS and18 Python audio/live tests PASS, providers/media mocked. No paid calls or server restart. Latest prior full regression62 tests is recorded, not rerun this turn.
+- Finding: continuity/checklist contain stale claims contradicting later user-confirmed real-mic test. Next: correct those claims and prioritize final debrief, webcam and30-minute stability.
+
+### 2026-10-22 - COMPLETE: latest-change review and user test priorities
+- Changes: corrected stale voice-verification claims in docs/SUBMIT_CHECKLIST.md and HANDOFF.md; README now reflects saved-duration selection, retry behavior and camera addition.
+- Outcome: no failing test found in targeted review. Prioritize successful real-user final debrief/download, physical webcam cleanup, then full30-minute timing/reconnection. Research429 remains optional blocker. No app implementation changes, provider calls or server restart.
+- Next: user tests and reports actual failures; fix those before demo/submission rather than adding more features.
+
+### 2026-10-22 - Planning: demo scope confirmed; distinctive feature proposal
+- User confirmation: five-minute interview and webcam work well. User explicitly says full30-minute perfection is unnecessary for this demo; remove it as a submission blocker. This is user-reported verification, not a new automated/live test.
+- Current request: think about a unique feature and plan first. No feature implementation authorized by this planning request.
+- Reviewed current handoff, README and submission feature inventory. Existing per-answer retries, resume/JD tailoring and saved rule counts mean those alone should not be pitched as new features.
+- Proposal for user review: Pressure Replay after the full interview: select one evidence-backed answer moment, offer a short spoken retry and one changed-constraint follow-up, then show exact before/after evidence without invented improvement scores. Preserve uninterrupted main interview and original debrief. Reuse Gemini Live and existing MCP comparison where applicable; no dependence on quota-blocked web research.
+- Scope: one replay moment, one follow-up, one comparison card. No new avatar/provider/platform work. Not approved or implemented yet.
+- Next: present recommendation and alternatives; wait for user's feature choice before coding. Proceed with short-demo readiness rather than30-minute hardening.
+
+### 2026-10-22 - IN PROGRESS: Pressure Replay implementation
+- User approved the proposed feature. Baseline4457f0c plus existing uncommitted continuity/checklist updates; preserve them. Five-minute interview/webcam user-confirmed,30-minute hardening not a blocker.
+- Plan: derive replay choices from exact completed-interview evidence; create isolated90-second child session using Gemini Live; one original-question retry and one changed-condition follow-up; post-replay evidence-filtered comparison plus existing MCP wording comparison. Preserve parent debrief/transcript on all failures.
+- Files: new pressure_replay.py, live_interview.py/server routes, interview.js/results UI/CSS, focused backend/frontend tests and continuity docs. Next: implement anchored choices/child sessions/comparison, then live phase gating and UI. No web-research dependency.
+
+### 2026-10-22 - Pressure Replay implementation checkpoint
+- Added evidence-anchored replay choices, isolated child sessions, bounded90-second Live mode, exchange tracking for two answers and end-only comparison. Comparison filters before/retry evidence separately from follow-up; uses existing MCP compare tool as an optional wording panel. Added UI selector/quote/focus, microphone replay, comparison card and combined export; original debrief retained on failure.
+- Existing18 Python audio/live tests and live/camera JS mocks pass. New replay tests authored; next: run/fix targeted tests, then full isolated regression and one fictional live replay check. Browser inventory currently empty; new UI visual verification pending.
+
+### 2026-10-22 - Pressure Replay live and regression verification
+- Live synthetic test: actual Gemini audio, exact original question, two candidate answer exchanges, changed condition (requiring empirical evidence), automatic end after54.5 seconds, no errors. Actual comparison succeeded: clearer verdict, one verified before/retry change and follow-up evidence. All inputs fictional/generated speech; no personal data or web-search call.
+- Regression:73 Python tests PASS on owned temporary loopback server with isolated history, real MCP integration and mocked providers. Eleven JS suites PASS, all JS syntax PASS. Test server process tree stopped; user server untouched. Browser inventory empty, so replay visual/physical-mic verification is pending.
+- Changes: README/submission/demo/checklist now explain replay and short-demo scope. Existing user-confirmed five-minute interview/webcam remain baseline;30-minute test is not a blocker.
+- Next: final HTML/diff check and commit; user restarts their terminal server after preserving current transcript, refreshes and tests only the new replay flow.
+
+### 2026-10-22 - COMPLETE: Pressure Replay
+- Finished implementation and updated README/submission/demo/checklist plus consolidated HANDOFF snapshot. Preserved earlier uncommitted continuity edits. Final HTML nesting/unique IDs/script paths/all interview element references pass; replay JS lifecycle test and syntax pass after wording cleanup; git diff check clean.
+- Ready for checkpoint commit. User owns server; no restart performed. Next: preserve current notes, restart in user's terminal, refresh, and test the new replay card. Five-minute interview/webcam remain confirmed;30-minute hardening not required.

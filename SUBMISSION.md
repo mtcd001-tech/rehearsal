@@ -57,6 +57,12 @@ The most common problem in real answers is specific. People say "we worked on it
 - There are no scores and no pronunciation, accent, personality or hiring judgments. With no transcript, no assessment is shown.
 - You can download the transcript and review.
 
+**Pressure Replay: put the feedback into practice.**
+
+After the interview, choose a moment backed by a quote from one actual answer. In a short voice replay, Maya repeats the original question and then changes one condition in a follow-up. The app compares exact before/retry evidence and evaluates the follow-up separately. It can report no demonstrated improvement; there are no invented percentage scores. The original debrief is preserved. An expandable wording comparison uses the existing MCP tool.
+
+Synthetic live verification passed for the original question, two spoken answers, changed-condition follow-up, automatic end and Gemini comparison. New replay UI and physical-microphone flow still need user verification; do not describe the synthetic test as a real user demo.
+
 **3. Single-answer practice and the retry loop.**
 
 - Practice one question at a time: built-in questions, or one generated from your setup.
@@ -116,7 +122,7 @@ The most common problem in real answers is specific. People say "we worked on it
   - Explicit consent before anything is sent to Google, and the key stays on the server.
   - The resume is extracted locally in a time-limited subprocess, and the file is not kept.
 - **Tests:**
-  - 59 Python tests, with providers mocked: schema validation, citations, resume parsing, the Live session lifecycle, review gating, the rule checks, history, and real local MCP integration.
+  - 73 Python tests, with providers mocked: schema validation, citations, resume parsing, the Live session lifecycle, review gating, the rule checks, history, and real local MCP integration.
   - 10 JavaScript suites with mocked browser and media APIs, including camera opt-in, release and denial: the AudioWorklet resampler, timed ending, microphone cleanup, late permission, stale results and recovery.
 
 ## Verification status (be precise in the video and on Devpost)

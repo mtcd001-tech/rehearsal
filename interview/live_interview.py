@@ -10,6 +10,7 @@ from websockets.asyncio.client import connect
 from fastapi import WebSocketDisconnect
 from pydantic import BaseModel, Field
 from audio_review import gemini_json
+from pressure_replay import REPLAY_INSTRUCTIONS, ReplayTurns
 
 ENDPOINT = 'wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent'
 INSTRUCTIONS = '''You are Maya, an AI interviewer running a realistic timed mock interview, not a coach.
@@ -24,13 +25,14 @@ When the app signals two minutes remaining, move to closing questions and invite
 Keep professional pressure through specific follow-ups, never humiliation or personal judgment.
 '''
 
-def setup(brief, handle=None):
+def setup(brief, handle=None, replay_moment=None):
     model = os.getenv('GEMINI_LIVE_MODEL', 'gemini-3.8-live')
     if not re.fullmatch(r'[\w.-]+', model):
         raise ValueError('Invalid Gemini Live model setting.')
+    instructions = (REPLAY_INSTRUCTIONS + '\nReplay moment: ' + json.dumps(replay_moment)) if replay_moment else INSTRUCTIONS
     return {'setup': {'model': 'models/' + model,
         'generationConfig': {'responseModalities': ['AUDIO']},
-        'systemInstruction': {'parts': [{'text': INSTRUCTIONS + '\nInterview setup: ' + json.dumps(brief)}]},
+        'systemInstruction': {'parts': [{'text': instructions + '\nInterview setup: ' + json.dumps(brief)}]},
         'inputAudioTranscription': {}, 'outputAudioTranscription': {},
         'realtimeInputConfig': {'automaticActivityDetection': {'silenceDurationMs': 1500, 'endOfSpeechSensitivity': 'END_SENSITIVITY_LOW'}},
         'contextWindowCompression': {'slidingWindow': {}},
@@ -53,9 +55,14 @@ def capture_transcripts(state, content):
 async def run_interview(ws, state):
     key = os.getenv('GEMINI_API_KEY', '')
     if not key:
+        state.update(interview_active=False, interview_ended=True)
         await ws.send_json({'type': 'error', 'message': 'Add a Gemini key and restart before starting an interview.'})
+        await ws.close()
         return
     state.update(interview_turns=[], interview_ended=False, interview_active=True)
+    replay = state.get('replay_moment')
+    replay_turns = ReplayTurns(replay['question']) if replay else None
+    seconds = state.get('duration_seconds', int(state['brief']['duration'])*60)
     deadline = None
     handle = None
     warned = False
@@ -63,13 +70,13 @@ async def run_interview(ws, state):
     try:
         while True:
             async with connect(ENDPOINT, additional_headers={'x-goog-api-key': key}, max_size=4*1024*1024, open_timeout=20) as upstream:
-                await upstream.send(json.dumps(setup(state['brief'], handle)))
+                await upstream.send(json.dumps(setup(state['brief'], handle, replay)))
                 greeting = json.loads(await asyncio.wait_for(upstream.recv(), 25))
                 if 'setupComplete' not in greeting:
                     raise ValueError('Gemini Live could not start. Check Live model access and quota.')
                 if deadline is None:
-                    deadline = time.monotonic() + int(state['brief']['duration'])*60
-                    await upstream.send(json.dumps({'clientContent': {'turns': [{'role': 'user', 'parts': [{'text': 'Begin the interview now.'}]}], 'turnComplete': True}}))
+                    deadline = time.monotonic() + seconds
+                    await upstream.send(json.dumps({'clientContent': {'turns': [{'role': 'user', 'parts': [{'text': 'Begin Pressure Replay. Ask the supplied original question verbatim.' if replay else 'Begin the interview now.'}]}], 'turnComplete': True}}))
                 await ws.send_json({'type': 'ready', 'remaining': max(0, deadline-time.monotonic()), 'resumed': bool(handle)})
 
                 async def browser():
@@ -100,6 +107,11 @@ async def run_interview(ws, state):
                             handle = update.get('newHandle') if update.get('resumable') else None
                         content = msg.get('serverContent', {})
                         capture_transcripts(state, content)
+                        replay_done = replay_turns.feed(content) if replay_turns else False
+                        if replay_turns:
+                            state['replay_answers'] = replay_turns.snapshot()
+                        if replay_done:
+                            return 'ended'
                         if content:
                             await ws.send_json({'type': 'content', 'content': content})
                         if 'goAway' in msg:
@@ -112,7 +124,7 @@ async def run_interview(ws, state):
                     nonlocal warned
                     while time.monotonic() < deadline:
                         left = deadline-time.monotonic()
-                        if left <= 120 and not warned:
+                        if left <= 120 and not warned and not replay:
                             warned = True
                             await upstream.send(json.dumps({'realtimeInput': {'text': 'Timing notice from the app: two minutes remain. Move toward closing questions. No coaching yet.'}}))
                         await asyncio.sleep(min(1, max(.01,left)))
@@ -143,7 +155,7 @@ async def run_interview(ws, state):
     finally:
         state['interview_ended'] = True
         state['interview_active'] = False
-        state['interview_seconds'] = max(0, int(state['brief']['duration'])*60 - max(0, deadline-time.monotonic())) if deadline else 0
+        state['interview_seconds'] = max(0, seconds - max(0, deadline-time.monotonic())) if deadline else 0
         with suppress(Exception):
             await ws.close()
 

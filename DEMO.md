@@ -43,3 +43,16 @@ The silent captioned AVI in `demo-video/` (git-ignored) **predates the redesign 
 - [ ] The interview clip is labelled as an excerpt, or shows *End interview*.
 - [ ] The words "authored sample" and "computed now by the … MCP tool" are visible during the sample segment.
 - [ ] Video under 3:00, uploaded publicly to YouTube or Vimeo; link pasted into `SUBMISSION.md` and Devpost.
+
+## Pressure Replay demo option (target2:45)
+
+After browser-checking the new feature, use this tighter sequence instead of adding to the script above:
+
+- 0:00-0:15: problem and setup.
+- 0:15-0:55: short excerpt of the live interview; one answer and follow-up, then show End interview.
+- 0:55-1:15: debrief quote and one improvement focus; choose Pressure Replay.
+- 1:15-2:10: replay excerpt: original question, clearer spoken retry, changed-condition follow-up and brief answer. Label any cuts; show whether the replay ended automatically or was ended early.
+- 2:10-2:35: actual before/after quotes and separate follow-up feedback. Expand Wording comparison to show the real MCP tool output.
+- 2:35-2:45: close: practice the difficult moment, then test your understanding under a changed condition.
+
+Use actual results, including an unresolved issue if that is what the model reports. Synthetic tests verified the provider path; rehearse the new browser flow before recording. Five-minute interview/webcam were already confirmed by the user; full30-minute testing is not a submission blocker.
