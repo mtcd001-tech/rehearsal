@@ -420,3 +420,7 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 - Visual QA: headless Chrome `--screenshot` (no DevTools protocol) on a scratch-only harness page that loads the real app with mocked endpoints ([MOCK] text) — desktop home, debrief, replay comparison; true 390 px iframe measurements for home and debrief show scrollWidth = clientWidth (no overflow). Harness lives only in scratchpad copy, not in repo.
 - Not verified: the new review fields with real Gemini output; user's own run will be the first.
 - Next: user does one real interview + replay, records demo, approves publication.
+
+### 2026-10-23 - IN PROGRESS: tidy single-answer practice panel; submission prep minus video
+- User: reorganize practice panel, remove long warnings; Gemini quota exhausted so do all submission prep except the video, wait for quota reset. Keep short consent hints for features that send audio to Google.
+- COMPLETE: practice panel regrouped into 1 Pick a question / 2 Record / 3 Options; three long disclosure paragraphs replaced by one-line hints on the two Google-bound toggles plus "Otherwise your recordings stay in this tab."; progress note shortened. All element IDs preserved. 11 JS suites PASS. Visual check via headless --screenshot harness (scratch only).
