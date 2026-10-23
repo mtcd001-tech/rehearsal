@@ -7,7 +7,7 @@
 - **Project name:** Rehearsal
 - **Tagline:** A timed mock interview with a voice interviewer who follows up like a real one — then feedback that quotes your own words and shows exactly what to change.
 - **Primary track:** Alexa+ (self-hosted MCP server, spec 2025-11-25 over Streamable HTTP, plus a simulated Alexa+-style voice experience in a web app)
-- **Mini challenges:** None claimed.
+- **Mini challenges:** Open Source (see the Open Source section below).
 - **Repository:** https://github.com/mtcd001-tech/rehearsal (public, MIT license)
 - **Demo video:** **[fill in YouTube/Vimeo URL]** (public, under 3 minutes)
 - **Built with:** Python, FastAPI, Model Context Protocol Python SDK (`mcp` 1.30.0, FastMCP, Streamable HTTP), Gemini API (Live API for the voice interview; `generateContent` for review, questions, coaching and Google Search–grounded research), `websockets`, vanilla JavaScript, Web Audio (AudioWorklet), MediaRecorder, Web Speech Synthesis
@@ -164,6 +164,36 @@ Synthetic live verification passed for the original question, two spoken answers
 - Run and tune full 15- and 30-minute sessions with real candidates, including non-native speakers, before claiming impact.
 - Connect the MCP tools to Alexa+ when developer access is available, so the debrief and retry loop can run by voice.
 - Add more interview types (technical walk-throughs, system design) and trends in history over time.
+
+## Open Source mini challenge
+
+All four are merged pull requests by **mtcd001-tech**, opened and merged within the hackathon window (Sep 17 – Oct 6, 2026). Verified via the GitHub API.
+
+- **GitHub username:** `mtcd001-tech`
+- **Project repository URL (primary submission):** https://github.com/mtcd001-tech/rehearsal
+- **Contribution URL (lead with this one if the form takes a single URL):** https://github.com/pytest-dev/pytest/pull/15058
+- **Additional contributions:**
+  - https://github.com/apache/sedona/pull/3397
+  - https://github.com/apache/sedona/pull/3384
+  - https://github.com/pydantic/pydantic-settings/pull/981
+
+**Description: what I did, how it works, and why it matters**
+
+- **pytest #15058: fixture discovery for bound methods in custom collectors** (fixes long-standing issue #6750; merged Oct 6).
+  - **What:** custom collectors that pass a bound method to `pytest.Function` silently lost their first fixture argument. `inspect.signature` had already removed `self`, and pytest removed one more parameter.
+  - **How:** the fix skips the extra removal for bound methods. A new integration regression covers instance, class and static methods, positional-only receivers and keyword-only fixtures. Four tests failed before the fix; all pass after it.
+  - **Why it matters:** plugin authors writing custom collectors get correct fixture injection instead of confusing missing-argument errors.
+- **Apache Sedona #3397: GeometryCollection inputs in `ST_Crosses`** (fixes #2417; merged Sep 23).
+  - **What:** `ST_Crosses` threw on non-empty GeometryCollections. The GeoPandas wrapper hid this by returning `False`, even when a collection really crossed the other geometry, so users got silently wrong spatial results.
+  - **How:** the shared implementation and both spatial-join evaluators now use JTS 1.20's RelateNG crosses predicate, which supports mixed and nested collections with union semantics. The workaround was removed and collection parity tests re-enabled. Changes span Java, Scala and Python, with tests.
+  - **Why it matters:** it fixes wrong answers in spatial SQL and joins.
+- **Apache Sedona #3384: NaN nodata in `RS_AsRaster`** (fixes #3372; merged Sep 22).
+  - **What and how:** NaN nodata is now allowed for float and double rasters, whether supplied explicitly or inherited, while integer types and infinite values keep their correct validation. Regression tests and API documentation were updated.
+  - **Why it matters:** NaN is the standard nodata value for floating-point geospatial rasters.
+- **pydantic-settings #981: explicit `None` in CLI serialization** (merged Sep 25).
+  - **What:** `CliApp.serialize` emitted `None` where the parser expects `null` or a custom null token, so serialized arguments failed validation when read back.
+  - **How:** the fix uses the configured null token with the same precedence as parsing, plus five round-trip regression cases (four failed on the old code).
+  - **Why it matters:** CLI arguments generated from a settings object can be parsed back reliably.
 
 ## Product feedback (required)
 

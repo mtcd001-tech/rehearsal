@@ -432,3 +432,6 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 ### 2026-10-23 - PUBLISHED: public GitHub repository
 - User supplied https://github.com/mtcd001-tech/rehearsal (empty). Pre-push secret scan of full history clean; no .env/data/.claude tracked. Pushed main; GitHub API confirms public, MIT detected, HEAD matches, author Minh Dau only.
 - SUBMISSION.md repo URL filled; README clone commands use the real URL. Remaining: video URL (user, after new Gemini key), onboarding confirmation, Devpost submission.
+
+### 2026-10-23 - Open Source mini challenge added
+- User supplied 4 PRs; verified via GitHub API: all by mtcd001-tech, created Sep 17-23 and merged Sep 22-Oct 6 2026 (inside window Aug 31-Oct 23): pytest#15058, sedona#3397, sedona#3384, pydantic-settings#981. SUBMISSION.md gains a ready-to-paste Open Source section; mini challenges now Open Source.
