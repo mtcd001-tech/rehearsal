@@ -1,6 +1,5 @@
 # Rehearsal - Gemini interview practice
 
-Continuing agents: read ../AGENTS.md, ../HANDOFF.md and latest ../WORK_LOG.md before editing. Keep the log and snapshot current after each milestone.
 
 ## Run
 
@@ -103,7 +102,6 @@ Python tests cover provider payloads/schema validation, grounding citations and 
 
 For Python integration tests, run a separate local server with isolated history, then from interview run python -m unittest discover -p test_*.py. Set its port in the environment consistently; .env values override environment settings. Individual unit modules can run without a server. JS tests run from interview using node test_practice.cjs, test_audio_review.cjs, test_gemini_questions.cjs, test_research.cjs, test_resume.cjs, test_setup.cjs, test_timer.cjs and test_recovery.cjs.
 
-Manual checklist: ../docs/USER_TEST.md. Demo/submission drafts: ../DEMO.md and ../SUBMISSION.md. Publication and submission are still pending.
 
 Implementation references: https://ai.google.dev/gemini-api/docs/audio , https://ai.google.dev/gemini-api/docs/google-search , https://ai.google.dev/api/generate-content .
 

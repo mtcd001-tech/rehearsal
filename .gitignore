@@ -8,3 +8,15 @@ test-results/
 .claude/
 interview/data/
 demo-video/
+
+# Local working notes and drafts (kept on disk, not published)
+AGENTS.md
+HANDOFF.md
+WORK_LOG.md
+DEMO.md
+SUBMISSION.md
+docs/DEVPOST_ABOUT.md
+docs/RECORDING_SCRIPT.md
+docs/SUBMIT_CHECKLIST.md
+docs/USER_TEST.md
+trace/

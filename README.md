@@ -145,10 +145,7 @@ node test_practice.cjs
 |---|---|
 | `interview/` | Rehearsal: FastAPI app, MCP server, rule checks, sample scenario, web client, tests |
 | `interview/README.md` | Detailed behavior, limits, and verification notes |
-| `SUBMISSION.md`, `DEMO.md` | Hackathon submission text, product feedback, friction log, demo script |
-| `docs/screenshots/`, `docs/SUBMIT_CHECKLIST.md` | Real screenshots of the app; the author's submission checklist |
-| `trace/` | An earlier, paused prototype (code-tracing visualizer). Not part of this submission. |
-| `HANDOFF.md`, `WORK_LOG.md`, `AGENTS.md` | Development handoff notes and log |
+| `docs/screenshots/` | Real screenshots of the app |
 
 ## Prior art and honest positioning
 
