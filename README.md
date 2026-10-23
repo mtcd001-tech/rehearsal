@@ -36,7 +36,7 @@ Requires Python 3.11+ and a recent Chrome or Edge.
 **Windows (PowerShell)**
 
 ```powershell
-git clone <this repository> rehearsal
+git clone https://github.com/mtcd001-tech/rehearsal.git rehearsal
 cd rehearsal
 python -m venv .venv
 .venv\Scripts\python -m pip install -r interview\requirements.txt
@@ -46,7 +46,7 @@ python -m venv .venv
 **macOS / Linux**
 
 ```bash
-git clone <this repository> rehearsal && cd rehearsal
+git clone https://github.com/mtcd001-tech/rehearsal.git rehearsal && cd rehearsal
 python3 -m venv .venv
 .venv/bin/python -m pip install -r interview/requirements.txt
 .venv/bin/python interview/server.py

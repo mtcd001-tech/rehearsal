@@ -428,3 +428,7 @@ Append meaningful milestones here. Keep `HANDOFF.md` as the current snapshot. Da
 ### 2026-10-23 - Submission prep (all but video)
 - SUBMISSION.md test count 76; README count 76; drafted Alexa+ onboarding answer (flagged "Author: confirm"); checklist updated. Remaining author inputs: repo URL, video URL, onboarding confirmation. Gemini quota exhausted per user; video waits for reset.
 - Publication blocked on user: no `gh` CLI and Chrome extension disconnected, so the agent cannot create the GitHub repo; push is ready once a repo URL exists (with user's go-ahead).
+
+### 2026-10-23 - PUBLISHED: public GitHub repository
+- User supplied https://github.com/mtcd001-tech/rehearsal (empty). Pre-push secret scan of full history clean; no .env/data/.claude tracked. Pushed main; GitHub API confirms public, MIT detected, HEAD matches, author Minh Dau only.
+- SUBMISSION.md repo URL filled; README clone commands use the real URL. Remaining: video URL (user, after new Gemini key), onboarding confirmation, Devpost submission.

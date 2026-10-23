@@ -59,3 +59,4 @@ Risks: model transcripts/advice/drafts may be wrong; exact quote checks are not 
 - **Verification:** 76 Python tests and 11 JS suites pass. Visual QA used a scratch-only mocked harness. The new fields have not yet been seen with real Gemini output.
 - **Remaining work is user-side:** one real interview and replay, the video, approving repo publication, and Devpost before Oct 23, 12:00 p.m. PT.
 - **No new features** without asking the user.
+- **Published Oct 23:** https://github.com/mtcd001-tech/rehearsal is public, MIT-licensed, and `main` tracks `origin`. Push future commits; after the deadline, freeze per the rules.
